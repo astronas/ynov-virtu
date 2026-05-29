@@ -1,0 +1,78 @@
+---
+# Playbook : Création et jointure du cluster Proxmox
+#
+# Ordre d'exécution :
+#   1. Créer le cluster sur PRX1 (proxmox_cluster_master)
+#   2. Joindre PRX2 puis PRX3 au cluster
+#
+# Prérequis : playbooks/proxmox-base.yml exécuté avec succès
+#
+# Usage :
+#   ansible-playbook playbooks/proxmox-cluster.yml
+
+- name: Créer le cluster Proxmox sur le nœud maître (PRX1)
+  hosts: proxmox_cluster_master | default('prx1')
+  gather_facts: false
+
+  tasks:
+    - name: Vérifier si le cluster existe déjà
+      ansible.builtin.command: pvecm status
+      register: cluster_status
+      changed_when: false
+      failed_when: false
+
+    - name: Créer le cluster (si non existant)
+      ansible.builtin.command: "pvecm create {{ proxmox_cluster_name }}"
+      when: "'cluster name' not in cluster_status.stdout"
+      register: cluster_create
+
+    - name: Afficher le résultat de la création
+      ansible.builtin.debug:
+        var: cluster_create.stdout_lines
+      when: cluster_create is defined and cluster_create.changed
+
+- name: Joindre les nœuds secondaires au cluster
+  hosts: proxmox:!prx1
+  gather_facts: false
+  serial: 1  # un nœud à la fois pour éviter les conflits corosync
+
+  tasks:
+    - name: Vérifier si le nœud est déjà dans le cluster
+      ansible.builtin.command: pvecm status
+      register: node_cluster_status
+      changed_when: false
+      failed_when: false
+
+    - name: Rejoindre le cluster (si pas encore membre)
+      ansible.builtin.command: >
+        pvecm add {{ proxmox_cluster_master_ip }}
+        --use_ssh
+        --force
+      when: proxmox_cluster_name not in node_cluster_status.stdout
+      register: join_result
+
+    - name: Attendre que le nœud soit stable dans le cluster
+      ansible.builtin.pause:
+        seconds: 15
+      when: join_result is defined and join_result.changed
+
+- name: Vérifier l'état final du cluster
+  hosts: prx1
+  gather_facts: false
+
+  tasks:
+    - name: État du cluster
+      ansible.builtin.command: pvecm status
+      register: final_status
+      changed_when: false
+
+    - name: Liste des nœuds
+      ansible.builtin.command: pvecm nodes
+      register: nodes_list
+      changed_when: false
+
+    - name: Afficher l'état du cluster
+      ansible.builtin.debug:
+        msg:
+          - "{{ final_status.stdout_lines }}"
+          - "{{ nodes_list.stdout_lines }}"

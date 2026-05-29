@@ -1,0 +1,69 @@
+# Fichier généré par Ansible — NE PAS MODIFIER MANUELLEMENT
+# Template : roles/proxmox_network/templates/interfaces.j2
+# Nœud : {{ inventory_hostname }} ({{ ansible_host }})
+#
+# Architecture :
+#   - vmbr0 : bridge VLAN-aware pour les VMs (MGMT/DMZ/SRV/WAN)
+{% if ceph_osd %}
+#   - {{ ceph_bond_members | join('+') }} → bond0 (LACP 802.3ad)
+#   - bond0.101 : Ceph public  ({{ ceph_public_ip }}/24)
+#   - bond0.102 : Ceph private ({{ ceph_private_ip }}/24)
+{% else %}
+#   - {{ ceph_nic }} : Ceph public uniquement ({{ ceph_public_ip }}/24, pas de bond)
+{% endif %}
+
+auto lo
+iface lo inet loopback
+
+# ── Interface management physique (non configurée) ─────────────────────────
+auto nic0
+iface nic0 inet manual
+
+# ── Bridge VLAN-aware principal ────────────────────────────────────────────
+auto vmbr0
+iface vmbr0 inet static
+    address {{ ansible_host }}/24
+    gateway {{ proxmox_mgmt_gateway }}
+    bridge-ports nic0
+    bridge-stp off
+    bridge-fd 0
+    bridge-vlan-aware yes
+    bridge-vids {{ proxmox_vlan_aware_vids }}
+    # DNS
+    dns-nameservers {{ dns_servers | join(' ') }}
+
+{% if ceph_osd %}
+# ── Bond LACP pour les interfaces Ceph (PRX1/PRX3) ────────────────────────
+{% for member in ceph_bond_members %}
+auto {{ member }}
+iface {{ member }} inet manual
+    bond-master bond0
+
+{% endfor %}
+auto bond0
+iface bond0 inet manual
+    bond-slaves {{ ceph_bond_members | join(' ') }}
+    bond-miimon 100
+    bond-mode 802.3ad
+    bond-xmit-hash-policy layer3+4
+
+# ── VLAN 101 — Ceph Public ─────────────────────────────────────────────────
+auto bond0.{{ vlans.ceph_pub.id }}
+iface bond0.{{ vlans.ceph_pub.id }} inet static
+    address {{ ceph_public_ip }}/24
+    vlan-raw-device bond0
+
+# ── VLAN 102 — Ceph Private ───────────────────────────────────────────────
+auto bond0.{{ vlans.ceph_priv.id }}
+iface bond0.{{ vlans.ceph_priv.id }} inet static
+    address {{ ceph_private_ip }}/24
+    vlan-raw-device bond0
+
+{% else %}
+# ── PRX2 : accès Ceph public direct via {{ ceph_nic }} (SFP→RJ45) ─────────
+# PRX2 n'a pas de bond et n'a pas de réseau Ceph private
+auto {{ ceph_nic }}
+iface {{ ceph_nic }} inet static
+    address {{ ceph_public_ip }}/24
+
+{% endif %}

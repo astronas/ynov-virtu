@@ -1,0 +1,41 @@
+---
+# Variables communes à tous les hôtes
+
+# ── Réseau ────────────────────────────────────────────────────────────────────
+lab_domain: ynov.lab
+
+vlans:
+  mgmt:
+    id: 10
+    network: "10.0.10.0/24"
+    gateway: "10.0.10.254"
+  dmz:
+    id: 20
+    network: "10.0.20.0/24"
+    gateway: "10.0.20.254"
+  srv:
+    id: 30
+    network: "10.0.30.0/24"
+    gateway: "10.0.30.254"
+  wan:
+    id: 99
+    network: "10.0.99.0/24"
+    gateway: "10.0.99.1"
+  ceph_pub:
+    id: 101
+    network: "10.0.101.0/24"
+  ceph_priv:
+    id: 102
+    network: "10.0.102.0/24"
+  blackhole:
+    id: 4094
+
+# ── DNS ───────────────────────────────────────────────────────────────────────
+dns_servers:
+  - "10.0.10.254"
+  - "1.1.1.1"
+
+# ── NTP ───────────────────────────────────────────────────────────────────────
+ntp_servers:
+  - "pool.ntp.org"
+  - "fr.pool.ntp.org"

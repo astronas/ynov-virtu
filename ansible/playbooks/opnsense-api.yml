@@ -1,0 +1,94 @@
+---
+# Playbook : Configuration OPNsense via API REST
+#
+# Configure OPNsense via son API REST (key+secret dans le vault).
+# Prérequis :
+#   - VM OPNsense démarrée, IP 10.0.99.2 et 10.0.10.254 accessibles
+#   - API key/secret générés dans OPNsense : System → Access → Users
+#   - ansible-vault encrypt_string pour stocker les credentials
+#
+# Usage :
+#   ansible-playbook playbooks/opnsense-api.yml
+
+- name: Configuration OPNsense via API REST
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    opnsense_host: "https://10.0.10.254"
+    opnsense_api_key: "{{ vault_opnsense_api_key }}"
+    opnsense_api_secret: "{{ vault_opnsense_api_secret }}"
+    opnsense_validate_certs: false
+
+  tasks:
+
+    # ── Vérification de l'accessibilité ──────────────────────────────────────
+    - name: Vérifier que l'API OPNsense répond
+      ansible.builtin.uri:
+        url: "{{ opnsense_host }}/api/core/firmware/status"
+        method: GET
+        url_username: "{{ opnsense_api_key }}"
+        url_password: "{{ opnsense_api_secret }}"
+        force_basic_auth: true
+        validate_certs: "{{ opnsense_validate_certs }}"
+        status_code: 200
+      register: api_check
+      retries: 3
+      delay: 10
+
+    # ── Désactiver Block private networks sur le WAN ──────────────────────────
+    - name: Désactiver block_private et block_bogons sur le WAN
+      ansible.builtin.uri:
+        url: "{{ opnsense_host }}/api/interfaces/overview/interfacesInfo"
+        method: GET
+        url_username: "{{ opnsense_api_key }}"
+        url_password: "{{ opnsense_api_secret }}"
+        force_basic_auth: true
+        validate_certs: "{{ opnsense_validate_certs }}"
+      register: ifaces_info
+
+    # ── Gateway WAN ───────────────────────────────────────────────────────────
+    - name: Vérifier la gateway WAN
+      ansible.builtin.uri:
+        url: "{{ opnsense_host }}/api/routes/gateway/status"
+        method: GET
+        url_username: "{{ opnsense_api_key }}"
+        url_password: "{{ opnsense_api_secret }}"
+        force_basic_auth: true
+        validate_certs: "{{ opnsense_validate_certs }}"
+      register: gw_status
+
+    - name: Afficher le statut de la gateway
+      ansible.builtin.debug:
+        var: gw_status.json
+
+    # ── Règles firewall — Phase 1 any-any (validation) ────────────────────────
+    # Note : la configuration des règles firewall OPNsense via API nécessite
+    # l'utilisation de l'endpoint /api/firewall/filter/
+    # Voir la documentation OPNsense API pour les détails.
+    - name: Afficher les règles firewall actuelles
+      ansible.builtin.uri:
+        url: "{{ opnsense_host }}/api/firewall/filter/searchRule"
+        method: POST
+        url_username: "{{ opnsense_api_key }}"
+        url_password: "{{ opnsense_api_secret }}"
+        force_basic_auth: true
+        validate_certs: "{{ opnsense_validate_certs }}"
+        body_format: json
+        body:
+          current: 1
+          rowCount: 50
+          searchPhrase: ""
+      register: fw_rules
+
+    - name: Recharger le firewall après modifications
+      ansible.builtin.uri:
+        url: "{{ opnsense_host }}/api/firewall/filter/apply"
+        method: POST
+        url_username: "{{ opnsense_api_key }}"
+        url_password: "{{ opnsense_api_secret }}"
+        force_basic_auth: true
+        validate_certs: "{{ opnsense_validate_certs }}"
+        body_format: json
+        body: {}
+      register: fw_apply

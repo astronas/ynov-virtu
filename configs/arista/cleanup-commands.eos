@@ -1,0 +1,80 @@
+! ============================================================
+! YNOV-SW-LAB — Commandes de nettoyage / remise à zéro
+! À utiliser avec précaution — coupe la connectivité en cours
+! ============================================================
+
+! ============================================================
+! Suppression des VLANs personnalisés
+! ============================================================
+
+no vlan 10
+no vlan 20
+no vlan 30
+no vlan 99
+no vlan 101
+no vlan 102
+no vlan 4094
+
+! ============================================================
+! Remise par défaut des interfaces actives
+! ============================================================
+
+default interface Ethernet1
+default interface Ethernet2
+default interface Ethernet3
+default interface Ethernet4
+default interface Ethernet5
+default interface Ethernet6
+default interface Ethernet7
+
+! ============================================================
+! Remise par défaut des interfaces Ceph (members + Po)
+! ============================================================
+
+default interface Ethernet49/1
+default interface Ethernet49/2
+default interface Ethernet49/3
+default interface Ethernet49/4
+default interface Port-Channel1
+default interface Port-Channel2
+
+! ============================================================
+! Suppression des Port-Channels
+! ============================================================
+
+no interface Port-Channel1
+no interface Port-Channel2
+
+! ============================================================
+! Remise par défaut des ports inutilisés (réactivation)
+! ============================================================
+
+default interface Ethernet8-48
+
+! ============================================================
+! Suppression de la SVI MGMT et de la route par défaut
+! ============================================================
+
+no interface Vlan10
+no ip route 0.0.0.0/0 10.0.10.254
+
+! ============================================================
+! Réactivation de Vlan1 (état par défaut Arista)
+! ============================================================
+
+interface Vlan1
+   no shutdown
+
+! ============================================================
+! Suppression des utilisateurs locaux (hors compte par défaut)
+! ============================================================
+! Adapter selon les comptes créés :
+! no username admin
+
+! ============================================================
+! Vérification post-nettoyage
+! ============================================================
+! show vlan
+! show interfaces status
+! show port-channel summary
+! show running-config

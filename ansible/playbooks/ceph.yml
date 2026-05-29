@@ -1,0 +1,139 @@
+---
+# Playbook : Déploiement Ceph via pveceph
+#
+# Ordre d'exécution :
+#   1. Installer Ceph sur les 3 nœuds
+#   2. Initialiser le cluster Ceph sur PRX1
+#   3. Créer les MON sur PRX1/PRX2/PRX3
+#   4. Créer les MGR sur PRX1/PRX2
+#   5. Créer les OSD sur PRX1 et PRX3
+#   6. Créer le pool vm-pool
+#
+# Prérequis : cluster Proxmox opérationnel, réseaux Ceph testés
+# Usage :
+#   ansible-playbook playbooks/ceph.yml
+#   ansible-playbook playbooks/ceph.yml --tags osds
+
+- name: Installer Ceph sur tous les nœuds
+  hosts: proxmox
+  gather_facts: false
+
+  tasks:
+    - name: Vérifier si Ceph est déjà installé
+      ansible.builtin.command: pveceph status
+      register: ceph_installed
+      changed_when: false
+      failed_when: false
+
+    - name: Installer Ceph via pveceph
+      ansible.builtin.command: pveceph install --version {{ ceph_release }}
+      when: ceph_installed.rc != 0
+      tags: install
+
+- name: Initialiser le cluster Ceph sur PRX1
+  hosts: prx1
+  gather_facts: false
+
+  tasks:
+    - name: Vérifier si Ceph est déjà initialisé
+      ansible.builtin.command: ceph status
+      register: ceph_init_check
+      changed_when: false
+      failed_when: false
+
+    - name: Initialiser Ceph (pveceph init)
+      ansible.builtin.command: >
+        pveceph init
+        --network {{ ceph_public_network }}
+        --cluster-network {{ ceph_cluster_network }}
+      when: ceph_init_check.rc != 0
+      tags: init
+
+- name: Créer les MON sur PRX1, PRX2, PRX3
+  hosts: ceph_mon
+  gather_facts: false
+  serial: 1
+
+  tasks:
+    - name: Vérifier si le MON existe sur ce nœud
+      ansible.builtin.command: "ceph mon stat"
+      register: mon_stat
+      changed_when: false
+      failed_when: false
+      delegate_to: prx1
+
+    - name: Créer le MON
+      ansible.builtin.command: pveceph mon create
+      when: inventory_hostname not in mon_stat.stdout
+      tags: mon
+
+- name: Créer les MGR sur PRX1 et PRX2
+  hosts: ceph_mgr
+  gather_facts: false
+  serial: 1
+
+  tasks:
+    - name: Créer le MGR
+      ansible.builtin.command: pveceph mgr create
+      register: mgr_create
+      changed_when: mgr_create.rc == 0
+      failed_when: false
+      tags: mgr
+
+- name: Créer les OSD sur PRX1 et PRX3
+  hosts: ceph_osd
+  gather_facts: false
+
+  tasks:
+    - name: Créer les OSD pour chaque disque configuré
+      ansible.builtin.command: "pveceph osd create {{ item }}"
+      loop: "{{ ceph_osd_devices[inventory_hostname] | default([]) }}"
+      register: osd_create
+      changed_when: osd_create.rc == 0
+      failed_when: false
+      tags: osds
+
+    - name: Afficher le résultat de la création des OSD
+      ansible.builtin.debug:
+        var: osd_create
+      when: osd_create is defined
+
+- name: Créer le pool Ceph pour les VMs
+  hosts: prx1
+  gather_facts: false
+
+  tasks:
+    - name: Vérifier si le pool existe
+      ansible.builtin.command: "ceph osd pool ls"
+      register: pool_list
+      changed_when: false
+
+    - name: Créer le pool vm-pool
+      ansible.builtin.command: >
+        pveceph pool create {{ ceph_pool_name }}
+        --add_storages 1
+        --size {{ ceph_pool_size }}
+        --min_size {{ ceph_pool_min_size }}
+      when: ceph_pool_name not in pool_list.stdout
+      tags: pool
+
+- name: Vérifier l'état final du cluster Ceph
+  hosts: prx1
+  gather_facts: false
+
+  tasks:
+    - name: Statut Ceph
+      ansible.builtin.command: ceph status
+      register: ceph_final
+      changed_when: false
+
+    - name: OSD tree
+      ansible.builtin.command: ceph osd tree
+      register: osd_tree
+      changed_when: false
+
+    - name: Afficher l'état
+      ansible.builtin.debug:
+        msg:
+          - "{{ ceph_final.stdout_lines }}"
+          - "{{ osd_tree.stdout_lines }}"

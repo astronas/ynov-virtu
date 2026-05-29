@@ -1,0 +1,40 @@
+# /etc/network/interfaces — PRX2
+# Proxmox VE — Nœud PRX2 (10.0.10.2)
+#
+# Réseau principal : nic0 → vmbr0 (VLAN-aware, trunk MGMT/DMZ/SRV/WAN)
+# Réseau Ceph     : nic2 (SFP→RJ45) → IP directe VLAN 101
+#
+# PRX2 ne porte pas d'OSD. Il n'a pas de réseau Ceph private (VLAN 102).
+# Son rôle Ceph est MON/MGR/quorum uniquement, accessible via VLAN 101.
+#
+# Le switch Et3 est configuré en trunk native VLAN 10.
+# Le switch Et6 est configuré en access VLAN 101 (SFP→RJ45, nic2).
+
+source /etc/network/interfaces.d/*
+
+auto lo
+iface lo inet loopback
+
+# ── Interface physique principale ─────────────────────────
+auto nic0
+iface nic0 inet manual
+
+# ── Bridge principal VLAN-aware ───────────────────────────
+# Fournit l'accès MGMT (IP du nœud) et le transport VLAN
+# pour les VMs (tag 10/20/30/99 via Proxmox GUI).
+auto vmbr0
+iface vmbr0 inet static
+    address 10.0.10.2/24
+    gateway 10.0.10.254
+    bridge-ports nic0
+    bridge-stp off
+    bridge-fd 0
+    bridge-vlan-aware yes
+    bridge-vids 10 20 30 99
+
+# ── nic2 — SFP→RJ45 — Ceph public uniquement ─────────────
+# Connecté au switch sur Et6 (access VLAN 101).
+# Pas de bond, pas de VLAN 102 : PRX2 ne réplique pas d'OSD.
+auto nic2
+iface nic2 inet static
+    address 10.0.101.2/24

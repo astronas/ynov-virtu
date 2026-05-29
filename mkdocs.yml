@@ -1,0 +1,98 @@
+site_name: YNOV-VIRTU — Lab d'infrastructure virtualisée
+site_description: "Lab Proxmox 3 nœuds · OPNsense · Ceph · Arista 7050TX-64 · IaC Terraform & Ansible"
+site_author: YNOV Campus
+repo_url: https://github.com/ynov-campus/ynov-virtu
+repo_name: ynov-virtu
+edit_uri: edit/main/
+
+docs_dir: .
+site_dir: site
+
+exclude_docs: |
+  site/
+  .git/
+  node_modules/
+  terraform/
+  ansible/
+  configs/
+  scripts/windows-nat-setup.ps1
+  scripts/windows-nat-cleanup.ps1
+
+theme:
+  name: material
+  language: fr
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/brightness-4
+        name: Passer en mode clair
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/brightness-7
+        name: Passer en mode sombre
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Accueil: README.md
+  - Architecture:
+      - Vue d'ensemble: docs/architecture.md
+      - Plan réseau & VLANs: docs/network-plan.md
+  - Composants:
+      - Proxmox VE: docs/proxmox.md
+      - Ceph: docs/ceph.md
+      - OPNsense: docs/opnsense.md
+      - NAT Windows: docs/windows-nat.md
+  - Sécurité: docs/security.md
+  - Dépannage: docs/troubleshooting.md
+  - Tests réseau: scripts/network-tests.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: Sur cette page
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search:
+      lang: fr
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ynov-campus/ynov-virtu

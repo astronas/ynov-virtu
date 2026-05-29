@@ -1,0 +1,15 @@
+---
+# Playbook : Configuration de base des nœuds Proxmox
+# Appliqué sur PRX1, PRX2 et PRX3
+#
+# Usage :
+#   ansible-playbook playbooks/proxmox-base.yml
+#   ansible-playbook playbooks/proxmox-base.yml --limit prx1
+
+- name: Configuration de base Proxmox
+  hosts: proxmox
+  gather_facts: true
+
+  roles:
+    - role: proxmox_base
+    - role: proxmox_network

@@ -1,0 +1,87 @@
+graph TB
+    subgraph INTERNET["Internet"]
+        INET[("Internet\n4G/5G")]
+    end
+
+    subgraph WIN["PC Windows — WAN temporaire"]
+        WIFI["Wi-Fi\nInternet"]
+        NAT["NAT PowerShell\n10.0.99.0/24"]
+        ETH["Ethernet\n10.0.99.1/24"]
+        WIFI --> NAT --> ETH
+    end
+
+    subgraph SW["YNOV-SW-LAB — Arista 7050TX-64"]
+        ET1["Et1\nAccess VLAN 99\n(WAN Windows)"]
+        ET2["Et2\nTrunk VLANs 10/20/30/99\n(PRX1)"]
+        ET3["Et3\nTrunk VLANs 10/20/30/99\n(PRX2)"]
+        ET4["Et4\nTrunk VLANs 10/20/30/99\n(PRX3)"]
+        ET5["Et5\nAccess VLAN 10\n(PC Admin)"]
+        ET6["Et6\nAccess VLAN 101\n(PRX2 Ceph public)"]
+        PO1["Po1 — LACP 2×10G\nEt49/1+49/2\nTrunk VLANs 101/102\n(PRX1 Ceph)"]
+        PO2["Po2 — LACP 2×10G\nEt49/3+49/4\nTrunk VLANs 101/102\n(PRX3 Ceph)"]
+    end
+
+    subgraph PRX1_BOX["PRX1 — 10.0.10.1"]
+        PRX1_MAIN["nic0 — vmbr0\nVLAN-aware\nMGMT/DMZ/SRV/WAN"]
+        PRX1_CEPH["bond0 — LACP\nCeph public 10.0.101.1\nCeph private 10.0.102.1"]
+    end
+
+    subgraph PRX2_BOX["PRX2 — 10.0.10.2"]
+        PRX2_MAIN["nic0 — vmbr0\nVLAN-aware\nMGMT/DMZ/SRV/WAN"]
+        PRX2_CEPH["nic2 — SFP→RJ45\nCeph public 10.0.101.2\n(VLAN 101 uniquement)"]
+    end
+
+    subgraph PRX3_BOX["PRX3 — 10.0.10.3"]
+        PRX3_MAIN["nic0 — vmbr0\nVLAN-aware\nMGMT/DMZ/SRV/WAN"]
+        PRX3_CEPH["bond0 — LACP\nCeph public 10.0.101.3\nCeph private 10.0.102.3"]
+        subgraph OPN["OPNsense VM"]
+            OPN_WAN["WAN\n10.0.99.2/24\nVLAN 99"]
+            OPN_LAN["LAN/MGMT\n10.0.10.254/24\nVLAN 10"]
+            OPN_DMZ["DMZ\n10.0.20.254/24\nVLAN 20"]
+            OPN_SRV["SRV/LAN\n10.0.30.254/24\nVLAN 30"]
+        end
+    end
+
+    subgraph DMZ_NET["VLAN 20 — DMZ 10.0.20.0/24"]
+        CFTUNN["cloudflared\n10.0.20.5"]
+        RPROXY["Reverse Proxy\n10.0.20.10"]
+        CFTUNN --> RPROXY
+    end
+
+    subgraph CEPH_CLUSTER["Cluster Ceph"]
+        CEPH_PUB["Ceph public\nVLAN 101 — 10.0.101.0/24"]
+        CEPH_PRIV["Ceph private\nVLAN 102 — 10.0.102.0/24"]
+    end
+
+    INET --> WIFI
+    ETH --> ET1
+    ET1 --> OPN_WAN
+    ET2 --> PRX1_MAIN
+    ET3 --> PRX2_MAIN
+    ET4 --> PRX3_MAIN
+    ET6 --> PRX2_CEPH
+    PO1 --> PRX1_CEPH
+    PO2 --> PRX3_CEPH
+
+    PRX1_CEPH --> CEPH_PUB
+    PRX2_CEPH --> CEPH_PUB
+    PRX3_CEPH --> CEPH_PUB
+    PRX1_CEPH --> CEPH_PRIV
+    PRX3_CEPH --> CEPH_PRIV
+
+    OPN_DMZ --> CFTUNN
+    CFTUNN -->|"Tunnel sortant"| INET
+
+    classDef switch fill:#1a3a5c,color:#fff,stroke:#4a9eff
+    classDef proxmox fill:#2d5a1b,color:#fff,stroke:#6abf40
+    classDef opnsense fill:#7a3b00,color:#fff,stroke:#ff8c00
+    classDef ceph fill:#4a1a6b,color:#fff,stroke:#c084fc
+    classDef wan fill:#1a1a1a,color:#fff,stroke:#888
+    classDef dmz fill:#5a3a00,color:#fff,stroke:#fbbf24
+
+    class ET1,ET2,ET3,ET4,ET5,ET6,PO1,PO2 switch
+    class PRX1_MAIN,PRX1_CEPH,PRX2_MAIN,PRX2_CEPH,PRX3_MAIN,PRX3_CEPH proxmox
+    class OPN_WAN,OPN_LAN,OPN_DMZ,OPN_SRV opnsense
+    class CEPH_PUB,CEPH_PRIV ceph
+    class INET,WIFI,NAT,ETH wan
+    class CFTUNN,RPROXY dmz

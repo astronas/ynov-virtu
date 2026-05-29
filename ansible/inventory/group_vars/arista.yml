@@ -1,0 +1,71 @@
+---
+# Variables switch Arista
+
+arista_hostname: YNOV-SW-LAB
+arista_mgmt_ip: "10.0.10.253/24"
+arista_mgmt_gateway: "10.0.10.254"
+arista_spanning_tree_mode: mstp
+arista_stp_priority: 4096
+
+# VLANs à configurer
+arista_vlans:
+  - id: 10
+    name: MGMT
+  - id: 20
+    name: DMZ
+  - id: 30
+    name: SRV-LAN
+  - id: 99
+    name: WAN-OPNSENSE
+  - id: 101
+    name: CEPH-PUBLIC
+  - id: 102
+    name: CEPH-PRIVATE
+  - id: 4094
+    name: BLACKHOLE-NATIVE
+
+# Trunks MGMT/DMZ/SRV/WAN (PRX1/2/3)
+arista_trunk_ports:
+  - interface: Ethernet2
+    description: TRUNK-PRX1
+    native_vlan: 10
+    allowed_vlans: "10,20,30,99"
+  - interface: Ethernet3
+    description: TRUNK-PRX2
+    native_vlan: 10
+    allowed_vlans: "10,20,30,99"
+  - interface: Ethernet4
+    description: TRUNK-PRX3
+    native_vlan: 10
+    allowed_vlans: "10,20,30,99"
+
+# Ports access
+arista_access_ports:
+  - interface: Ethernet1
+    description: WAN-PC-WINDOWS
+    vlan: 99
+  - interface: Ethernet5
+    description: PC-ADMIN-1
+    vlan: 10
+  - interface: Ethernet6
+    description: PRX2-CEPH-PUBLIC
+    vlan: 101
+  - interface: Ethernet7
+    description: PC-ADMIN-2
+    vlan: 10
+
+# Ports inutilisés (shutdown + VLAN blackhole)
+arista_unused_ports_range: "Ethernet8-48"
+
+# Port-Channels LACP Ceph
+arista_port_channels:
+  - id: 1
+    description: PRX1-CEPH-LACP
+    members: [Ethernet49/1, Ethernet49/2]
+    native_vlan: 4094
+    allowed_vlans: "101,102"
+  - id: 2
+    description: PRX3-CEPH-LACP
+    members: [Ethernet49/3, Ethernet49/4]
+    native_vlan: 4094
+    allowed_vlans: "101,102"

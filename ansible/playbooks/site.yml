@@ -1,0 +1,28 @@
+---
+# Playbook maître — exécute toutes les étapes dans l'ordre
+# Usage : ansible-playbook playbooks/site.yml
+# Usage partiel : ansible-playbook playbooks/site.yml --tags ceph
+
+- name: "1/6 — Switch Arista — configuration réseau"
+  import_playbook: arista-network.yml
+  tags: [arista, network]
+
+- name: "2/6 — Proxmox — configuration de base"
+  import_playbook: proxmox-base.yml
+  tags: [proxmox, base]
+
+- name: "3/6 — Proxmox — cluster"
+  import_playbook: proxmox-cluster.yml
+  tags: [proxmox, cluster]
+
+- name: "4/6 — Ceph — déploiement"
+  import_playbook: ceph.yml
+  tags: [ceph]
+
+- name: "5/6 — OPNsense — configuration via API"
+  import_playbook: opnsense-api.yml
+  tags: [opnsense]
+
+- name: "6/6 — NAT Windows — passerelle WAN"
+  import_playbook: windows-nat.yml
+  tags: [windows, nat]

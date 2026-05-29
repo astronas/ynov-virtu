@@ -1,0 +1,40 @@
+---
+# Role : arista_switch
+# Alternative modulaire au playbook arista-network.yml
+# Peut être inclus dans d'autres playbooks via :
+#   roles:
+#     - role: arista_switch
+
+- name: Configurer les VLANs
+  arista.eos.eos_vlans:
+    config: "{{ arista_vlans | map(attribute='id') | zip(arista_vlans | map(attribute='name'))
+      | map('zip', ['vlan_id','name']) | map('community.general.dict') | list }}"
+    state: merged
+
+# Utilisation directe du module pour les trunks
+- name: Configurer les trunks Proxmox
+  arista.eos.eos_l2_interfaces:
+    config:
+      - name: "{{ item.interface }}"
+        mode: trunk
+        trunk:
+          native_vlan: "{{ item.native_vlan }}"
+          allowed_vlans: "{{ item.allowed_vlans }}"
+    state: merged
+  loop: "{{ arista_trunk_ports }}"
+
+# Ports access
+- name: Configurer les ports access
+  arista.eos.eos_l2_interfaces:
+    config:
+      - name: "{{ item.interface }}"
+        mode: access
+        access:
+          vlan: "{{ item.vlan }}"
+    state: merged
+  loop: "{{ arista_access_ports }}"
+
+# Sauvegarde
+- name: Sauvegarder la configuration
+  arista.eos.eos_config:
+    save_when: modified
