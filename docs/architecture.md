@@ -12,34 +12,46 @@ Le lab YNOV-VIRTU est une infrastructure de virtualisation d'entreprise miniatur
 
 ## Topologie physique
 
-```
-                    INTERNET (4G/5G)
-                          │
-                    [PC Windows]
-                  Wi-Fi │     │ Ethernet 10.0.99.1/24
-                         NAT PS
-                          │
-                    ┌─────┴──────────────────────────────────┐
-                    │       YNOV-SW-LAB (Arista 7050TX-64)   │
-                    │                                         │
-                    │  Et1(VLAN99)  Et2     Et3     Et4       │
-                    │  [WAN-WIN]   [PRX1] [PRX2] [PRX3]      │
-                    │                                         │
-                    │  Et5(VLAN10) Et6(VLAN101) Et7(VLAN10)  │
-                    │  [PC-Admin]  [PRX2-Ceph]  [PC-Admin2]  │
-                    │                                         │
-                    │  Et49/1+49/2 (Po1)  Et49/3+49/4 (Po2)  │
-                    │  [PRX1-Ceph LACP]   [PRX3-Ceph LACP]   │
-                    └─────────────────────────────────────────┘
-                          │           │           │
-                        PRX1        PRX2        PRX3
-                     10.0.10.1   10.0.10.2   10.0.10.3
-                                               │
-                                        [OPNsense VM]
-                                    WAN  : 10.0.99.254
-                                    MGMT : 10.0.10.254
-                                    DMZ  : 10.0.20.254
-                                    SRV  : 10.0.30.254
+```mermaid
+graph TD
+    classDef internet  fill:#37474f,stroke:#263238,color:#fff
+    classDef win       fill:#2d6a4f,stroke:#1b4332,color:#fff
+    classDef switch    fill:#c0392b,stroke:#922b21,color:#fff
+    classDef proxmox   fill:#1565c0,stroke:#0d47a1,color:#fff
+    classDef quorum    fill:#1976d2,stroke:#1565c0,color:#fff,stroke-dasharray:4 3
+    classDef opnsense  fill:#e65c00,stroke:#bf360c,color:#fff
+    classDef ceph      fill:#6a1b9a,stroke:#4a148c,color:#fff
+    classDef admin     fill:#4a4a4a,stroke:#222,color:#fff
+
+    INET["🌐 Internet\n(4G/5G Wi-Fi)"]:::internet
+    WIN["💻 PC Windows\nNAT Wi-Fi → Eth\n10.0.99.1/24"]:::win
+    SW["🔀 YNOV-SW-LAB\nArista 7050TX-64\n10.0.10.253"]:::switch
+
+    INET -->|Wi-Fi| WIN
+    WIN -->|Et1 — VLAN 99| SW
+
+    SW -->|Et2 trunk\n10/20/30/99\nnatif 10| PRX1
+    SW -->|Et3 trunk\n10/20/30/99\nnatif 10| PRX2
+    SW -->|Et4 trunk\n10/20/30/99\nnatif 10| PRX3
+
+    SW -->|Et5 — VLAN 10| PCADM["🖥 PC Admin\nVLAN MGMT"]:::admin
+    SW -->|Et7 — VLAN 10| PCADM2["🖥 PC Admin 2\nVLAN MGMT"]:::admin
+
+    SW -->|Po1 — LACP 2×10G\nEt49/1+49/2\nVLAN 101+102| C1["PRX1 bond0\nCeph public+private"]:::ceph
+    SW -->|Et6 — VLAN 101| C2["PRX2 nic2\nCeph public"]:::ceph
+    SW -->|Po2 — LACP 2×10G\nEt49/3+49/4\nVLAN 101+102| C3["PRX3 bond0\nCeph public+private"]:::ceph
+
+    subgraph CLUSTER["☁️ Proxmox Cluster — YNOV-CLUSTER"]
+        PRX1["🖥 PRX1\n10.0.10.1\nOSD · MON · MGR"]:::proxmox
+        PRX2["🖥 PRX2\n10.0.10.2\nMON · MGR quorum"]:::quorum
+        PRX3["🖥 PRX3\n10.0.10.3\nOSD · MON"]:::proxmox
+        OPN["🛡 OPNsense VM\nWAN 10.0.99.254\nLAN 10.0.10.254\nDMZ 10.0.20.254\nSRV 10.0.30.254"]:::opnsense
+        PRX3 --- OPN
+    end
+
+    C1 --- PRX1
+    C2 --- PRX2
+    C3 --- PRX3
 ```
 
 ---
@@ -47,6 +59,8 @@ Le lab YNOV-VIRTU est une infrastructure de virtualisation d'entreprise miniatur
 ## Composants et rôles
 
 ### <img src="assets/logos/arista.png" class="inline-logo" alt=""> Switch Arista 7050TX-64
+
+![Arista 7050TX-64](assets/arista-7050tx-64.png){ style="height:220px;width:auto" }
 
 Le switch est le cœur L2 du lab. Il assure :
 
@@ -84,11 +98,9 @@ VM hébergée sur PRX3. Sert de passerelle et pare-feu pour l'ensemble du lab :
 - **DMZ** : `10.0.20.254/24` — gateway de la zone DMZ.
 - **SRV/LAN** : `10.0.30.254/24` — gateway des services internes.
 
-### PC Windows
+### 💻 PC Windows
 
 Passerelle WAN temporaire. Partage une connexion Wi-Fi (4G/5G ou autre) vers le VLAN 99 via NAT PowerShell. Connecté au switch via `Et1` (VLAN 99 access).
-
-![Serveurs Proxmox — MSI MS-7D59 (PRX-1, PRX-2, PRX-3)](assets/pc.png){ style="height:220px;width:auto" }
 
 ---
 
@@ -120,23 +132,56 @@ Le VLAN 1 est le VLAN natif par défaut sur Arista. Pour éviter les attaques de
 
 ### Accès Internet depuis une VM interne (VLAN 30)
 
-```
-VM (10.0.30.x) → OPNsense SRV (10.0.30.254) → OPNsense WAN (10.0.99.254)
-→ PC Windows (10.0.99.1) → Wi-Fi → Internet
+```mermaid
+sequenceDiagram
+    participant VM as 🖥 VM<br/>10.0.30.x
+    participant OPN_SRV as 🛡 OPNsense SRV<br/>10.0.30.254
+    participant OPN_WAN as 🛡 OPNsense WAN<br/>10.0.99.254
+    participant WIN as 💻 PC Windows<br/>10.0.99.1
+    participant INET as 🌐 Internet
+
+    VM->>OPN_SRV: requête (VLAN 30)
+    OPN_SRV->>OPN_WAN: routage inter-VLAN
+    OPN_WAN->>WIN: VLAN 99 — NAT
+    WIN->>INET: Wi-Fi (4G/5G)
+    INET-->>WIN: réponse
+    WIN-->>OPN_WAN: NAT retour
+    OPN_WAN-->>VM: retour routé
 ```
 
 ### Réplication Ceph (inter-OSD)
 
-```
-PRX1 (10.0.102.1) ←→ PRX3 (10.0.102.3)
-[VLAN 102 / Ceph private — LACP Po1/Po2]
+```mermaid
+graph LR
+    classDef ceph fill:#6a1b9a,stroke:#4a148c,color:#fff
+    classDef sw   fill:#c0392b,stroke:#922b21,color:#fff
+
+    PRX1["🖥 PRX1\nbond0.102\n10.0.102.1"]:::ceph
+    SW["🔀 Switch\nPo1 + Po2\nVLAN 102"]:::sw
+    PRX3["🖥 PRX3\nbond0.102\n10.0.102.3"]:::ceph
+
+    PRX1 <-->|LACP 2×10G| SW
+    SW <-->|LACP 2×10G| PRX3
 ```
 
-### Accès client Ceph
+### Accès client Ceph (VLAN 101)
 
-```
-PRX1/PRX2/PRX3 (10.0.101.x) ←→ Ceph cluster
-[VLAN 101 / Ceph public]
+```mermaid
+graph LR
+    classDef ceph   fill:#6a1b9a,stroke:#4a148c,color:#fff
+    classDef sw     fill:#c0392b,stroke:#922b21,color:#fff
+    classDef client fill:#1565c0,stroke:#0d47a1,color:#fff
+
+    PRX1C["PRX1\n10.0.101.1"]:::client
+    PRX2C["PRX2\n10.0.101.2"]:::client
+    PRX3C["PRX3\n10.0.101.3"]:::client
+    SW["🔀 Switch\nVLAN 101"]:::sw
+    CEPH["🗄 Ceph Cluster\n(MON / OSD)"]:::ceph
+
+    PRX1C <--> SW
+    PRX2C <--> SW
+    PRX3C <--> SW
+    SW <--> CEPH
 ```
 
 ---
