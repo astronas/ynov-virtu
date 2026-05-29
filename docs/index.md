@@ -46,7 +46,7 @@ Le repo couvre toute la stack : documentation, configs réseau, IaC (**Terraform
 >
 > **PC Windows** — passerelle WAN (NAT Wi-Fi → VLAN 99)
 >
-> ![PC Windows](assets/pc.png)
+> ![PC Windows](assets/pc.png){ style="height:220px;width:auto" }
 
 ```mermaid
 graph TD

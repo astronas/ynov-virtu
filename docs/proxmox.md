@@ -2,6 +2,8 @@
 
 ## Identification du matériel
 
+Ces trois PC MSI constituent les **nœuds du cluster Proxmox VE**.
+
 | Élément | Serveur 1 | Serveur 2 | Serveur 3 |
 |---|---|---|---|
 | **Désignation retenue** | PRX-1 | PRX-2 | PRX-3 |
@@ -10,6 +12,8 @@
 | **Numéro de série** | 022X2210036417 | 022X2210036398 | 022X2210036399 |
 | **Étiquette visible** | D-3D-SOP1FR-023 | D-3D-SOP1FR-022 | D-3D-SOP1FR-099 |
 | **RAM** | 32 Go | 32 Go | 32 Go |
+| **SSD (système)** | 512 Go (~256 Go utilisables) | 512 Go (~256 Go utilisables) | 512 Go (~256 Go utilisables) |
+| **HDD (données / OSD Ceph)** | 1,8 To | 1,8 To | 1,8 To |
 
 ---
 
