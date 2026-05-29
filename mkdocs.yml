@@ -5,6 +5,9 @@ repo_url: https://github.com/astronas/ynov-virtu
 repo_name: ynov-virtu
 edit_uri: edit/main/docs/
 
+extra_css:
+  - stylesheets/extra.css
+
 docs_dir: docs
 site_dir: site
 

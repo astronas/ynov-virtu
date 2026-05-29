@@ -1,0 +1,23 @@
+/* Grille de logos stack technique */
+.tech-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  align-items: center;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.tech-logos img {
+  height: 48px !important;
+  width: auto !important;
+  max-width: 140px !important;
+  object-fit: contain !important;
+  filter: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.tech-logos img:hover {
+  transform: scale(1.08);
+  opacity: 0.85;
+}
