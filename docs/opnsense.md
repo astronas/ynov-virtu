@@ -129,35 +129,31 @@ Identifiants par défaut : `admin` / `opnsense`
 
 ## Règles firewall
 
-Voir le fichier de configuration détaillé : [configs/opnsense/firewall-rules.md](../configs/opnsense/firewall-rules.md)
+### Capture des règles en production
 
-### Phase 1 — Règles any-any (validation initiale)
+![Règles firewall OPNsense](assets/opnsense-firewall-rules.png)
 
-Pendant la phase de mise en place, appliquer des règles permissives sur chaque interface pour valider la connectivité :
+### Tableau récapitulatif des règles actives
 
-**Firewall → Rules → LAN / DMZ / SRV / WAN** :
+| # | Interface | Version | Protocole | Source | Port src | Destination | Port dst | Description |
+|---|-----------|---------|-----------|--------|----------|-------------|----------|-------------|
+| 1 | OPT1 + SRV30 | IPv4 | TCP/UDP | OPT1 network, SRV30 network | * | * | web | — |
+| 2 | WAN | IPv4 | TCP | * | * | DMZ network | 80 (http) | allow 80 WAN to DMZ |
+| 3 | WAN | IPv4 | TCP | * | * | DMZ network | 443 (https) | allow 443 WAN to DMZ |
+| 4 | OPT1 | IPv4 | TCP | OPT1 network | * | OPT1 adresse | 443 (https) | allow admin from MGMT net |
 
-```
-Action : Pass
-Interface : (respective)
-Source : any
-Destination : any
-Protocol : any
-```
+> **OPT1** = VLAN 10 MGMT · **SRV30** = VLAN 30 SRV/LAN · **DMZ** = VLAN 20
 
-> Une fois la connectivité validée, durcir les règles (Phase 2).
-
-### Phase 2 — Règles durcies (production)
+### Logique de filtrage inter-VLAN
 
 | Interface source | Destination | Action | Commentaire |
 |---|---|---|---|
-| LAN/MGMT | any | Pass | Les admins ont accès partout |
-| SRV | LAN/MGMT | Block | Les VMs serveurs n'administrent pas MGMT |
-| SRV | Internet | Pass | Les VMs ont accès Internet |
-| DMZ | LAN/MGMT | Block | La DMZ n'initie pas vers le management |
-| DMZ | SRV | Block | La DMZ n'accède pas aux services internes |
-| DMZ | Internet | Pass | cloudflared a besoin de sortir vers Cloudflare |
-| WAN | any | Block | Entrant WAN bloqué par défaut |
+| MGMT (OPT1) + SRV30 | Internet (web) | Pass | Accès web sortant depuis management et serveurs |
+| WAN | DMZ :80 | Pass | Exposition HTTP vers la DMZ |
+| WAN | DMZ :443 | Pass | Exposition HTTPS vers la DMZ |
+| MGMT (OPT1) | OPNsense :443 | Pass | Accès interface d'admin depuis le réseau MGMT |
+| WAN | tout autre | Block | Entrant WAN bloqué par défaut (implicit deny) |
+| DMZ | MGMT/SRV | Block | La DMZ n'initie pas vers l'interne |
 
 ---
 
