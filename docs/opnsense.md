@@ -133,6 +133,8 @@ Identifiants par défaut : `admin` / `opnsense`
 
 ![Règles firewall OPNsense](assets/opnsense-firewall-rules.png)
 
+![Preuve firewall](assets/fw.png)
+
 ### Tableau récapitulatif des règles actives
 
 | # | Interface | Version | Protocole | Source | Port src | Destination | Port dst | Description |
