@@ -88,6 +88,8 @@ VM hébergée sur PRX3. Sert de passerelle et pare-feu pour l'ensemble du lab :
 
 Passerelle WAN temporaire. Partage une connexion Wi-Fi (4G/5G ou autre) vers le VLAN 99 via NAT PowerShell. Connecté au switch via `Et1` (VLAN 99 access).
 
+![PC Windows — passerelle WAN](assets/pc.png)
+
 ---
 
 ## Décisions d'architecture

@@ -43,6 +43,10 @@ Le repo couvre toute la stack : documentation, configs réseau, IaC (**Terraform
 > **Switch physique** — Arista 7050TX-64 <img src="assets/logos/arista.png" class="inline-logo" alt=""> (48× RJ45 10G + 4× QSFP+ 40G SFP)
 >
 > ![Arista 7050TX-64](assets/arista-7050tx-64.png)
+>
+> **PC Windows** — passerelle WAN (NAT Wi-Fi → VLAN 99)
+>
+> ![PC Windows](assets/pc.png)
 
 ```mermaid
 graph TD
