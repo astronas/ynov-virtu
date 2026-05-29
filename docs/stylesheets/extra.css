@@ -47,3 +47,14 @@
 [data-md-color-scheme="slate"] img.inline-logo[src$=".svg"] {
   filter: brightness(0) invert(1);
 }
+
+/* Logo YNOV Campus Sophia — fond blanc en dark mode pour préserver les couleurs */
+img[src*="logo_ynov_campus_sophia"] {
+  transition: background 0.2s ease, padding 0.2s ease, border-radius 0.2s ease;
+}
+
+[data-md-color-scheme="slate"] img[src*="logo_ynov_campus_sophia"] {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
