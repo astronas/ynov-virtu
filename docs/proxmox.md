@@ -1,5 +1,18 @@
 # <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> Proxmox VE — Configuration des nœuds
 
+## Identification du matériel
+
+| Élément | Serveur 1 | Serveur 2 | Serveur 3 |
+|---|---|---|---|
+| **Désignation retenue** | PRX-1 | PRX-2 | PRX-3 |
+| **Marque** | MSI | MSI | MSI |
+| **Modèle** | MS-7D59 | MS-7D59 | MS-7D59 |
+| **Numéro de série** | 022X2210036417 | 022X2210036398 | 022X2210036399 |
+| **Étiquette visible** | D-3D-SOP1FR-023 | D-3D-SOP1FR-022 | D-3D-SOP1FR-099 |
+| **RAM** | 32 Go | 32 Go | 32 Go |
+
+---
+
 ## Prérequis
 
 - ISO Proxmox VE 8.x téléchargé sur chaque serveur
