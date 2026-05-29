@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/assets/ynov-campus.svg" alt="YNOV Campus Sophia-Antipolis" height="72">
+  <img src="docs/assets/logo_ynov_campus_sophia.png" alt="YNOV Campus Sophia-Antipolis" height="72">
 </div>
 
 # ynov-virtu
