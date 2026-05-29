@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="docs/assets/ynov-campus.svg" alt="YNOV Campus Sophia-Antipolis" height="72">
+</div>
+
 # ynov-virtu
 
 > **Cours de Virtualisation** — M1 Expert Cloud, Sécurité & Infrastructure  
