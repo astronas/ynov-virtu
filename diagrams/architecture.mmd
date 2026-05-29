@@ -35,7 +35,7 @@ graph TB
         PRX3_MAIN["nic0 — vmbr0\nVLAN-aware\nMGMT/DMZ/SRV/WAN"]
         PRX3_CEPH["bond0 — LACP\nCeph public 10.0.101.3\nCeph private 10.0.102.3"]
         subgraph OPN["OPNsense VM"]
-            OPN_WAN["WAN\n10.0.99.2/24\nVLAN 99"]
+            OPN_WAN["WAN\n10.0.99.254/24\nVLAN 99"]
             OPN_LAN["LAN/MGMT\n10.0.10.254/24\nVLAN 10"]
             OPN_DMZ["DMZ\n10.0.20.254/24\nVLAN 20"]
             OPN_SRV["SRV/LAN\n10.0.30.254/24\nVLAN 30"]

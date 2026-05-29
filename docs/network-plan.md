@@ -47,7 +47,7 @@
 | Équipement | Adresse IP | Remarques |
 |---|---|---|
 | PC Windows (NAT) | `10.0.99.1/24` | Carte Ethernet vers switch, pas de gateway |
-| OPNsense WAN | `10.0.99.2/24` | Gateway : `10.0.99.1` |
+| OPNsense WAN | `10.0.99.254/24` | Gateway : `10.0.99.1` |
 
 ### VLAN 101 — Ceph public (`10.0.101.0/24`)
 

@@ -3,7 +3,7 @@
 #
 # Configure OPNsense via son API REST (key+secret dans le vault).
 # Prérequis :
-#   - VM OPNsense démarrée, IP 10.0.99.2 et 10.0.10.254 accessibles
+#   - VM OPNsense démarrée, IP 10.0.99.254 et 10.0.10.254 accessibles
 #   - API key/secret générés dans OPNsense : System → Access → Users
 #   - ansible-vault encrypt_string pour stocker les credentials
 #

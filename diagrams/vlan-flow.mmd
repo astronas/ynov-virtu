@@ -1,7 +1,7 @@
 flowchart TD
     subgraph VLAN99["VLAN 99 — WAN-OPNSENSE 10.0.99.0/24"]
         WIN["PC Windows\n10.0.99.1\n(NAT vers Internet)"]
-        OPN_WAN["OPNsense WAN\n10.0.99.2\ngw: 10.0.99.1"]
+        OPN_WAN["OPNsense WAN\n10.0.99.254\ngw: 10.0.99.1"]
     end
 
     subgraph VLAN10["VLAN 10 — MGMT 10.0.10.0/24"]
