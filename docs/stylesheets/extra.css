@@ -35,6 +35,15 @@
   display: inline !important;
 }
 
+/* Logo YNOV Campus (badge avec texte) */
+.inline-logo-ynov {
+  height: 26px !important;
+  width: auto !important;
+  vertical-align: middle !important;
+  margin: 0 4px;
+  display: inline !important;
+}
+
 [data-md-color-scheme="slate"] img.inline-logo[src$=".svg"] {
   filter: brightness(0) invert(1);
 }

@@ -5,7 +5,7 @@
 # YNOV-VIRTU — Lab d'infrastructure virtualisée
 
 > **Cours de Virtualisation** — M1 Expert Cloud, Sécurité & Infrastructure  
-> YNOV Campus Sophia-Antipolis
+> <img src="assets/ynov-campus.svg" class="inline-logo-ynov" alt="YNOV Campus Sophia-Antipolis"> YNOV Campus Sophia-Antipolis
 
 Lab orienté entreprise basé sur **Proxmox VE** <img src="assets/logos/proxmox.png" class="inline-logo" alt="">, **OPNsense** <img src="assets/logos/opnsense.svg" class="inline-logo" alt="">, **Ceph** <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> et un switch **Arista 7050TX-64** <img src="assets/logos/arista.png" class="inline-logo" alt="">.  
 Le repo couvre toute la stack : documentation, configs réseau, IaC (**Terraform** <img src="assets/logos/terraform.svg" class="inline-logo" alt=""> + **Ansible** <img src="assets/logos/ansible.svg" class="inline-logo" alt="">) et **GitHub** Pages <img src="assets/logos/github.svg" class="inline-logo" alt="">.
