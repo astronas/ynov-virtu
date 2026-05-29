@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="assets/ynov-campus.svg" alt="YNOV Campus Sophia-Antipolis" height="72">
+</div>
+
 # YNOV-VIRTU — Lab d'infrastructure virtualisée
 
 > **Cours de Virtualisation** — M1 Expert Cloud, Sécurité & Infrastructure  
