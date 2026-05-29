@@ -139,6 +139,53 @@ PRX1/PRX2/PRX3 (10.0.101.x) ←→ Ceph cluster
 
 ---
 
+## Configuration switch Arista (running-config)
+
+Configuration complète exportée depuis le switch (`show running-config`) — **EOS 4.20.12M** :
+
+```eos
+! device: YNOV-SW-LAB (DCS-7050TX-64, EOS-4.20.12M)
+
+hostname YNOV-SW-LAB
+spanning-tree mode mstp
+environment fan-speed override 30
+
+! --- VLANs ---
+vlan 10  → MGMT
+vlan 20  → DMZ
+vlan 30  → SRV-LAN
+vlan 99  → WAN-FUTUR-OPNSENSE
+vlan 101 → CEPH-PUBLIC
+vlan 102 → CEPH-PRIVATE
+vlan 4094 → BLACKHOLE-NATIVE
+
+! --- Ports actifs ---
+Et1  : access vlan 99          → PC Windows (NAT WAN vers OPNsense)
+Et2  : trunk 10,20,30,99       → PRX1 (native vlan 10)
+Et3  : trunk 10,20,30,99       → PRX2 (native vlan 10)
+Et4  : trunk 10,20,30,99       → PRX3 / OPNsense (native vlan 10)
+Et5  : access vlan 10          → PC Admin MGMT
+Et6  : access vlan 101         → PRX2 Ceph public (NIC2 SFP-RJ45)
+Et7  : access vlan 10          → PC Admin MGMT2
+
+! --- LACP Ceph ---
+Po1 (Et49/1+Et49/2) : trunk vlan 101-102, native 4094, mtu 9000 → PRX1 Ceph
+Po2 (Et49/3+Et49/4) : trunk vlan 101-102, native 4094, mtu 9000 → PRX3 Ceph
+
+! --- Sécurité ---
+Et8-Et48, Et50-Et52 : shutdown, access vlan 4094 (blackhole)
+interface Vlan1 : shutdown (neutralisation VLAN 1)
+
+! --- Routage management ---
+interface Vlan10 : ip address 10.0.10.253/24
+ip route 0.0.0.0/0 10.0.10.254
+ip routing
+```
+
+> Fichier complet : [`configs/arista/running-config-current.eos`](../configs/arista/running-config-current.eos)
+
+---
+
 ## Voir aussi
 
 - [docs/network-plan.md](network-plan.md) — Plan IP complet et rôles des ports switch
