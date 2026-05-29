@@ -215,6 +215,12 @@ ip link show bond0.102
 
 ## Voir aussi
 
+### Capture du statut Ceph
+
+![Ceph status — Proxmox Datacenter Manager](assets/PDM_Ceph.png)
+
+---
+
 - [diagrams/ceph-network.mmd](../diagrams/ceph-network.mmd) — Topologie réseau Ceph
 - [configs/proxmox/](../configs/proxmox/) — Interfaces réseau des nœuds
 - [docs/network-plan.md](network-plan.md) — Adresses IP des réseaux Ceph

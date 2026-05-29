@@ -209,6 +209,18 @@ dmesg | grep -i lacp
 
 ## Voir aussi
 
+### Captures du Proxmox Datacenter Manager
+
+**Dashboard central du cluster :**
+
+![Proxmox Datacenter Dashboard](assets/PDM_Dash.png)
+
+**VMs déployées sur le cluster :**
+
+![VMs Proxmox](assets/PDM_VM.png)
+
+---
+
 - [configs/proxmox/](../configs/proxmox/) — Fichiers `/etc/network/interfaces` exemple
 - [docs/ceph.md](ceph.md) — Déploiement Ceph
 - [docs/opnsense.md](opnsense.md) — VM OPNsense
