@@ -44,9 +44,9 @@ Le repo couvre toute la stack : documentation, configs réseau, IaC (**Terraform
 >
 > ![Arista 7050TX-64](assets/arista-7050tx-64.png)
 >
-> **PC Windows** — passerelle WAN (NAT Wi-Fi → VLAN 99)
+> **Serveurs Proxmox** — 3× MSI MS-7D59 (PRX-1, PRX-2, PRX-3)
 >
-> ![PC Windows](assets/pc.png){ style="height:220px;width:auto" }
+> ![Serveurs Proxmox — MSI MS-7D59](assets/pc.png){ style="height:220px;width:auto" }
 
 ```mermaid
 graph TD
