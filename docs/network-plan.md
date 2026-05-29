@@ -69,7 +69,7 @@
 
 ---
 
-## Rôles des ports switch Arista
+## <img src="assets/logos/arista.png" class="inline-logo" alt=""> Rôles des ports switch Arista
 
 | Port | Mode | VLAN(s) | Équipement connecté | Remarques |
 |---|---|---|---|---|
@@ -90,7 +90,7 @@
 
 ---
 
-## Logique de trunking Proxmox
+## <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> Logique de trunking Proxmox
 
 Les ports `Et2`, `Et3`, `Et4` sont configurés en trunk avec VLAN natif 10. Côté Proxmox, `vmbr0` est VLAN-aware et supporte les VLAN IDs 10, 20, 30 et 99.
 
@@ -110,7 +110,7 @@ Switch Et2/3/4 (trunk, native VLAN 10)
 
 ---
 
-## Logique de trunking Ceph
+## <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Logique de trunking Ceph
 
 Les Port-Channels 1 et 2 transportent les VLANs 101 et 102. Le VLAN natif est 4094 (blackhole), ce qui garantit qu'aucun trafic non tagué ne circule accidentellement sur ces liens.
 

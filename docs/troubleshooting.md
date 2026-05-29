@@ -55,7 +55,7 @@ Lorsqu'un PC a plusieurs interfaces réseau actives (Ethernet + Wi-Fi), les rout
 
 ---
 
-## Problème 2 — OPNsense ne ping pas Internet (`1.1.1.1`)
+## Problème 2 — <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> OPNsense ne ping pas Internet (`1.1.1.1`)
 
 ### Symptôme
 
@@ -85,7 +85,7 @@ Get-NetIPInterface | Where-Object { $_.Forwarding -eq "Enabled" }
 
 ---
 
-## Problème 3 — LACP Po1/Po2 ne monte pas (Ceph)
+## Problème 3 — LACP Po1/Po2 ne monte pas (<img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph)
 
 ### Symptôme
 

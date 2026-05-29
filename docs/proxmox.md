@@ -1,4 +1,4 @@
-# Proxmox VE — Configuration des nœuds
+# <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> Proxmox VE — Configuration des nœuds
 
 ## Prérequis
 
@@ -68,7 +68,7 @@ vmbr0 (bridge-vlan-aware yes, bridge-vids 10 20 30 99)
 - Trafic tagué VLAN 30 → SRV/LAN
 - Trafic tagué VLAN 99 → WAN OPNsense
 
-### `bond0` — Bond LACP Ceph (PRX1 et PRX3 uniquement)
+### `bond0` — Bond LACP <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph (PRX1 et PRX3 uniquement)
 
 Agrège deux interfaces SFP en LACP 802.3ad vers le switch.
 
@@ -142,7 +142,7 @@ Dans l'interface Proxmox, lors de la création d'une VM :
 
 ---
 
-## OPNsense VM sur PRX3
+## <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> OPNsense VM sur PRX3
 
 Voir [docs/opnsense.md](opnsense.md) pour la configuration complète.
 

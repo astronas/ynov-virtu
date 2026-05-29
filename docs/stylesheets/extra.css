@@ -25,3 +25,16 @@
   transform: scale(1.08);
   opacity: 0.85;
 }
+
+/* Logos inline dans le texte */
+.inline-logo {
+  height: 18px !important;
+  width: auto !important;
+  vertical-align: middle !important;
+  margin: 0 3px;
+  display: inline !important;
+}
+
+[data-md-color-scheme="slate"] img.inline-logo[src$=".svg"] {
+  filter: brightness(0) invert(1);
+}

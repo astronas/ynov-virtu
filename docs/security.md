@@ -10,7 +10,7 @@ Le lab applique une approche de **défense en profondeur** à plusieurs niveaux 
 
 ---
 
-## Sécurisation du switch Arista
+## <img src="assets/logos/arista.png" class="inline-logo" alt=""> Sécurisation du switch Arista
 
 ### Neutralisation du VLAN 1
 
@@ -68,7 +68,7 @@ Les ports admin (`Et5`, `Et7`) sont en **access VLAN 10** (MGMT). Ils ne peuvent
 
 ---
 
-## Sécurisation OPNsense
+## <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> Sécurisation OPNsense
 
 ### Filtrage inter-VLAN
 
@@ -100,7 +100,7 @@ OPNsense active par défaut le **Block private networks** et **Block bogon netwo
 
 ## Évolutions futures envisagées
 
-### Exposition de services via Cloudflare Tunnel
+### Exposition de services via <img src="assets/logos/cloudflare.svg" class="inline-logo" alt=""> Cloudflare Tunnel
 
 > **Idée d'évolution — non implémenté dans ce lab**
 
@@ -110,13 +110,13 @@ En cas de connexion derrière CG-NAT (4G/5G), il est impossible d'ouvrir des por
 
 ## Sécurité des accès infrastructure
 
-### Proxmox
+### <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> Proxmox
 
 - Désactiver l'accès root SSH sur les nœuds Proxmox en production (utiliser des utilisateurs PAM dédiés).
 - Créer des utilisateurs Proxmox avec des rôles limités pour les accès non-admin.
 - Activer la 2FA sur Proxmox VE.
 
-### Switch Arista
+### <img src="assets/logos/arista.png" class="inline-logo" alt=""> Switch Arista
 
 - Changer le mot de passe `admin` par défaut.
 - Désactiver l'accès Telnet (uniquement SSH).

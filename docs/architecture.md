@@ -4,9 +4,9 @@
 
 Le lab YNOV-VIRTU est une infrastructure de virtualisation d'entreprise miniaturisée, construite autour de trois couches :
 
-1. **Couche réseau** — Switch Arista 7050TX-64 (`YNOV-SW-LAB`), segmentation VLAN, LACP pour Ceph.
-2. **Couche compute** — Cluster Proxmox 3 nœuds (PRX1, PRX2, PRX3), hyperviseur KVM/LXC.
-3. **Couche service** — OPNsense (routage/firewall), Ceph (stockage distribué), Windows NAT (WAN temporaire).
+1. **Couche réseau** — Switch Arista 7050TX-64 <img src="assets/logos/arista.png" class="inline-logo" alt=""> (`YNOV-SW-LAB`), segmentation VLAN, LACP pour Ceph <img src="assets/logos/ceph.svg" class="inline-logo" alt="">.
+2. **Couche compute** — Cluster Proxmox <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> 3 nœuds (PRX1, PRX2, PRX3), hyperviseur KVM/LXC.
+3. **Couche service** — OPNsense <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> (routage/firewall), Ceph <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> (stockage distribué), Windows NAT (WAN temporaire).
 
 ---
 
@@ -46,7 +46,7 @@ Le lab YNOV-VIRTU est une infrastructure de virtualisation d'entreprise miniatur
 
 ## Composants et rôles
 
-### Switch Arista 7050TX-64
+### <img src="assets/logos/arista.png" class="inline-logo" alt=""> Switch Arista 7050TX-64
 
 Le switch est le cœur L2 du lab. Il assure :
 
@@ -57,25 +57,25 @@ Le switch est le cœur L2 du lab. Il assure :
 - La connectivité Ceph public de PRX2 (Et6, VLAN 101).
 - La sécurisation des ports inutilisés (shutdown + VLAN 4094).
 
-### PRX1
+### <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> PRX1
 
 - **Rôle Proxmox** : nœud de compute, héberge des VMs de workload.
 - **Rôle Ceph** : OSD (stockage de données), MON/MGR possible.
 - **Réseaux** : MGMT/DMZ/SRV/WAN via trunk `Et2`, Ceph public+private via `Po1` (LACP 2×10G, Et49/1+49/2).
 
-### PRX2
+### <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> PRX2
 
 - **Rôle Proxmox** : nœud de compute, héberge des VMs de workload.
 - **Rôle Ceph** : quorum/management (MON, MGR), **pas d'OSD**. Pas de réseau Ceph private.
 - **Réseaux** : MGMT/DMZ/SRV/WAN via trunk `Et3`, Ceph public uniquement via `Et6` (VLAN 101, SFP→RJ45).
 
-### PRX3
+### <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> PRX3
 
 - **Rôle Proxmox** : nœud de compute, héberge la VM OPNsense.
 - **Rôle Ceph** : OSD (stockage de données), MON/MGR possible.
 - **Réseaux** : MGMT/DMZ/SRV/WAN via trunk `Et4`, Ceph public+private via `Po2` (LACP 2×10G, Et49/3+49/4).
 
-### OPNsense
+### <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> OPNsense
 
 VM hébergée sur PRX3. Sert de passerelle et pare-feu pour l'ensemble du lab :
 
@@ -100,7 +100,7 @@ L'objectif est de maximiser l'usage du matériel disponible. PRX3 porte les OSD 
 
 Le management Proxmox (interface web, SSH, corosync) doit rester accessible sans tag VLAN. En plaçant le VLAN 10 comme natif sur les trunks `Et2/Et3/Et4`, le trafic non tagué est automatiquement dans le VLAN MGMT. Cela simplifie le boot et l'accès initial.
 
-### Pourquoi LACP pour Ceph ?
+### Pourquoi LACP pour <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph ?
 
 Ceph génère un trafic réseau intense lors des opérations de réplication (réseau private VLAN 102) et d'accès client (réseau public VLAN 101). Le LACP 2×10G offre à la fois la redondance et l'augmentation de bande passante effective pour PRX1 et PRX3.
 
