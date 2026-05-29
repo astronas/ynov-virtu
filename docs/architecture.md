@@ -184,6 +184,8 @@ ip routing
 
 > Fichier complet : [`configs/arista/running-config-current.eos`](../configs/arista/running-config-current.eos)
 
+![Table de routage Arista — ip route](assets/route.png)
+
 ---
 
 ## Voir aussi
