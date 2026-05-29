@@ -1,0 +1,40 @@
+---
+# Variables spécifiques aux nœuds Proxmox
+
+# ── Cluster ───────────────────────────────────────────────────────────────────
+proxmox_cluster_name: YNOV-CLUSTER
+proxmox_cluster_master: prx1
+proxmox_cluster_master_ip: "10.0.10.1"
+
+# ── Réseau principal ──────────────────────────────────────────────────────────
+proxmox_main_bridge: vmbr0
+proxmox_main_iface: nic0
+proxmox_mgmt_gateway: "10.0.10.254"
+proxmox_vlan_aware_vids: "10 20 30 99"
+
+# ── Packages à installer ──────────────────────────────────────────────────────
+proxmox_packages:
+  - ifupdown2
+  - bridge-utils
+  - vlan
+  - bonding
+  - qemu-guest-agent
+  - htop
+  - iotop
+  - tcpdump
+  - nmap
+
+# ── Ceph ──────────────────────────────────────────────────────────────────────
+ceph_public_network: "10.0.101.0/24"
+ceph_cluster_network: "10.0.102.0/24"
+ceph_pool_name: vm-pool
+ceph_pool_size: 2
+ceph_pool_min_size: 1
+ceph_release: reef   # Ceph 18.x — inclus dans Proxmox 8.x
+
+# Disques OSD (adapter selon le matériel réel de PRX1 et PRX3)
+ceph_osd_devices:
+  prx1:
+    - /dev/sdb
+  prx3:
+    - /dev/sdb

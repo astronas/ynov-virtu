@@ -1,0 +1,6 @@
+server {{ ntp_servers[0] }}
+server {{ ntp_servers[1] }}
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+logdir /var/log/chrony

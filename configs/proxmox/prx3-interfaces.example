@@ -1,0 +1,66 @@
+# /etc/network/interfaces — PRX3
+# Proxmox VE — Nœud PRX3 (10.0.10.3)
+#
+# Réseau principal : nic0 → vmbr0 (VLAN-aware, trunk MGMT/DMZ/SRV/WAN)
+# Réseau Ceph     : enic1 + enic2 → bond0 → LACP → Po2 switch
+#                   bond0.101 = Ceph public (10.0.101.3/24)
+#                   bond0.102 = Ceph private (10.0.102.3/24)
+#
+# PRX3 héberge également la VM OPNsense.
+# Le switch Et4 est configuré en trunk native VLAN 10 :
+# vmbr0 reçoit le trafic MGMT sans tag (natif = VLAN 10).
+
+source /etc/network/interfaces.d/*
+
+auto lo
+iface lo inet loopback
+
+# ── Interface physique principale ─────────────────────────
+auto nic0
+iface nic0 inet manual
+
+# ── Bridge principal VLAN-aware ───────────────────────────
+# Fournit l'accès MGMT (IP du nœud) et le transport VLAN
+# pour les VMs (tag 10/20/30/99 via Proxmox GUI).
+# La VM OPNsense utilise ce bridge avec différents VLAN tags
+# (99=WAN, vide=MGMT, 20=DMZ, 30=SRV) via la config Proxmox GUI.
+auto vmbr0
+iface vmbr0 inet static
+    address 10.0.10.3/24
+    gateway 10.0.10.254
+    bridge-ports nic0
+    bridge-stp off
+    bridge-fd 0
+    bridge-vlan-aware yes
+    bridge-vids 10 20 30 99
+
+# ── Interfaces physiques Ceph (membres du bond LACP) ──────
+auto enic1
+iface enic1 inet manual
+    bond-master bond0
+
+auto enic2
+iface enic2 inet manual
+    bond-master bond0
+
+# ── Bond LACP Ceph ────────────────────────────────────────
+# LACP actif vers Port-Channel2 du switch (Et49/3 + Et49/4)
+auto bond0
+iface bond0 inet manual
+    bond-slaves enic1 enic2
+    bond-miimon 100
+    bond-mode 802.3ad
+    bond-xmit-hash-policy layer3+4
+    bond-lacp-rate fast
+
+# ── VLAN 101 sur bond0 — Ceph public ─────────────────────
+auto bond0.101
+iface bond0.101 inet static
+    address 10.0.101.3/24
+    vlan-raw-device bond0
+
+# ── VLAN 102 sur bond0 — Ceph private ────────────────────
+auto bond0.102
+iface bond0.102 inet static
+    address 10.0.102.3/24
+    vlan-raw-device bond0

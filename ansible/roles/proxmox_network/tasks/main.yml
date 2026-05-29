@@ -1,0 +1,20 @@
+---
+# Role : proxmox_network
+# Déploie /etc/network/interfaces via un template Jinja2
+# et recharge la configuration réseau avec ifreload.
+
+- name: Déployer /etc/network/interfaces
+  ansible.builtin.template:
+    src: interfaces.j2
+    dest: /etc/network/interfaces
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  register: interfaces_changed
+  notify: reload networking
+
+- name: Recharger le réseau si le fichier a changé
+  ansible.builtin.command: ifreload -a
+  when: interfaces_changed.changed
+  changed_when: true

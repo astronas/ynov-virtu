@@ -1,0 +1,10 @@
+---
+- name: restart chrony
+  ansible.builtin.systemd:
+    name: chrony
+    state: restarted
+
+- name: restart networking
+  ansible.builtin.systemd:
+    name: networking
+    state: restarted

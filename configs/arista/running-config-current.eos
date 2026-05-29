@@ -1,0 +1,225 @@
+! ============================================================
+! YNOV-SW-LAB — Arista 7050TX-64
+! Running configuration
+! Lab: YNOV-VIRTU — Infrastructure Proxmox/OPNsense/Ceph
+! ============================================================
+
+hostname YNOV-SW-LAB
+
+! ============================================================
+! VLANs
+! ============================================================
+
+vlan 10
+   name MGMT
+!
+vlan 20
+   name DMZ
+!
+vlan 30
+   name SRV-LAN
+!
+vlan 99
+   name WAN-OPNSENSE
+!
+vlan 101
+   name CEPH-PUBLIC
+!
+vlan 102
+   name CEPH-PRIVATE
+!
+vlan 4094
+   name BLACKHOLE-NATIVE
+
+! ============================================================
+! Interface de management du switch (SVI VLAN 10)
+! ============================================================
+
+interface Vlan10
+   description MGMT-SVI
+   ip address 10.0.10.253/24
+!
+
+! Désactivation de Vlan1 (neutralisation VLAN par défaut)
+interface Vlan1
+   shutdown
+!
+
+! ============================================================
+! Ethernet1 — WAN Windows → OPNsense (access VLAN 99)
+! ============================================================
+
+interface Ethernet1
+   description WAN-PC-WINDOWS
+   switchport mode access
+   switchport access vlan 99
+   spanning-tree portfast
+!
+
+! ============================================================
+! Ethernet2 — PRX1 trunk MGMT/DMZ/SRV/WAN
+! ============================================================
+
+interface Ethernet2
+   description TRUNK-PRX1
+   switchport mode trunk
+   switchport trunk native vlan 10
+   switchport trunk allowed vlan 10,20,30,99
+   spanning-tree portfast
+!
+
+! ============================================================
+! Ethernet3 — PRX2 trunk MGMT/DMZ/SRV/WAN
+! ============================================================
+
+interface Ethernet3
+   description TRUNK-PRX2
+   switchport mode trunk
+   switchport trunk native vlan 10
+   switchport trunk allowed vlan 10,20,30,99
+   spanning-tree portfast
+!
+
+! ============================================================
+! Ethernet4 — PRX3 trunk MGMT/DMZ/SRV/WAN
+! ============================================================
+
+interface Ethernet4
+   description TRUNK-PRX3
+   switchport mode trunk
+   switchport trunk native vlan 10
+   switchport trunk allowed vlan 10,20,30,99
+   spanning-tree portfast
+!
+
+! ============================================================
+! Ethernet5 — PC Admin, access VLAN 10
+! ============================================================
+
+interface Ethernet5
+   description PC-ADMIN-1
+   switchport mode access
+   switchport access vlan 10
+   spanning-tree portfast
+!
+
+! ============================================================
+! Ethernet6 — PRX2 Ceph public via SFP→RJ45 (access VLAN 101)
+! ============================================================
+
+interface Ethernet6
+   description PRX2-CEPH-PUBLIC
+   switchport mode access
+   switchport access vlan 101
+   spanning-tree portfast
+!
+
+! ============================================================
+! Ethernet7 — PC Admin 2, access VLAN 10
+! ============================================================
+
+interface Ethernet7
+   description PC-ADMIN-2
+   switchport mode access
+   switchport access vlan 10
+   spanning-tree portfast
+!
+
+! ============================================================
+! Ethernet8–48 — Ports inutilisés — shutdown + VLAN blackhole
+! ============================================================
+
+interface Ethernet8-48
+   description UNUSED-BLACKHOLE
+   switchport mode access
+   switchport access vlan 4094
+   shutdown
+!
+
+! ============================================================
+! Port-Channel1 — PRX1 Ceph LACP 2×10G
+! ============================================================
+
+interface Port-Channel1
+   description PRX1-CEPH-LACP
+   switchport mode trunk
+   switchport trunk native vlan 4094
+   switchport trunk allowed vlan 101,102
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 90
+!
+
+interface Ethernet49/1
+   description PRX1-CEPH-LINK1
+   channel-group 1 mode active
+!
+
+interface Ethernet49/2
+   description PRX1-CEPH-LINK2
+   channel-group 1 mode active
+!
+
+! ============================================================
+! Port-Channel2 — PRX3 Ceph LACP 2×10G
+! ============================================================
+
+interface Port-Channel2
+   description PRX3-CEPH-LACP
+   switchport mode trunk
+   switchport trunk native vlan 4094
+   switchport trunk allowed vlan 101,102
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 90
+!
+
+interface Ethernet49/3
+   description PRX3-CEPH-LINK1
+   channel-group 2 mode active
+!
+
+interface Ethernet49/4
+   description PRX3-CEPH-LINK2
+   channel-group 2 mode active
+!
+
+! ============================================================
+! Spanning Tree
+! ============================================================
+
+spanning-tree mode mstp
+spanning-tree mst 0 priority 4096
+
+! ============================================================
+! IP routing (pour SVI MGMT)
+! ============================================================
+
+ip routing
+
+! Route par défaut vers OPNsense (gestion switch via MGMT)
+ip route 0.0.0.0/0 10.0.10.254
+
+! ============================================================
+! AAA / Management
+! ============================================================
+
+aaa authorization exec default local
+!
+username admin privilege 15 secret <CHANGE_ME>
+!
+
+! Accès SSH uniquement, pas de telnet
+management ssh
+   idle-timeout 30
+   authentication mode keyboard-interactive
+!
+
+management api http-commands
+   no shutdown
+   !
+   vrf default
+      no shutdown
+   !
+
+! ============================================================
+! Fin de configuration
+! ============================================================

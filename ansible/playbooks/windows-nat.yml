@@ -1,0 +1,111 @@
+---
+# Playbook : Configuration NAT Windows via WinRM
+#
+# Prérequis :
+#   pip install pywinrm
+#   WinRM doit être activé sur le PC Windows :
+#     (depuis PowerShell Admin) winrm quickconfig -y
+#     Enable-PSRemoting -Force
+#
+# Usage :
+#   ansible-playbook playbooks/windows-nat.yml
+#   ansible-playbook playbooks/windows-nat.yml --tags cleanup  # supprimer le NAT
+
+- name: Configuration NAT Windows — passerelle WAN OPNsense
+  hosts: windows
+  gather_facts: false
+
+  vars:
+    nat_name: NAT-OPNSENSE-WAN99
+    nat_network: "10.0.99.0/24"
+    eth_alias: "Ethernet"
+    wifi_alias: "Wi-Fi"
+    eth_ip: "10.0.99.1"
+    eth_prefix: 24
+
+  tasks:
+
+    # ── Vérification connectivité ─────────────────────────────────────────────
+    - name: Vérifier la connectivité WinRM
+      ansible.windows.win_ping:
+      tags: always
+
+    # ── Configuration IP Ethernet ─────────────────────────────────────────────
+    - name: Configurer IP statique sur l'interface Ethernet (vers switch)
+      ansible.windows.win_shell: |
+        $iface = "{{ eth_alias }}"
+        $existing = Get-NetIPAddress -InterfaceAlias $iface -AddressFamily IPv4 -ErrorAction SilentlyContinue
+        if (-not $existing -or $existing.IPAddress -ne "{{ eth_ip }}") {
+          $existing | Remove-NetIPAddress -Confirm:$false -ErrorAction SilentlyContinue
+          Remove-NetRoute -InterfaceAlias $iface -DestinationPrefix "0.0.0.0/0" -Confirm:$false -ErrorAction SilentlyContinue
+          New-NetIPAddress -InterfaceAlias $iface -IPAddress "{{ eth_ip }}" -PrefixLength {{ eth_prefix }}
+          Write-Output "CHANGED: IP configurée"
+        } else {
+          Write-Output "OK: IP déjà configurée"
+        }
+      register: ip_config
+      changed_when: "'CHANGED' in ip_config.stdout"
+      tags: ip
+
+    - name: Élever la métrique Ethernet (éviter conflit route par défaut)
+      ansible.windows.win_shell: |
+        Set-NetIPInterface -InterfaceAlias "{{ eth_alias }}" -InterfaceMetric 9000
+      tags: ip
+
+    # ── NAT ───────────────────────────────────────────────────────────────────
+    - name: Créer la règle NAT (si non existante)
+      ansible.windows.win_shell: |
+        $nat = Get-NetNat -Name "{{ nat_name }}" -ErrorAction SilentlyContinue
+        if (-not $nat) {
+          New-NetNat -Name "{{ nat_name }}" -InternalIPInterfaceAddressPrefix "{{ nat_network }}"
+          Write-Output "CHANGED: NAT créé"
+        } else {
+          Write-Output "OK: NAT existe déjà"
+        }
+      register: nat_create
+      changed_when: "'CHANGED' in nat_create.stdout"
+      tags: nat
+
+    # ── Forwarding ────────────────────────────────────────────────────────────
+    - name: Activer le forwarding sur Ethernet et Wi-Fi
+      ansible.windows.win_shell: |
+        Set-NetIPInterface -InterfaceAlias "{{ eth_alias }}" -Forwarding Enabled
+        Set-NetIPInterface -InterfaceAlias "{{ wifi_alias }}" -Forwarding Enabled
+        Write-Output "CHANGED: forwarding activé"
+      register: fwd_enable
+      changed_when: "'CHANGED' in fwd_enable.stdout"
+      tags: nat
+
+    # ── Vérification ─────────────────────────────────────────────────────────
+    - name: Vérifier l'état du NAT
+      ansible.windows.win_shell: |
+        Get-NetNat | Where-Object { $_.Name -eq "{{ nat_name }}" } |
+          Select-Object Name, InternalIPInterfaceAddressPrefix | Format-List
+        Get-NetIPInterface | Where-Object { $_.Forwarding -eq "Enabled" } |
+          Select-Object InterfaceAlias, Forwarding | Format-Table
+      register: verify
+      changed_when: false
+      tags: verify
+
+    - name: Afficher l'état
+      ansible.builtin.debug:
+        var: verify.stdout_lines
+      tags: verify
+
+    # ── Nettoyage (tag cleanup) ───────────────────────────────────────────────
+    - name: Supprimer le NAT
+      ansible.windows.win_shell: |
+        $nat = Get-NetNat -Name "{{ nat_name }}" -ErrorAction SilentlyContinue
+        if ($nat) {
+          Remove-NetNat -Name "{{ nat_name }}" -Confirm:$false
+          Set-NetIPInterface -InterfaceAlias "{{ eth_alias }}" -Forwarding Disabled
+          Set-NetIPInterface -InterfaceAlias "{{ wifi_alias }}" -Forwarding Disabled
+          Write-Output "CHANGED: NAT supprimé"
+        } else {
+          Write-Output "OK: NAT inexistant"
+        }
+      register: nat_remove
+      changed_when: "'CHANGED' in nat_remove.stdout"
+      tags:
+        - never
+        - cleanup

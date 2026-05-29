@@ -1,0 +1,20 @@
+---
+# Collections Ansible requises
+# Installer avec : ansible-galaxy collection install -r requirements.yml
+
+collections:
+  # Collection officielle Arista EOS — switch management
+  - name: arista.eos
+    version: ">=6.0.0"
+
+  # Collection communautaire générale (modules divers)
+  - name: community.general
+    version: ">=9.0.0"
+
+  # Collection Windows (WinRM — NAT Windows)
+  - name: ansible.windows
+    version: ">=2.0.0"
+
+  # Collection pour les posix (gestion fichiers, templates)
+  - name: ansible.posix
+    version: ">=1.5.0"

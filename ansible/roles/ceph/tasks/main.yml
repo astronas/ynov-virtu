@@ -1,0 +1,41 @@
+---
+# Role : ceph
+# Sous-ensemble des tâches Ceph délégables depuis le playbook ceph.yml
+# Ce role est utilisé pour les vérifications et tâches post-déploiement.
+# Le déploiement initial est géré par playbooks/ceph.yml (pveceph).
+
+- name: Vérifier la santé du cluster Ceph
+  ansible.builtin.command: ceph health detail
+  register: ceph_health
+  changed_when: false
+  run_once: true
+  delegate_to: prx1
+
+- name: Afficher la santé Ceph
+  ansible.builtin.debug:
+    var: ceph_health.stdout_lines
+  run_once: true
+
+- name: Vérifier le quorum Ceph MON
+  ansible.builtin.command: ceph mon stat
+  register: mon_stat
+  changed_when: false
+  run_once: true
+  delegate_to: prx1
+
+- name: Afficher les MON
+  ansible.builtin.debug:
+    var: mon_stat.stdout_lines
+  run_once: true
+
+- name: Vérifier les OSD
+  ansible.builtin.command: ceph osd tree
+  register: osd_tree
+  changed_when: false
+  run_once: true
+  delegate_to: prx1
+
+- name: Afficher l'OSD tree
+  ansible.builtin.debug:
+    var: osd_tree.stdout_lines
+  run_once: true

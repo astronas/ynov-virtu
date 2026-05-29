@@ -1,0 +1,174 @@
+---
+# Playbook : Configuration du switch Arista 7050TX-64
+#
+# Prérequis :
+#   ansible-galaxy collection install -r requirements.yml
+#   Le switch doit être accessible via SSH sur 10.0.10.253
+#   eAPI activé : management api http-commands / no shutdown
+#
+# Usage :
+#   ansible-playbook playbooks/arista-network.yml
+#   ansible-playbook playbooks/arista-network.yml --tags vlans
+#   ansible-playbook playbooks/arista-network.yml --check  # dry-run
+
+- name: Configure Arista YNOV-SW-LAB
+  hosts: arista
+  gather_facts: false
+
+  tasks:
+
+    # ── VLANs ────────────────────────────────────────────────────────────────
+    - name: Configurer les VLANs
+      arista.eos.eos_vlans:
+        config:
+          - vlan_id: 10
+            name: MGMT
+            state: active
+          - vlan_id: 20
+            name: DMZ
+            state: active
+          - vlan_id: 30
+            name: SRV-LAN
+            state: active
+          - vlan_id: 99
+            name: WAN-OPNSENSE
+            state: active
+          - vlan_id: 101
+            name: CEPH-PUBLIC
+            state: active
+          - vlan_id: 102
+            name: CEPH-PRIVATE
+            state: active
+          - vlan_id: 4094
+            name: BLACKHOLE-NATIVE
+            state: active
+        state: merged
+      tags: vlans
+
+    # ── SVI MGMT ─────────────────────────────────────────────────────────────
+    - name: Configurer l'interface SVI VLAN 10 (management switch)
+      arista.eos.eos_l3_interfaces:
+        config:
+          - name: Vlan10
+            ipv4:
+              - address: "{{ arista_mgmt_ip }}"
+        state: merged
+      tags: [vlans, svi]
+
+    - name: Désactiver VLAN 1 (neutralisation VLAN par défaut)
+      arista.eos.eos_config:
+        lines:
+          - shutdown
+        parents: interface Vlan1
+      tags: [vlans, security]
+
+    # ── Route par défaut ──────────────────────────────────────────────────────
+    - name: Configurer la route par défaut vers OPNsense
+      arista.eos.eos_static_routes:
+        config:
+          - vrf: default
+            address_families:
+              - afi: ipv4
+                routes:
+                  - dest: "0.0.0.0/0"
+                    next_hops:
+                      - forward_router_address: "{{ arista_mgmt_gateway }}"
+        state: merged
+      tags: routing
+
+    # ── Ports trunk (PRX1/PRX2/PRX3) ─────────────────────────────────────────
+    - name: Configurer les ports trunk Proxmox
+      arista.eos.eos_l2_interfaces:
+        config:
+          - name: "{{ item.interface }}"
+            mode: trunk
+            trunk:
+              native_vlan: "{{ item.native_vlan }}"
+              allowed_vlans: "{{ item.allowed_vlans }}"
+        state: merged
+      loop: "{{ arista_trunk_ports }}"
+      tags: interfaces
+
+    - name: Ajouter les descriptions sur les trunks
+      arista.eos.eos_interfaces:
+        config:
+          - name: "{{ item.interface }}"
+            description: "{{ item.description }}"
+            enabled: true
+        state: merged
+      loop: "{{ arista_trunk_ports }}"
+      tags: interfaces
+
+    # ── Ports access ──────────────────────────────────────────────────────────
+    - name: Configurer les ports access
+      arista.eos.eos_l2_interfaces:
+        config:
+          - name: "{{ item.interface }}"
+            mode: access
+            access:
+              vlan: "{{ item.vlan }}"
+        state: merged
+      loop: "{{ arista_access_ports }}"
+      tags: interfaces
+
+    - name: Ajouter les descriptions et portfast sur les ports access
+      arista.eos.eos_config:
+        lines:
+          - "description {{ item.description }}"
+          - spanning-tree portfast
+        parents: "interface {{ item.interface }}"
+      loop: "{{ arista_access_ports }}"
+      tags: interfaces
+
+    # ── Ports inutilisés (shutdown + VLAN blackhole) ──────────────────────────
+    - name: Désactiver et isoler les ports inutilisés
+      arista.eos.eos_config:
+        lines:
+          - description UNUSED-BLACKHOLE
+          - switchport mode access
+          - switchport access vlan 4094
+          - shutdown
+        parents: "interface {{ arista_unused_ports_range }}"
+      tags: [interfaces, security]
+
+    # ── Port-Channels LACP Ceph ───────────────────────────────────────────────
+    - name: Créer les Port-Channels et configurer les trunks Ceph
+      arista.eos.eos_config:
+        lines:
+          - "description {{ item.description }}"
+          - switchport mode trunk
+          - "switchport trunk native vlan {{ item.native_vlan }}"
+          - "switchport trunk allowed vlan {{ item.allowed_vlans }}"
+          - port-channel lacp fallback static
+          - port-channel lacp fallback timeout 90
+        parents: "interface Port-Channel{{ item.id }}"
+      loop: "{{ arista_port_channels }}"
+      tags: [interfaces, lacp]
+
+    - name: Assigner les membres LACP aux Port-Channels
+      arista.eos.eos_config:
+        lines:
+          - "channel-group {{ item.0.id }} mode active"
+        parents: "interface {{ item.1 }}"
+      loop: "{{ arista_port_channels | subelements('members') }}"
+      tags: [interfaces, lacp]
+
+    # ── Spanning Tree ─────────────────────────────────────────────────────────
+    - name: Configurer le Spanning Tree (MSTP)
+      arista.eos.eos_config:
+        lines:
+          - spanning-tree mode mstp
+          - "spanning-tree mst 0 priority {{ arista_stp_priority }}"
+      tags: stp
+
+    # ── Hostname ──────────────────────────────────────────────────────────────
+    - name: Configurer le hostname du switch
+      arista.eos.eos_system:
+        hostname: "{{ arista_hostname }}"
+      tags: system
+
+    # ── Sauvegarde de la configuration ───────────────────────────────────────
+    - name: Sauvegarder la configuration courante
+      arista.eos.eos_config:
+        save_when: modified
+      tags: always

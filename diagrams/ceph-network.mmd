@@ -1,0 +1,58 @@
+graph TB
+    subgraph SW["YNOV-SW-LAB — Arista 7050TX-64"]
+        PO1["Port-Channel1\nLACP 2×10G\nEt49/1 + Et49/2\nTrunk VLAN 101+102\nNative VLAN 4094"]
+        PO2["Port-Channel2\nLACP 2×10G\nEt49/3 + Et49/4\nTrunk VLAN 101+102\nNative VLAN 4094"]
+        ET6["Ethernet6\nAccess VLAN 101\n(PRX2 Ceph public)"]
+    end
+
+    subgraph PRX1_CEPH["PRX1 — OSD"]
+        PRX1_BOND["bond0 (LACP)\nenic1 + enic2"]
+        PRX1_PUB["bond0.101\n10.0.101.1/24\nCeph public"]
+        PRX1_PRIV["bond0.102\n10.0.102.1/24\nCeph private"]
+        PRX1_BOND --> PRX1_PUB
+        PRX1_BOND --> PRX1_PRIV
+    end
+
+    subgraph PRX2_CEPH["PRX2 — MON/MGR/Quorum"]
+        PRX2_NIC["nic2 (SFP→RJ45)"]
+        PRX2_PUB["nic2\n10.0.101.2/24\nCeph public uniquement"]
+        PRX2_NIC --> PRX2_PUB
+    end
+
+    subgraph PRX3_CEPH["PRX3 — OSD"]
+        PRX3_BOND["bond0 (LACP)\nenic1 + enic2"]
+        PRX3_PUB["bond0.101\n10.0.101.3/24\nCeph public"]
+        PRX3_PRIV["bond0.102\n10.0.102.3/24\nCeph private"]
+        PRX3_BOND --> PRX3_PUB
+        PRX3_BOND --> PRX3_PRIV
+    end
+
+    subgraph CEPH_NET["Cluster Ceph"]
+        subgraph PUB_NET["VLAN 101 — Ceph public 10.0.101.0/24"]
+            MON["Ceph MON/MGR\nAccès clients\nHealthcheck"]
+        end
+        subgraph PRIV_NET["VLAN 102 — Ceph private 10.0.102.0/24"]
+            REP["Réplication OSD\nRecovery\nBackfill"]
+        end
+    end
+
+    PO1 <-->|"LACP 2×10G"| PRX1_BOND
+    PO2 <-->|"LACP 2×10G"| PRX3_BOND
+    ET6 <-->|"1G"| PRX2_NIC
+
+    PRX1_PUB <-->|"VLAN 101"| MON
+    PRX2_PUB <-->|"VLAN 101"| MON
+    PRX3_PUB <-->|"VLAN 101"| MON
+
+    PRX1_PRIV <-->|"VLAN 102"| REP
+    PRX3_PRIV <-->|"VLAN 102"| REP
+
+    classDef switchport fill:#1a3a5c,color:#fff,stroke:#4a9eff
+    classDef osd fill:#2d5a1b,color:#fff,stroke:#6abf40
+    classDef quorum fill:#4a1a6b,color:#fff,stroke:#c084fc
+    classDef cephnet fill:#1a1a1a,color:#fff,stroke:#888
+
+    class PO1,PO2,ET6 switchport
+    class PRX1_BOND,PRX1_PUB,PRX1_PRIV,PRX3_BOND,PRX3_PUB,PRX3_PRIV osd
+    class PRX2_NIC,PRX2_PUB quorum
+    class MON,REP cephnet

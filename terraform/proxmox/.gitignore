@@ -1,0 +1,17 @@
+# .gitignore pour terraform/proxmox
+
+# State Terraform (ne jamais versionner — contient des secrets)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Variables avec secrets
+terraform.tfvars
+*.auto.tfvars
+
+# Plans
+*.tfplan
+
+# Logs
+crash.log

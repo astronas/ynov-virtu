@@ -1,0 +1,57 @@
+flowchart TD
+    subgraph VLAN99["VLAN 99 — WAN-OPNSENSE 10.0.99.0/24"]
+        WIN["PC Windows\n10.0.99.1\n(NAT vers Internet)"]
+        OPN_WAN["OPNsense WAN\n10.0.99.2\ngw: 10.0.99.1"]
+    end
+
+    subgraph VLAN10["VLAN 10 — MGMT 10.0.10.0/24"]
+        OPN_LAN["OPNsense LAN/MGMT\n10.0.10.254"]
+        PRX1["PRX1\n10.0.10.1"]
+        PRX2["PRX2\n10.0.10.2"]
+        PRX3["PRX3\n10.0.10.3"]
+        SW["Switch Arista\n10.0.10.253"]
+        PC_ADM["PC Admin\n(Et5 / Et7)"]
+    end
+
+    subgraph VLAN20["VLAN 20 — DMZ 10.0.20.0/24"]
+        OPN_DMZ["OPNsense DMZ\n10.0.20.254"]
+        RPROX["Reverse Proxy\n10.0.20.10"]
+        CFTUN["cloudflared\n10.0.20.5"]
+    end
+
+    subgraph VLAN30["VLAN 30 — SRV/LAN 10.0.30.0/24"]
+        OPN_SRV["OPNsense SRV\n10.0.30.254"]
+        VMS["VMs internes\n10.0.30.x"]
+    end
+
+    INET(("Internet"))
+
+    WIN -->|"NAT sortant"| INET
+    OPN_WAN -->|"Default route\ngw 10.0.99.1"| WIN
+
+    OPN_LAN <-->|"Inter-VLAN routing"| OPN_WAN
+    OPN_LAN <-->|"Inter-VLAN routing"| OPN_DMZ
+    OPN_LAN <-->|"Inter-VLAN routing"| OPN_SRV
+
+    PC_ADM -->|"VLAN 10"| OPN_LAN
+    PC_ADM -->|"Accès admin\nvia OPNsense"| OPN_DMZ
+    PC_ADM -->|"Accès admin\nvia OPNsense"| OPN_SRV
+
+    VMS -->|"Default route"| OPN_SRV
+    OPN_SRV -->|"Sortie Internet\nvia WAN"| OPN_WAN
+
+    RPROX -->|"Default route"| OPN_DMZ
+    CFTUN -->|"Tunnel sortant\nCloudflare"| INET
+    CFTUN -->|"Trafic entrant\nrouté vers RP"| RPROX
+
+    classDef vlan10 fill:#1a3a5c,color:#fff,stroke:#4a9eff
+    classDef vlan20 fill:#5a3a00,color:#fff,stroke:#fbbf24
+    classDef vlan30 fill:#2d5a1b,color:#fff,stroke:#6abf40
+    classDef vlan99 fill:#4a0000,color:#fff,stroke:#ff6b6b
+    classDef internet fill:#1a1a1a,color:#fff,stroke:#888
+
+    class OPN_LAN,PRX1,PRX2,PRX3,SW,PC_ADM vlan10
+    class OPN_DMZ,RPROX,CFTUN vlan20
+    class OPN_SRV,VMS vlan30
+    class WIN,OPN_WAN vlan99
+    class INET internet
