@@ -112,10 +112,6 @@ PRX2 ne porte pas d'OSD. Il ne participe pas à la réplication inter-OSD. Son r
 
 Le VLAN 1 est le VLAN natif par défaut sur Arista. Pour éviter les attaques de VLAN hopping (double-tagging sur VLAN 1), tous les ports inutilisés sont placés dans un VLAN inexistant (4094) et mis en shutdown. Les trunks Ceph utilisent aussi 4094 comme VLAN natif.
 
-### Pourquoi Cloudflare Tunnel pour l'exposition de services ?
-
-L'accès Internet passe par une connexion mobile potentiellement derrière CG-NAT. Il est impossible d'ouvrir des ports entrants (80/443). Cloudflare Tunnel permet d'exposer des services publics via une connexion sortante initiée depuis la DMZ, sans aucun port-forwarding.
-
 ---
 
 ## Flux de données principaux
@@ -125,13 +121,6 @@ L'accès Internet passe par une connexion mobile potentiellement derrière CG-NA
 ```
 VM (10.0.30.x) → OPNsense SRV (10.0.30.254) → OPNsense WAN (10.0.99.254)
 → PC Windows (10.0.99.1) → Wi-Fi → Internet
-```
-
-### Accès à un service exposé publiquement
-
-```
-Internet → Cloudflare → Tunnel → cloudflared VM (10.0.20.5/DMZ)
-→ Reverse proxy (10.0.20.10/DMZ) → Application interne
 ```
 
 ### Réplication Ceph (inter-OSD)

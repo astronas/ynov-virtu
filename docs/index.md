@@ -82,7 +82,7 @@ graph TD
 | VLAN | Nom | Réseau | Rôle |
 |------|-----|--------|------|
 | 10 | MGMT | 10.0.10.0/24 | Management — PRX1=.1, PRX2=.2, PRX3=.3, SW=.253, OPNsense=.254 |
-| 20 | DMZ | 10.0.20.0/24 | cloudflared=.5, reverse-proxy=.10 |
+| 20 | DMZ | 10.0.20.0/24 | reverse-proxy=.10 |
 | 30 | SRV-LAN | 10.0.30.0/24 | VMs serveurs internes |
 | 99 | WAN-OPNSENSE | 10.0.99.0/24 | PC Windows=.1, OPNsense WAN=.2 |
 | 101 | CEPH-PUBLIC | 10.0.101.0/24 | PRX1=.1, PRX2=.2, PRX3=.3 |

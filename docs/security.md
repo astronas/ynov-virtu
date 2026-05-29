@@ -7,7 +7,6 @@ Le lab applique une approche de **défense en profondeur** à plusieurs niveaux 
 1. **Sécurisation L2** — Neutralisation du VLAN 1, isolation des ports inutilisés, VLAN blackhole.
 2. **Segmentation VLAN** — Chaque zone réseau est isolée dans son propre VLAN.
 3. **Filtrage inter-VLAN** — OPNsense contrôle tous les flux entre VLANs.
-4. **Exposition externe sécurisée** — Cloudflare Tunnel, pas de port-forwarding entrant.
 
 ---
 
@@ -82,7 +81,7 @@ OPNsense est le seul point de routage entre les VLANs. Sans règle firewall, auc
 | MGMT → tout | ✅ Autorisé | Les administrateurs ont accès à toute l'infrastructure |
 | DMZ → MGMT | ❌ Bloqué | Un service compromis en DMZ ne doit pas atteindre le management |
 | DMZ → SRV | ❌ Bloqué | La DMZ n'accède pas aux services internes directement |
-| DMZ → Internet | ✅ TCP 80/443 uniquement | cloudflared et reverse proxy ont besoin de sortir |
+| DMZ → Internet | ✅ TCP 80/443 uniquement | Les services DMZ ont besoin d'accès sortant |
 | SRV → MGMT | ❌ Bloqué | Les VMs de service n'administrent pas l'infrastructure |
 | SRV → Internet | ✅ TCP 80/443 uniquement | Les services ont besoin de mises à jour et d'accès API |
 | WAN entrant | ❌ Bloqué | Par défaut OPNsense — aucun service exposé directement |
@@ -99,57 +98,13 @@ OPNsense active par défaut le **Block private networks** et **Block bogon netwo
 
 ---
 
-## Exposition de services vers Internet
+## Évolutions futures envisagées
 
-### Problème : CG-NAT opérateur mobile
+### Exposition de services via Cloudflare Tunnel
 
-Une connexion 4G/5G est souvent derrière un **CG-NAT** (Carrier Grade NAT). L'opérateur ne fournit pas d'IP publique fixe, et plusieurs abonnés partagent la même IP publique. Il est impossible d'ouvrir des ports entrants (80, 443) depuis Internet.
+> **Idée d'évolution — non implémenté dans ce lab**
 
-### Solution : Cloudflare Tunnel
-
-Cloudflare Tunnel (`cloudflared`) initie une connexion **sortante** depuis la DMZ vers les serveurs Cloudflare. Cloudflare devient alors le point d'entrée public, sans nécessiter de port-forwarding.
-
-```
-Internet → [Cloudflare Edge]
-              │ Tunnel chiffré (QUIC/HTTP2)
-           [cloudflared VM — 10.0.20.5 — DMZ]
-              │ Requête HTTP interne
-           [Reverse proxy — 10.0.20.10 — DMZ]
-              │
-           [Application (VLAN SRV ou DMZ)]
-```
-
-**Avantages :**
-
-- Aucun port ouvert entrant sur le firewall OPNsense.
-- Compatible avec le CG-NAT opérateur.
-- TLS géré par Cloudflare (certificat automatique).
-- Protection DDoS incluse dans l'offre Cloudflare gratuite.
-- Contrôle d'accès possible via Cloudflare Access.
-
-**Configuration de base `cloudflared` (VM DMZ) :**
-
-```bash
-# Installation cloudflared
-curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 \
-  -o /usr/local/bin/cloudflared
-chmod +x /usr/local/bin/cloudflared
-
-# Authentification et création du tunnel
-cloudflared tunnel login
-cloudflared tunnel create ynov-lab
-
-# Exemple de config ~/.cloudflared/config.yml
-# tunnel: <UUID>
-# credentials-file: /root/.cloudflared/<UUID>.json
-# ingress:
-#   - hostname: app.example.com
-#     service: http://10.0.20.10:80
-#   - service: http_status:404
-
-# Installer comme service systemd
-cloudflared service install
-```
+En cas de connexion derrière CG-NAT (4G/5G), il est impossible d'ouvrir des ports entrants. Cloudflare Tunnel permettrait d'exposer des services publics via une connexion sortante depuis la DMZ, sans port-forwarding et avec TLS automatique + protection DDoS.
 
 ---
 
