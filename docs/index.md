@@ -38,15 +38,19 @@ Le repo couvre toute la stack : documentation, configs réseau, IaC (**Terraform
 
 ---
 
-## Architecture
+## Stack physique (assets)
 
-> **Switch physique** — Arista 7050TX-64 <img src="assets/logos/arista.png" class="inline-logo" alt=""> (48× RJ45 10G + 4× QSFP+ 40G SFP)
->
-> ![Arista 7050TX-64](assets/arista-7050tx-64.png)
->
-> **Serveurs Proxmox** — 3× MSI MS-7D59 (PRX-1, PRX-2, PRX-3)
->
-> ![Serveurs Proxmox — MSI MS-7D59](assets/pc.png){ style="height:220px;width:auto" }
+**Switch réseau** — Arista 7050TX-64 <img src="assets/logos/arista.png" class="inline-logo" alt=""> (48× RJ45 10G + 4× QSFP+ 40G SFP)
+
+![Arista 7050TX-64](assets/arista-7050tx-64.png)
+
+**Serveurs Proxmox** — 3× MSI MS-7D59 (PRX-1, PRX-2, PRX-3)
+
+![Serveurs Proxmox — MSI MS-7D59](assets/pc.png){ style="height:320px;width:auto" }
+
+---
+
+## Architecture
 
 ```mermaid
 graph TD
