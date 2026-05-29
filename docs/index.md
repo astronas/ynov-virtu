@@ -12,10 +12,10 @@ Le repo couvre toute la stack : documentation, configs réseau, IaC (Terraform +
 
 | Membre | GitHub |
 |--------|--------|
-| Jonathan Panzer | [@jonathanpanzer](https://github.com/jonathanpanzer) |
-| Redouane Kachour | [@redouanekachour](https://github.com/redouanekachour) |
+| Jonathan Panzer | [@Sorway](https://github.com/Sorway) |
+| Redouane Kachour | [@Redouane638](https://github.com/Redouane638) |
 | Thibaut Gianola | [@astronas](https://github.com/astronas) |
-| Sacha Veylon-Busser | [@sachavb](https://github.com/sachavb) |
+| Sacha Veylon-Busser | [@veysacha](https://github.com/veysacha) |
 
 ---
 
