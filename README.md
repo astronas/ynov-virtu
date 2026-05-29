@@ -1,7 +1,12 @@
 # ynov-virtu
 
-Lab de virtualisation orienté entreprise basé sur **Proxmox VE**, **OPNsense**, **Ceph** et un switch **Arista 7050TX-64**.  
+> **Cours de Virtualisation** — M1 Expert Cloud, Sécurité & Infrastructure  
+> YNOV Campus Sophia-Antipolis
+
+Lab orienté entreprise basé sur **Proxmox VE**, **OPNsense**, **Ceph** et un switch **Arista 7050TX-64**.  
 Le repo couvre toute la stack : documentation, configs réseau, Infrastructure as Code (Terraform + Ansible) et GitHub Pages.
+
+**Équipe :** Jonathan Panzer · Redouane Kachour · Thibaut Gianola · Sacha Veylon-Busser
 
 ---
 
