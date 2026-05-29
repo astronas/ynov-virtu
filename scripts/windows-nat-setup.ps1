@@ -9,7 +9,7 @@
     et active le forwarding IP sur les interfaces Ethernet et Wi-Fi.
 
     Architecture :
-        OPNsense WAN (10.0.99.2) → PC Windows (10.0.99.1) → Wi-Fi → Internet
+        OPNsense WAN (10.0.99.254) → PC Windows (10.0.99.1) → Wi-Fi → Internet
 
 .PARAMETER EthernetAlias
     Nom de l'interface Ethernet connectée au switch (vers VLAN 99).
@@ -137,7 +137,7 @@ Write-Host "  Interface Wi-Fi    : $WifiAlias"
 Write-Host "  NAT                : $NatName ($NatNetwork)"
 Write-Host ""
 Write-Host "  OPNsense WAN doit être configuré avec :"
-Write-Host "    IP      : 10.0.99.2/24"
+Write-Host "    IP      : 10.0.99.254/24"
 Write-Host "    Gateway : 10.0.99.1"
 Write-Host ""
 Write-Host "  Pour tester depuis OPNsense :"

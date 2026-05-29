@@ -13,7 +13,7 @@
 
 | Interface OPNsense | Adresse IP | Masque | Gateway | Rôle |
 |---|---|---|---|---|
-| WAN (`vtnet0`) | `10.0.99.2` | `/24` | `10.0.99.1` | Accès Internet via PC Windows NAT |
+| WAN (`vtnet0`) | `10.0.99.254` | `/24` | `10.0.99.1` | Accès Internet via PC Windows NAT |
 | LAN (`vtnet1`) | `10.0.10.254` | `/24` | — | Management Proxmox + administration |
 | DMZ (`vtnet2`) | `10.0.20.254` | `/24` | — | Zone démilitarisée |
 | SRV (`vtnet3`) | `10.0.30.254` | `/24` | — | Services internes |

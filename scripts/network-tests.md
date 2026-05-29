@@ -96,7 +96,7 @@ Get-NetIPInterface | Where-Object { $_.Forwarding -eq "Enabled" } | Select-Objec
 Get-NetIPAddress -InterfaceAlias "Ethernet" -AddressFamily IPv4
 
 # Pinger OPNsense WAN
-ping 10.0.99.2
+ping 10.0.99.254
 
 # Vérifier les routes
 route print

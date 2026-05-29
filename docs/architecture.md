@@ -36,7 +36,7 @@ Le lab YNOV-VIRTU est une infrastructure de virtualisation d'entreprise miniatur
                      10.0.10.1   10.0.10.2   10.0.10.3
                                                │
                                         [OPNsense VM]
-                                    WAN  : 10.0.99.2
+                                    WAN  : 10.0.99.254
                                     MGMT : 10.0.10.254
                                     DMZ  : 10.0.20.254
                                     SRV  : 10.0.30.254
@@ -79,7 +79,7 @@ Le switch est le cœur L2 du lab. Il assure :
 
 VM hébergée sur PRX3. Sert de passerelle et pare-feu pour l'ensemble du lab :
 
-- **WAN** : `10.0.99.2/24` — récupère Internet depuis le PC Windows via NAT.
+- **WAN** : `10.0.99.254/24` — récupère Internet depuis le PC Windows via NAT.
 - **LAN/MGMT** : `10.0.10.254/24` — gateway du VLAN management.
 - **DMZ** : `10.0.20.254/24` — gateway de la zone DMZ.
 - **SRV/LAN** : `10.0.30.254/24` — gateway des services internes.
@@ -123,7 +123,7 @@ L'accès Internet passe par une connexion mobile potentiellement derrière CG-NA
 ### Accès Internet depuis une VM interne (VLAN 30)
 
 ```
-VM (10.0.30.x) → OPNsense SRV (10.0.30.254) → OPNsense WAN (10.0.99.2)
+VM (10.0.30.x) → OPNsense SRV (10.0.30.254) → OPNsense WAN (10.0.99.254)
 → PC Windows (10.0.99.1) → Wi-Fi → Internet
 ```
 

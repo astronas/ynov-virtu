@@ -61,7 +61,7 @@ OPT2 → vtnet3  (VLAN 30 — SRV/LAN)
 **WAN (vtnet0)** :
 
 ```
-IPv4 static : 10.0.99.2/24
+IPv4 static : 10.0.99.254/24
 Gateway     : 10.0.99.1
 IPv6        : none
 ```
@@ -106,7 +106,7 @@ Identifiants par défaut : `admin` / `opnsense`
 - ☐ **Block private networks** → désactiver
 - ☐ **Block bogon networks** → désactiver
 
-> Indispensable car le WAN OPNsense est une IP privée (`10.0.99.2`).
+> Indispensable car le WAN OPNsense est une IP privée (`10.0.99.254`).
 
 ### Renommer les interfaces
 

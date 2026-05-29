@@ -66,7 +66,7 @@ graph TD
         PRX1["🖥 PRX1\n10.0.10.1\nOSD + MON + MGR"]:::proxmox
         PRX2["🖥 PRX2\n10.0.10.2\nMON + MGR (quorum)"]:::quorum
         PRX3["🖥 PRX3\n10.0.10.3\nOSD + MON"]:::proxmox
-        OPN["🛡 OPNsense VM\nWAN 10.0.99.2\nLAN 10.0.10.254"]:::opnsense
+        OPN["🛡 OPNsense VM\nWAN 10.0.99.254\nLAN 10.0.10.254"]:::opnsense
         PRX3 --> OPN
     end
 

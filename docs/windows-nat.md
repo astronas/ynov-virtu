@@ -11,7 +11,7 @@ Le PC Windows sert de **passerelle WAN temporaire** pour OPNsense, en attendant 
     │ Ethernet — 10.0.99.1/24
 [Switch Arista — Et1 — VLAN 99]
     │
-[OPNsense WAN — 10.0.99.2/24]
+[OPNsense WAN — 10.0.99.254/24]
 ```
 
 ---
@@ -86,7 +86,7 @@ Get-NetNat
 Get-NetIPInterface | Where-Object { $_.Forwarding -eq "Enabled" } | Select-Object InterfaceAlias, Forwarding
 
 # Pinger OPNsense WAN depuis Windows
-ping 10.0.99.2
+ping 10.0.99.254
 
 # Vérifier les routes
 route print
@@ -129,7 +129,7 @@ Script complet : [scripts/windows-nat-cleanup.ps1](../scripts/windows-nat-cleanu
 1. Vérifier la configuration IP de la carte Ethernet Windows (`ipconfig`).
 2. Vérifier qu'`Et1` du switch est bien en access VLAN 99.
 3. Vérifier que le câble est branché sur `Et1` du switch.
-4. Vérifier qu'OPNsense a `10.0.99.2/24` sur son interface WAN.
+4. Vérifier qu'OPNsense a `10.0.99.254/24` sur son interface WAN.
 5. Vérifier les règles firewall Windows (désactiver temporairement pour test).
 
 ### OPNsense ping `10.0.99.1` mais pas `1.1.1.1`
