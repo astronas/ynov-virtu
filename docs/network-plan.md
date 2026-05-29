@@ -12,6 +12,8 @@
 | **102** | CEPH-PRIVATE | `10.0.102.0` | `/24` | — | Réplication OSD Ceph (PRX1 ↔ PRX3) |
 | **4094** | BLACKHOLE | — | — | — | VLAN poubelle / native sécurisée |
 
+![Configuration VLANs sur le switch Arista](assets/vlan.png)
+
 ---
 
 ## Plan IP complet
@@ -122,6 +124,8 @@ Switch Po1 (trunk, VLANs 101+102, native 4094)
    │ bond0.102  │→ 10.0.102.1/24 (Ceph private)
    └────────────┘
 ```
+
+![LACP trunk Ceph — Port-Channel 1 & 2](assets/lacp%20trunk.png)
 
 ---
 
