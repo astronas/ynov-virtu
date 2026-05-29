@@ -8,6 +8,17 @@ Le repo couvre toute la stack : documentation, configs réseau, Infrastructure a
 
 **Équipe :** Jonathan Panzer · Redouane Kachour · Thibaut Gianola · Sacha Veylon-Busser
 
+<div align="center">
+  <img src="docs/assets/logos/proxmox.png" height="48" alt="Proxmox VE">&nbsp;&nbsp;
+  <img src="docs/assets/logos/opnsense.png" height="48" alt="OPNsense">&nbsp;&nbsp;
+  <img src="docs/assets/logos/ceph.png" height="48" alt="Ceph">&nbsp;&nbsp;
+  <img src="docs/assets/logos/arista.png" height="48" alt="Arista">&nbsp;&nbsp;
+  <img src="docs/assets/logos/cloudflare.svg" height="48" alt="Cloudflare">&nbsp;&nbsp;
+  <img src="docs/assets/logos/terraform.svg" height="48" alt="Terraform">&nbsp;&nbsp;
+  <img src="docs/assets/logos/ansible.png" height="48" alt="Ansible">&nbsp;&nbsp;
+  <img src="docs/assets/logos/github.svg" height="48" alt="GitHub">
+</div>
+
 ---
 
 ## Architecture

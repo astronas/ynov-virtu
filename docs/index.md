@@ -8,6 +8,21 @@ Le repo couvre toute la stack : documentation, configs réseau, IaC (Terraform +
 
 ---
 
+## Stack technique
+
+<div align="center" style="display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:center;margin:24px 0">
+  <img src="assets/logos/proxmox.png" height="52" alt="Proxmox VE" title="Proxmox VE">
+  <img src="assets/logos/opnsense.png" height="52" alt="OPNsense" title="OPNsense">
+  <img src="assets/logos/ceph.png" height="52" alt="Ceph" title="Ceph">
+  <img src="assets/logos/arista.png" height="52" alt="Arista" title="Arista">
+  <img src="assets/logos/cloudflare.svg" height="52" alt="Cloudflare" title="Cloudflare">
+  <img src="assets/logos/terraform.svg" height="52" alt="Terraform" title="Terraform">
+  <img src="assets/logos/ansible.png" height="52" alt="Ansible" title="Ansible">
+  <img src="assets/logos/github.svg" height="52" alt="GitHub" title="GitHub">
+</div>
+
+---
+
 ## Équipe
 
 | Membre | GitHub |
