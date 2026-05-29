@@ -7,21 +7,82 @@ Le repo couvre toute la stack : documentation, configs réseau, Infrastructure a
 
 ## Architecture
 
+```mermaid
+graph TD
+    PC["💻 PC Windows\n10.0.99.1\nNAT Wi-Fi → Ethernet"]
+    SW["🔀 Arista 7050TX-64\nYNOV-SW-LAB\n10.0.10.253"]
+
+    PC -- "Et1 VLAN 99" --> SW
+
+    SW -- "Et2 trunk\nVLAN 10/20/30/99" --> PRX1
+    SW -- "Et3 trunk\nVLAN 10/20/30/99" --> PRX2
+    SW -- "Et4 trunk\nVLAN 10/20/30/99" --> PRX3
+
+    SW -- "Po1 LACP\nVLAN 101+102" --> PRX1_CEPH["PRX1 bond0\nCeph 2×10G"]
+    SW -- "Et6 VLAN 101" --> PRX2_CEPH["PRX2 nic2\nCeph public"]
+    SW -- "Po2 LACP\nVLAN 101+102" --> PRX3_CEPH["PRX3 bond0\nCeph 2×10G"]
+
+    subgraph CLUSTER["Proxmox Cluster — YNOV-CLUSTER"]
+        PRX1["🖥 PRX1\n10.0.10.1\nOSD + MON + MGR"]
+        PRX2["🖥 PRX2\n10.0.10.2\nMON + MGR (quorum)"]
+        PRX3["🖥 PRX3\n10.0.10.3\nOSD + MON"]
+        OPN["🛡 OPNsense VM\nWAN 10.0.99.2\nLAN 10.0.10.254"]
+        PRX3 --> OPN
+    end
+
+    PRX1_CEPH --- PRX1
+    PRX2_CEPH --- PRX2
+    PRX3_CEPH --- PRX3
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  PC Windows (10.0.99.1)  ←NAT Wi-Fi→  Switch Arista        │
-│                                         YNOV-SW-LAB          │
-│  ┌─── Et1 VLAN 99 ───────────────────────────────────────┐  │
-│  │  Et2/3/4 trunk 10/20/30/99        Et49/1-4 LACP SFP  │  │
-│  └────────────────────────────────────────────────────────┘  │
-│       │              │              │          │              │
-│      PRX1          PRX2           PRX3       Po1/Po2         │
-│   10.0.10.1     10.0.10.2      10.0.10.3   Ceph LACP        │
-│   OSD+MON+MGR   MON+MGR        OSD+MON                       │
-│   bond0 LACP    nic2 direct    bond0 LACP                    │
-│                                                               │
-│   OPNsense VM (sur PRX3) — WAN 10.0.99.2 / LAN 10.0.10.254 │
-└─────────────────────────────────────────────────────────────┘
+
+### Flux VLAN
+
+```mermaid
+graph LR
+    subgraph VLANs
+        V10["VLAN 10\nMGMT\n10.0.10.0/24"]
+        V20["VLAN 20\nDMZ\n10.0.20.0/24"]
+        V30["VLAN 30\nSRV-LAN\n10.0.30.0/24"]
+        V99["VLAN 99\nWAN\n10.0.99.0/24"]
+        V101["VLAN 101\nCEPH-PUBLIC\n10.0.101.0/24"]
+        V102["VLAN 102\nCEPH-PRIVATE\n10.0.102.0/24"]
+    end
+
+    OPN["OPNsense\n10.0.10.254"] -- "inter-VLAN routing" --> V10
+    OPN -- "firewall → DMZ" --> V20
+    OPN -- "firewall → SRV" --> V30
+    V99 -- "WAN upstream" --> OPN
+
+    V101 -- "réplication OSD" --> V102
+```
+
+### Réseau Ceph
+
+```mermaid
+graph TD
+    subgraph PRX1["PRX1 — OSD + MON + MGR"]
+        B1["bond0\nenic1 + enic2\nLACP 802.3ad"]
+        P101A["bond0.101\n10.0.101.1/24"]
+        P102A["bond0.102\n10.0.102.1/24"]
+        B1 --> P101A
+        B1 --> P102A
+    end
+
+    subgraph PRX2["PRX2 — MON + MGR (quorum only)"]
+        N2["nic2 direct\nSFP→RJ45\n10.0.101.2/24"]
+    end
+
+    subgraph PRX3["PRX3 — OSD + MON"]
+        B3["bond0\nenic1 + enic2\nLACP 802.3ad"]
+        P101C["bond0.101\n10.0.101.3/24"]
+        P102C["bond0.102\n10.0.102.3/24"]
+        B3 --> P101C
+        B3 --> P102C
+    end
+
+    P101A -- "VLAN 101 public" --> N2
+    P101A -- "VLAN 101 public" --> P101C
+    P102A -- "VLAN 102 private\n(PRX2 exclu)" --> P102C
 ```
 
 ## Plan réseau
