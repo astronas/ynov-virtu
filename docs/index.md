@@ -1,7 +1,21 @@
 # YNOV-VIRTU — Lab d'infrastructure virtualisée
 
+> **Cours de Virtualisation** — M1 Expert Cloud, Sécurité & Infrastructure  
+> YNOV Campus Sophia-Antipolis
+
 Lab orienté entreprise basé sur **Proxmox VE**, **OPNsense**, **Ceph** et un switch **Arista 7050TX-64**.  
 Le repo couvre toute la stack : documentation, configs réseau, IaC (Terraform + Ansible) et GitHub Pages.
+
+---
+
+## Équipe
+
+| Membre | GitHub |
+|--------|--------|
+| Jonathan Panzer | [@jonathanpanzer](https://github.com/jonathanpanzer) |
+| Redouane Kachour | [@redouanekachour](https://github.com/redouanekachour) |
+| Thibaut Gianola | [@astronas](https://github.com/astronas) |
+| Sacha Veylon-Busser | [@sachavb](https://github.com/sachavb) |
 
 ---
 
@@ -98,3 +112,9 @@ ansible-playbook ansible/playbooks/site.yml --tags proxmox,ceph
 | [Sécurité](security.md) | Politique inter-VLAN, VLAN 4094, hardening |
 | [Dépannage](troubleshooting.md) | Problèmes rencontrés et résolutions |
 | [Tests réseau](network-tests.md) | Matrice de validation complète |
+
+---
+
+## Schéma de brassage
+
+![Schéma de brassage](assets/skema.png)
