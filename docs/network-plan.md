@@ -5,7 +5,7 @@
 | VLAN | Nom | Réseau | Masque | Gateway (OPNsense) | Rôle |
 |---|---|---|---|---|---|
 | **10** | MGMT | `10.0.10.0` | `/24` | `10.0.10.254` | Management Proxmox, switch, OPNsense LAN |
-| **20** | DMZ | `10.0.20.0` | `/24` | `10.0.20.254` | Zone DMZ — reverse proxy, Cloudflare Tunnel |
+| **20** | DMZ | `10.0.20.0` | `/24` | `10.0.20.254` | Zone DMZ — reverse proxy, services exposés |
 | **30** | SRV-LAN | `10.0.30.0` | `/24` | `10.0.30.254` | Services internes, VMs métier |
 | **99** | WAN-OPNSENSE | `10.0.99.0` | `/24` | `10.0.99.1` (PC Win) | WAN OPNsense via NAT Windows |
 | **101** | CEPH-PUBLIC | `10.0.101.0` | `/24` | — | Accès client Ceph, MON/MGR |
@@ -33,7 +33,6 @@
 |---|---|---|
 | OPNsense DMZ | `10.0.20.254/24` | Gateway de la DMZ |
 | Reverse proxy | `10.0.20.10/24` | NGINX, Traefik ou Caddy |
-| cloudflared | `10.0.20.5/24` | VM Cloudflare Tunnel |
 
 ### VLAN 30 — SRV/LAN (`10.0.30.0/24`)
 
@@ -133,7 +132,7 @@ Switch Po1 (trunk, VLANs 101+102, native 4094)
 | `10.0.10.1–10` | Nœuds Proxmox et infrastructure |
 | `10.0.10.100–200` | VMs management (DHCP ou statique) |
 | `10.0.10.253–254` | Switch et OPNsense (fixes) |
-| `10.0.20.1–10` | VMs DMZ fixes (reverse proxy, cloudflared) |
+| `10.0.20.1–10` | VMs DMZ fixes (reverse proxy) |
 | `10.0.20.100–200` | VMs DMZ dynamiques |
 | `10.0.30.100–200` | VMs SRV/LAN (DHCP via OPNsense) |
 | `10.0.99.1–2` | PC Windows et OPNsense WAN (fixes) |
