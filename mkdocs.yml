@@ -1,22 +1,12 @@
 site_name: YNOV-VIRTU — Lab d'infrastructure virtualisée
 site_description: "Lab Proxmox 3 nœuds · OPNsense · Ceph · Arista 7050TX-64 · IaC Terraform & Ansible"
 site_author: YNOV Campus
-repo_url: https://github.com/ynov-campus/ynov-virtu
+repo_url: https://github.com/astronas/ynov-virtu
 repo_name: ynov-virtu
-edit_uri: edit/main/
+edit_uri: edit/main/docs/
 
-docs_dir: .
+docs_dir: docs
 site_dir: site
-
-exclude_docs: |
-  site/
-  .git/
-  node_modules/
-  terraform/
-  ansible/
-  configs/
-  scripts/windows-nat-setup.ps1
-  scripts/windows-nat-cleanup.ps1
 
 theme:
   name: material
@@ -49,18 +39,18 @@ theme:
     repo: fontawesome/brands/github
 
 nav:
-  - Accueil: README.md
+  - Accueil: index.md
   - Architecture:
-      - Vue d'ensemble: docs/architecture.md
-      - Plan réseau & VLANs: docs/network-plan.md
+      - Vue d'ensemble: architecture.md
+      - Plan réseau & VLANs: network-plan.md
   - Composants:
-      - Proxmox VE: docs/proxmox.md
-      - Ceph: docs/ceph.md
-      - OPNsense: docs/opnsense.md
-      - NAT Windows: docs/windows-nat.md
-  - Sécurité: docs/security.md
-  - Dépannage: docs/troubleshooting.md
-  - Tests réseau: scripts/network-tests.md
+      - Proxmox VE: proxmox.md
+      - Ceph: ceph.md
+      - OPNsense: opnsense.md
+      - NAT Windows: windows-nat.md
+  - Sécurité: security.md
+  - Dépannage: troubleshooting.md
+  - Tests réseau: network-tests.md
 
 markdown_extensions:
   - admonition
@@ -95,4 +85,4 @@ plugins:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/ynov-campus/ynov-virtu
+      link: https://github.com/astronas/ynov-virtu
