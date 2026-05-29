@@ -1,4 +1,4 @@
-# Ceph — Stockage distribué
+# <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph — Stockage distribué
 
 ## Architecture Ceph du lab
 
@@ -165,7 +165,7 @@ Quorum Ceph (3 MON) :
 
 ---
 
-## Intégration Proxmox ↔ Ceph
+## Intégration <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> Proxmox ↔ <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph
 
 Une fois le pool créé, l'ajouter dans Proxmox comme stockage :
 

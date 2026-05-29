@@ -1,8 +1,8 @@
-# OPNsense — Pare-feu et routage inter-VLAN
+# <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> OPNsense — Pare-feu et routage inter-VLAN
 
 ## Présentation
 
-OPNsense est déployé en VM sur **PRX3**. Il joue le rôle de :
+OPNsense <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> est déployé en VM sur **PRX3** <img src="assets/logos/proxmox.png" class="inline-logo" alt="">. Il joue le rôle de :
 
 - **Routeur inter-VLAN** entre MGMT, DMZ, SRV/LAN et WAN.
 - **Pare-feu stateful** contrôlant les flux entre segments.
