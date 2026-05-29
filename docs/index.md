@@ -12,12 +12,12 @@ Le repo couvre toute la stack : documentation, configs réseau, IaC (Terraform +
 
 <div class="tech-logos">
   <img src="assets/logos/proxmox.png" alt="Proxmox VE" title="Proxmox VE">
-  <img src="assets/logos/opnsense.png" alt="OPNsense" title="OPNsense">
-  <img src="assets/logos/ceph.png" alt="Ceph" title="Ceph">
+  <img src="assets/logos/opnsense.svg" alt="OPNsense" title="OPNsense">
+  <img src="assets/logos/ceph.svg" alt="Ceph" title="Ceph">
   <img src="assets/logos/arista.png" alt="Arista" title="Arista">
   <img src="assets/logos/cloudflare.svg" alt="Cloudflare" title="Cloudflare">
   <img src="assets/logos/terraform.svg" alt="Terraform" title="Terraform">
-  <img src="assets/logos/ansible.png" alt="Ansible" title="Ansible">
+  <img src="assets/logos/ansible.svg" alt="Ansible" title="Ansible">
   <img src="assets/logos/github.svg" alt="GitHub" title="GitHub">
 </div>
 

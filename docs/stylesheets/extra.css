@@ -13,8 +13,12 @@
   width: auto !important;
   max-width: 140px !important;
   object-fit: contain !important;
-  filter: none;
   transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+/* SVGs monochromes (simple-icons) : rendre visibles en dark mode */
+[data-md-color-scheme="slate"] .tech-logos img[src$=".svg"] {
+  filter: brightness(0) invert(1);
 }
 
 .tech-logos img:hover {
