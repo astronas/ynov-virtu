@@ -1,7 +1,5 @@
 # ── Nœuds Proxmox (data sources) ─────────────────────────────────────────────
 
-data "proxmox_virtual_environment_nodes" "available" {}
-
 locals {
   cluster_nodes = toset(["prx1", "prx2", "prx3"])
 
