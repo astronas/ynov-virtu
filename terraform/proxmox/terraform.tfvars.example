@@ -2,27 +2,19 @@
 # NE JAMAIS committer terraform.tfvars dans Git (contient des secrets)
 
 # ── Connexion Proxmox ─────────────────────────────────────────────────────────
-proxmox_endpoint     = "https://10.0.10.1:8006"
-proxmox_username     = "terraform@pve"
-proxmox_password     = "CHANGE_ME"
-proxmox_insecure     = true
-proxmox_ssh_user     = "root"
-proxmox_ssh_password = "CHANGE_ME"
-
-# ── Cloud-init ────────────────────────────────────────────────────────────────
-vm_default_user     = "ynov"
-vm_default_password = "CHANGE_ME"
-vm_ssh_public_key   = "ssh-ed25519 AAAA... user@machine"
+proxmox_api_url          = "https://10.0.10.1:8006/api2/json"
+proxmox_api_token_id     = "root@pam!terraform"    # Proxmox : Datacenter > API Tokens
+proxmox_api_token_secret = "CHANGE_ME"             # UUID du secret du token
+proxmox_insecure         = true
 
 # ── Stockage ──────────────────────────────────────────────────────────────────
 datastore_local = "local-lvm"
 datastore_iso   = "local"
 datastore_ceph  = "vm-pool"
 
-# ── OPNsense ──────────────────────────────────────────────────────────────────
-opnsense_iso  = "local:iso/OPNsense-25.1-dvd-amd64.iso"
-opnsense_node = "prx3"
+# ── VMs ───────────────────────────────────────────────────────────────────────
+# Template cloné par défaut (doit exister sur le nœud cible).
+default_template = "tmpl-debian"
 
-# ── Placement VMs DMZ ─────────────────────────────────────────────────────────
-cloudflared_node = "prx3"
-rproxy_node      = "prx3"
+# L'inventaire des VMs (variable `vms`) se définit par environnement, p.ex.
+# dans env.prod.tfvars, et se passe avec -var-file="env.prod.tfvars".

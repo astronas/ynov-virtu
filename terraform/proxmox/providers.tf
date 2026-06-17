@@ -3,8 +3,12 @@ terraform {
 
   required_providers {
     proxmox = {
-      source  = "bpg/proxmox"
-      version = "~> 0.66"
+      source = "telmate/proxmox"
+      # Dernière version publiée sur le registre Terraform (la 3.0.2 stable
+      # n'existe pas encore — seules des release candidates sont publiées).
+      # La branche v3 corrige le bug de vérification de permission VM.Monitor
+      # présent en 2.9.x sur Proxmox 8/9.
+      version = "3.0.2-rc07"
     }
   }
 
@@ -17,16 +21,8 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint = var.proxmox_endpoint
-  username = var.proxmox_username
-  password = var.proxmox_password
-
-  # Désactiver la vérification TLS si certificat auto-signé (lab uniquement)
-  insecure = var.proxmox_insecure
-
-  ssh {
-    agent    = false
-    username = var.proxmox_ssh_user
-    password = var.proxmox_ssh_password
-  }
+  pm_api_url          = var.proxmox_api_url
+  pm_api_token_id     = var.proxmox_api_token_id
+  pm_api_token_secret = var.proxmox_api_token_secret
+  pm_tls_insecure     = var.proxmox_insecure
 }

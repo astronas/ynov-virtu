@@ -1,20 +1,19 @@
 # ── Connexion Proxmox ─────────────────────────────────────────────────────────
 
-variable "proxmox_endpoint" {
-  description = "URL de l'API Proxmox (nœud maître du cluster)"
+variable "proxmox_api_url" {
+  description = "URL de l'API Proxmox (avec /api2/json)"
   type        = string
-  default     = "https://10.0.10.1:8006"
+  default     = "https://10.0.10.1:8006/api2/json"
 }
 
-variable "proxmox_username" {
-  description = "Utilisateur Proxmox API (format user@realm)"
+variable "proxmox_api_token_id" {
+  description = "ID du token API Proxmox (format: user@realm!tokenid)"
   type        = string
-  default     = "terraform@pve"
   sensitive   = true
 }
 
-variable "proxmox_password" {
-  description = "Mot de passe de l'utilisateur Proxmox API"
+variable "proxmox_api_token_secret" {
+  description = "Secret UUID du token API Proxmox"
   type        = string
   sensitive   = true
 }
@@ -23,19 +22,6 @@ variable "proxmox_insecure" {
   description = "Désactiver la validation TLS (certificat auto-signé en lab)"
   type        = bool
   default     = true
-}
-
-variable "proxmox_ssh_user" {
-  description = "Utilisateur SSH pour les opérations nécessitant un accès direct au nœud"
-  type        = string
-  default     = "root"
-  sensitive   = true
-}
-
-variable "proxmox_ssh_password" {
-  description = "Mot de passe SSH root des nœuds Proxmox"
-  type        = string
-  sensitive   = true
 }
 
 # ── Nœuds du cluster ─────────────────────────────────────────────────────────
@@ -100,55 +86,64 @@ variable "datastore_ceph" {
 
 # ── VMs — paramètres communs ──────────────────────────────────────────────────
 
-variable "vm_default_user" {
-  description = "Utilisateur cloud-init par défaut pour les VMs Linux"
+# ── VMs — déploiement par clone de template ───────────────────────────────────
+
+variable "default_template" {
+  description = "Template à cloner par défaut quand une VM n'en précise pas"
   type        = string
-  default     = "ynov"
+  default     = "tmpl-debian"
+}
+
+# Valeurs cloud-init par défaut (surchargées par VM si besoin)
+variable "ci_default_user" {
+  description = "Utilisateur cloud-init par défaut"
+  type        = string
+  default     = "debian"
+}
+
+variable "ci_default_password" {
+  description = "Mot de passe cloud-init par défaut"
+  type        = string
+  default     = ""
   sensitive   = true
 }
 
-variable "vm_default_password" {
-  description = "Mot de passe cloud-init par défaut (changer en prod)"
+variable "ci_default_ssh_key" {
+  description = "Clé SSH publique par défaut injectée par cloud-init"
   type        = string
-  sensitive   = true
+  default     = ""
 }
 
-variable "vm_ssh_public_key" {
-  description = "Clé SSH publique injectée via cloud-init dans les VMs"
+variable "ci_nameserver" {
+  description = "DNS injecté par cloud-init (séparés par espaces)"
   type        = string
-  sensitive   = true
+  default     = "10.0.10.254 1.1.1.1"
 }
 
-# ── VMs — OPNsense ────────────────────────────────────────────────────────────
-
-variable "opnsense_iso" {
-  description = "Chemin de l'ISO OPNsense sur le stockage Proxmox (ex: local:iso/OPNsense-25.1-dvd-amd64.iso)"
-  type        = string
-  default     = "local:iso/OPNsense-25.1-dvd-amd64.iso"
+variable "vms" {
+  description = "Map des VMs à déployer (clé = identifiant logique)"
+  type = map(object({
+    vm_id     = number
+    name      = string
+    node      = string
+    template  = optional(string)         # défaut: var.default_template
+    cpu_cores = optional(number, 2)
+    memory    = optional(number, 2048)   # Mo
+    disk_size = optional(number, 48)     # Go — doit être >= disque du template (48G)
+    datastore = optional(string)         # défaut: var.datastore_local
+    tags      = optional(list(string), [])
+    networks = optional(list(object({
+      bridge  = optional(string, "vmbr0")
+      model   = optional(string, "virtio")
+      vlan_id = optional(number)
+    })), [])
+    # Cloud-init
+    ipv4_address   = optional(string, "dhcp") # CIDR (ex: 10.0.30.40/24) ou "dhcp"
+    ipv4_gateway   = optional(string, "")
+    ci_user        = optional(string)         # défaut: var.ci_default_user
+    ci_password    = optional(string)         # défaut: var.ci_default_password
+    ssh_public_key = optional(string)         # défaut: var.ci_default_ssh_key
+  }))
+  default = {}
 }
 
-variable "opnsense_node" {
-  description = "Nœud Proxmox hébergeant la VM OPNsense"
-  type        = string
-  default     = "prx3"
-}
-
-# ── VMs — DMZ ─────────────────────────────────────────────────────────────────
-
-variable "cloudflared_node" {
-  description = "Nœud Proxmox hébergeant la VM cloudflared"
-  type        = string
-  default     = "prx3"
-}
-
-variable "rproxy_node" {
-  description = "Nœud Proxmox hébergeant la VM reverse proxy"
-  type        = string
-  default     = "prx3"
-}
-
-variable "linux_cloud_image" {
-  description = "ID de l'image cloud-init Linux (template Debian/Ubuntu à créer au préalable)"
-  type        = string
-  default     = "local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst"
-}
