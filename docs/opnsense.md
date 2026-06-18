@@ -131,7 +131,7 @@ Identifiants par défaut : `admin` / `opnsense`
 
 ### Capture des règles en production
 
-![Règles firewall OPNsense](assets/opnsense-firewall-rules.png)
+![Règles firewall OPNsense](assets/opnsense-firewall-rules-full.png)
 
 ![Preuve firewall](assets/fw.png)
 
