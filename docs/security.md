@@ -74,17 +74,83 @@ Les ports admin (`Et5`, `Et7`) sont en **access VLAN 10** (MGMT). Ils ne peuvent
 
 OPNsense est le seul point de routage entre les VLANs. Sans règle firewall, aucun trafic inter-VLAN n'est possible. La politique par défaut est **deny all** entre VLANs.
 
-**Politique appliquée (Phase 2)** :
+**Politique appliquée** — chaque interface (MGMT, DMZ, SRV) n'autorise que des flux explicites ; tout le reste tombe dans le **deny all** implicite d'OPNsense.
 
-| Flux | Action | Justification |
-|---|---|---|
-| MGMT → tout | ✅ Autorisé | Les administrateurs ont accès à toute l'infrastructure |
-| DMZ → MGMT | ❌ Bloqué | Un service compromis en DMZ ne doit pas atteindre le management |
-| DMZ → SRV | ❌ Bloqué | La DMZ n'accède pas aux services internes directement |
-| DMZ → Internet | ✅ TCP 80/443 uniquement | Les services DMZ ont besoin d'accès sortant |
-| SRV → MGMT | ❌ Bloqué | Les VMs de service n'administrent pas l'infrastructure |
-| SRV → Internet | ✅ TCP 80/443 uniquement | Les services ont besoin de mises à jour et d'accès API |
-| WAN entrant | ❌ Bloqué | Par défaut OPNsense — aucun service exposé directement |
+#### Diagramme des flux autorisés
+
+```mermaid
+flowchart LR
+    classDef mgmt  fill:#1565c0,stroke:#0d47a1,color:#fff
+    classDef dmz   fill:#00838f,stroke:#006064,color:#fff
+    classDef srv   fill:#2e7d32,stroke:#1b5e20,color:#fff
+    classDef svc   fill:#5e35b1,stroke:#4527a0,color:#fff
+    classDef infra fill:#e65c00,stroke:#bf360c,color:#fff
+    classDef wan   fill:#37474f,stroke:#263238,color:#fff
+
+    %% Zones sources
+    MGMT["🛠 MGMT network\nVLAN 10"]:::mgmt
+    BAS["🛡 Bastion\nDMZ · VLAN 20"]:::dmz
+    SRV["🗄 SRV network\nVLAN 30"]:::srv
+
+    %% Destinations
+    ZBX["Zabbix\nsupervision"]:::svc
+    GIT["GitLab\n443"]:::svc
+    AD["AD1 / AD2\nDNS (domain)"]:::infra
+    GUI["OPNsense GUI\nhttps"]:::infra
+    INET["🌐 Internet\n(! IP privées)"]:::wan
+
+    %% MGMT (VLAN 10) -> accès étendu
+    MGMT -->|https| ZBX
+    MGMT -->|tcp/udp 443| GIT
+    MGMT -->|any| BAS
+    MGMT -->|DNS| AD
+    MGMT -->|any| SRV
+    MGMT -->|https admin| GUI
+    MGMT -->|egress| INET
+
+    %% Bastion (DMZ) -> jump host
+    BAS -->|any| SRV
+    BAS -->|DNS| AD
+    BAS -->|egress web| INET
+
+    %% SRV (VLAN 30) -> sortie Internet
+    SRV -->|egress web| INET
+```
+
+#### Règles OPNsense (*Firewall → Rules*)
+
+| # | Interface | Proto | Source | Destination | Service | Description |
+|---|---|---|---|---|---|---|
+| 1 | MGMT | any | MGMT network | Zabbix | https | Accès supervision Zabbix |
+| 2 | MGMT | TCP/UDP | MGMT network | GitLab | https (443) | Accès GitLab |
+| 3 | MGMT | any | MGMT network | Bastion | any | Accès au bastion |
+| 4 | MGMT | TCP/UDP | MGMT network | AD1, AD2 | domain | Résolution DNS / Active Directory |
+| 5 | MGMT | any | MGMT network | SRV network | any | Administration des serveurs |
+| 6 | MGMT | TCP/UDP | MGMT network | MGMT address | https | Interface web OPNsense |
+| 7 | MGMT | TCP/UDP | MGMT network | ! IP_Priv | any | Sortie Internet |
+| 8 | DMZ | any | Bastion | SRV network | any | Bastion → serveurs (jump host PAM) |
+| 9 | DMZ | TCP/UDP | Bastion | AD1, AD2 | domain | Bastion → DNS |
+| 10 | DMZ | any | Bastion | ! IP_Priv | any | Bastion → Internet |
+| 11 | SRV | any | SRV network | ! IP_Priv | any | Serveurs → Internet |
+
+!!! note "Alias `! IP_Priv`"
+    `! IP_Priv` désigne « **tout sauf les plages privées RFC1918** ». Les règles 7, 10 et 11
+    n'autorisent donc que la **sortie Internet** (egress) — elles n'ouvrent **aucun** flux
+    inter-VLAN vers une autre zone interne.
+
+**Principes qui en découlent :**
+
+- **MGMT → tout** : les administrateurs (VLAN 10) atteignent toutes les zones et services.
+- **Bastion → SRV** : seul le **bastion** (PAM / jump host) de la DMZ accède aux serveurs internes ; le reste de la DMZ n'a pas ce droit.
+- **DMZ / SRV → MGMT** : ❌ implicitement bloqué — un service compromis ne peut pas remonter vers le management.
+- **DMZ / SRV → Internet** : autorisé via `! IP_Priv` (mises à jour, API, accès web).
+- **WAN entrant** : ❌ aucun service exposé directement (deny par défaut d'OPNsense).
+
+#### Preuve de configuration
+
+> Export des règles appliquées depuis l'interface OPNsense (*Firewall → Rules* — interfaces MGMT, DMZ et SRV) :
+
+![Règles firewall OPNsense — interfaces MGMT, DMZ (Bastion) et SRV](assets/opnsense-firewall-rules-full.png)
 
 ### Anti-spoofing
 
