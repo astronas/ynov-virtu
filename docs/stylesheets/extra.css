@@ -58,3 +58,254 @@ img[src*="logo_ynov_campus_sophia"] {
   border-radius: 8px;
   padding: 6px 10px;
 }
+
+/* =====================================================================
+   POLISH — palette de marque YNOV, header, cards, tables, code…
+   ===================================================================== */
+
+/* ---- Couleurs de marque (palette "custom" Material) ---------------- */
+:root {
+  --ynov-blue-900: #0d47a1;
+  --ynov-blue-700: #1565c0;
+  --ynov-blue-500: #1e88e5;
+  --ynov-cyan: #29b6f6;
+}
+
+/* Forcé sur toute valeur de l'attribut (custom ET fallback indigo au 1er paint),
+   chargé après le CSS de Material -> le bleu YNOV s'applique toujours. */
+[data-md-color-primary] {
+  --md-primary-fg-color: var(--ynov-blue-700);
+  --md-primary-fg-color--light: var(--ynov-blue-500);
+  --md-primary-fg-color--dark: var(--ynov-blue-900);
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
+}
+
+[data-md-color-accent] {
+  --md-accent-fg-color: var(--ynov-cyan);
+  --md-accent-fg-color--transparent: rgba(41, 182, 246, 0.1);
+}
+
+/* Sélection de texte aux couleurs de marque */
+::selection {
+  background: rgba(30, 136, 229, 0.28);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ---- Header & onglets en dégradé ----------------------------------- */
+.md-header {
+  background: linear-gradient(
+    120deg,
+    var(--ynov-blue-900) 0%,
+    var(--ynov-blue-700) 55%,
+    var(--ynov-blue-500) 100%
+  );
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+.md-tabs {
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Logo YNOV (noir) -> blanc pour rester lisible sur le header bleu */
+.md-header__button.md-logo img {
+  filter: brightness(0) invert(1);
+  height: 1.5rem;
+}
+
+/* Onglet de navigation actif souligné */
+.md-tabs__link {
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+.md-tabs__link:hover,
+.md-tabs__link--active {
+  opacity: 1;
+}
+
+/* ---- Bannière d'annonce -------------------------------------------- */
+.md-banner {
+  background: linear-gradient(90deg, var(--ynov-blue-900), var(--ynov-blue-700));
+  color: #fff;
+}
+.md-banner__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+}
+.ynov-announce-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  color: #fff !important;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.ynov-announce-link:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+.ynov-announce-link svg {
+  height: 0.9em;
+  width: 0.9em;
+  fill: currentColor;
+}
+
+/* ---- Titres -------------------------------------------------------- */
+.md-typeset h1 {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.md-typeset h2 {
+  font-weight: 700;
+  padding-bottom: 0.2em;
+  border-bottom: 2px solid var(--md-default-fg-color--lightest);
+}
+.md-typeset h2::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 1.1em;
+  margin-right: 0.5rem;
+  vertical-align: -0.18em;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--ynov-blue-500), var(--ynov-cyan));
+}
+
+/* ---- Cartes de navigation (grid cards) ----------------------------- */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid > .card:hover {
+  transform: translateY(-4px);
+  border-color: var(--ynov-blue-500);
+  box-shadow: 0 10px 26px rgba(13, 71, 161, 0.18);
+}
+.md-typeset .grid.cards .twemoji,
+.md-typeset .grid.cards :is(.lg, .xl) {
+  color: var(--ynov-blue-500);
+}
+
+/* ---- Boutons ------------------------------------------------------- */
+.md-typeset .md-button {
+  border-radius: 999px;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.md-typeset .md-button--primary {
+  background: var(--ynov-blue-700);
+  border-color: var(--ynov-blue-700);
+}
+.md-typeset .md-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(13, 71, 161, 0.25);
+}
+
+/* ---- Tableaux ------------------------------------------------------ */
+.md-typeset table:not([class]) {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+.md-typeset table:not([class]) th {
+  background: var(--md-primary-fg-color);
+  color: #fff;
+  font-weight: 600;
+}
+.md-typeset table:not([class]) tr:hover td {
+  background: var(--md-accent-fg-color--transparent);
+}
+
+/* ---- Blocs de code ------------------------------------------------- */
+.md-typeset pre > code,
+.md-typeset .highlight {
+  border-radius: 10px;
+}
+.md-typeset .highlight {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ---- Admonitions / détails ---------------------------------------- */
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 10px;
+  border-left-width: 4px;
+}
+
+/* ---- Liens contenus ------------------------------------------------ */
+.md-typeset a {
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+.md-typeset a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--md-accent-fg-color);
+}
+
+/* ---- Mermaid centré ------------------------------------------------ */
+.md-typeset .mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 1.2em 0;
+}
+
+/* ---- Barre de défilement personnalisée ----------------------------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ynov-blue-500) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--ynov-blue-500);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ynov-blue-700);
+  background-clip: content-box;
+}
+
+/* ---- Pied de page -------------------------------------------------- */
+.md-footer-meta {
+  background: var(--ynov-blue-900);
+}
+
+/* ---- "Dernière mise à jour" (git-revision-date) -------------------- */
+.md-source-file__fact {
+  font-size: 0.66rem;
+}
+
+/* ---- Accessibilité : respect de prefers-reduced-motion ------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .md-typeset .grid.cards > ul > li:hover,
+  .md-typeset .grid > .card:hover,
+  .md-typeset .md-button:hover,
+  .ynov-announce-link:hover {
+    transform: none;
+  }
+}
