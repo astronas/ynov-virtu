@@ -16,3 +16,6 @@ ansible/ansible.log
 
 # Variables locales (peuvent contenir des secrets) — garder les .example
 **/terraform.tfvars
+
+# Sortie de build MkDocs
+site/

@@ -141,19 +141,97 @@ ansible-playbook playbooks/roles.yml
 
 ## Navigation
 
-| Section | Description |
-|---------|-------------|
-| [Architecture](architecture.md) | Topologie complète, rôles des composants, décisions de design |
-| [Plan réseau & VLANs](network-plan.md) | IPs, VLANs, affectation des ports switch |
-| [Proxmox VE](proxmox.md) | Installation, cluster, bridges, interfaces |
-| [Ceph](ceph.md) | Déploiement OSD/MON/MGR, pools, bench |
-| [OPNsense](opnsense.md) | VM, interfaces, firewall, NAT, DNS |
-| [NAT Windows](windows-nat.md) | Passerelle Wi-Fi→Ethernet, PowerShell |
-| [OpenTofu & cloud-init](opentofu.md) | Provisionnement des VMs (template, provider, variables) |
-| [Configuration Ansible](ansible.md) | Socle, rôles, JumpServer, supervision Zabbix |
-| [Sécurité](security.md) | Politique inter-VLAN, VLAN 4094, hardening |
-| [Dépannage](troubleshooting.md) | Problèmes rencontrés et résolutions |
-| [Tests réseau](network-tests.md) | Matrice de validation complète |
+<div class="grid cards" markdown>
+
+-   :material-sitemap:{ .lg .middle } **Architecture**
+
+    ---
+
+    Topologie complète, rôles des composants et décisions de design.
+
+    [:octicons-arrow-right-24: Vue d'ensemble](architecture.md)
+
+-   :material-ip-network:{ .lg .middle } **Plan réseau & VLANs**
+
+    ---
+
+    Adressage IP, VLANs et affectation des ports switch.
+
+    [:octicons-arrow-right-24: Plan réseau](network-plan.md)
+
+-   :material-server:{ .lg .middle } **Proxmox VE**
+
+    ---
+
+    Installation, cluster 3 nœuds, bridges et interfaces.
+
+    [:octicons-arrow-right-24: Proxmox](proxmox.md)
+
+-   :material-database:{ .lg .middle } **Ceph**
+
+    ---
+
+    Déploiement OSD / MON / MGR, pools et benchmarks.
+
+    [:octicons-arrow-right-24: Ceph](ceph.md)
+
+-   :material-shield-lock:{ .lg .middle } **OPNsense**
+
+    ---
+
+    VM, interfaces, firewall, NAT et DNS.
+
+    [:octicons-arrow-right-24: OPNsense](opnsense.md)
+
+-   :material-microsoft-windows:{ .lg .middle } **NAT Windows**
+
+    ---
+
+    Passerelle WAN Wi-Fi → Ethernet en PowerShell.
+
+    [:octicons-arrow-right-24: NAT Windows](windows-nat.md)
+
+-   :material-cloud-upload:{ .lg .middle } **OpenTofu & cloud-init**
+
+    ---
+
+    Provisionnement des VMs : template, provider, variables.
+
+    [:octicons-arrow-right-24: OpenTofu](opentofu.md)
+
+-   :material-cog-sync:{ .lg .middle } **Configuration Ansible**
+
+    ---
+
+    Socle, rôles, bastion JumpServer et supervision Zabbix.
+
+    [:octicons-arrow-right-24: Ansible](ansible.md)
+
+-   :material-lock-check:{ .lg .middle } **Sécurité**
+
+    ---
+
+    Politique inter-VLAN, VLAN 4094 blackhole, hardening.
+
+    [:octicons-arrow-right-24: Sécurité](security.md)
+
+-   :material-wrench:{ .lg .middle } **Dépannage**
+
+    ---
+
+    Problèmes rencontrés et résolutions.
+
+    [:octicons-arrow-right-24: Dépannage](troubleshooting.md)
+
+-   :material-lan-connect:{ .lg .middle } **Tests réseau**
+
+    ---
+
+    Matrice de validation réseau complète.
+
+    [:octicons-arrow-right-24: Tests réseau](network-tests.md)
+
+</div>
 
 ---
 

@@ -1,45 +1,70 @@
 site_name: YNOV-VIRTU — Lab d'infrastructure virtualisée
 site_description: "Lab Proxmox 3 nœuds · OPNsense · Ceph · Arista 7050TX-64 — VMs déployées en IaC (OpenTofu + cloud-init + Ansible) : bastion JumpServer, web, db, supervision Zabbix"
-site_author: YNOV Campus
+site_author: YNOV Campus Sophia-Antipolis
+site_url: https://astronas.github.io/ynov-virtu/
 repo_url: https://github.com/astronas/ynov-virtu
-repo_name: ynov-virtu
+repo_name: astronas/ynov-virtu
 edit_uri: edit/main/docs/
-
-extra_css:
-  - stylesheets/extra.css
+copyright: >
+  Copyright © 2026 YNOV Campus Sophia-Antipolis — M1 Expert Cloud, Sécurité & Infrastructure
 
 docs_dir: docs
 site_dir: site
 
+extra_css:
+  - stylesheets/extra.css
+
 theme:
   name: material
   language: fr
+  custom_dir: overrides
+  logo: assets/logo_ynov_campus_sophia.png
+  favicon: assets/favicon.svg
+  font:
+    text: Inter
+    code: JetBrains Mono
   palette:
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: blue
-      accent: light blue
+    - media: "(prefers-color-scheme)"
       toggle:
-        icon: material/brightness-4
-        name: Passer en mode clair
+        icon: material/brightness-auto
+        name: Basculer en mode clair
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: blue
-      accent: light blue
+      primary: custom
+      accent: custom
       toggle:
-        icon: material/brightness-7
-        name: Passer en mode sombre
+        icon: material/weather-sunny
+        name: Basculer en mode sombre
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Suivre le système
   features:
+    - announce.dismiss
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
+    - navigation.indexes
     - navigation.top
-    - toc.integrate
+    - navigation.footer
+    - toc.follow
     - search.suggest
     - search.highlight
+    - search.share
     - content.code.copy
     - content.code.annotate
+    - content.code.select
+    - content.tooltips
   icon:
     repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
 
 nav:
   - Accueil: index.md
@@ -59,8 +84,11 @@ nav:
   - Tests réseau: network-tests.md
 
 markdown_extensions:
+  - abbr
   - admonition
   - attr_list
+  - def_list
+  - footnotes
   - md_in_html
   - tables
   - toc:
@@ -80,6 +108,14 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.details
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.caret
+  - pymdownx.tilde
+  - pymdownx.smartsymbols
+  - pymdownx.critic
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
@@ -87,8 +123,24 @@ markdown_extensions:
 plugins:
   - search:
       lang: fr
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+  - git-revision-date-localized:
+      type: timeago
+      enable_creation_date: true
+      fallback_to_build_date: true
+      locale: fr
 
 extra:
+  generator: false
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/astronas/ynov-virtu
+      name: Dépôt GitHub du projet
+    - icon: fontawesome/solid/graduation-cap
+      link: https://www.ynov.com
+      name: YNOV Campus
