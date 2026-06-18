@@ -1,3 +1,9 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
 <div align="center">
   <img src="assets/logo_ynov_campus_sophia.png" alt="YNOV Campus Sophia-Antipolis" height="72">
 </div>
