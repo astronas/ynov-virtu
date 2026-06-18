@@ -1,0 +1,23 @@
+---
+# Variables du role jumpserver (astronas/jumpserver) — bastion / PAM
+# Deploiement via docker compose v2 (le role n'execute plus jmsctl.sh).
+jumpserver_version: v4.10.16
+jumpserver_install_mode: online
+
+# ── Secrets OBLIGATOIRES (assert length > 0 dans configure.yml) ──────────────
+# Generes une fois (openssl rand -hex 32 / 16) — NE PLUS LES CHANGER, sinon les
+# sessions et donnees chiffrees deviennent illisibles.
+# TODO: a deplacer dans un vault.yml chiffre.
+jumpserver_secret_key: "19d7fe72d988b6fb1fe67b1b2ef65983927b6770257993c46ea4c52c42667eca"
+jumpserver_bootstrap_token: "3e8303e3a0898176f5079074327c297b"
+
+# ── Base de donnees + Redis (conteneurs embarques, valeurs par defaut) ───────
+# db_host=postgresql / redis_host=redis => le role deploie les conteneurs dedies.
+# TODO: a chiffrer avec ansible-vault.
+jumpserver_db_password: "CHANGE_ME_js_db"
+jumpserver_redis_password: "CHANGE_ME_js_redis"
+
+# ── Ports exposes par le bastion ─────────────────────────────────────────────
+jumpserver_http_port: 80
+jumpserver_ssh_port: 2222     # acces SSH via le proxy KoKo
+jumpserver_rdp_port: 3389     # acces RDP via le proxy Lion

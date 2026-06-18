@@ -1,0 +1,29 @@
+---
+# The installer tarball is used purely as a source of declarative data:
+# its compose/*.yml definitions and config_init/ files. No script from it is
+# ever executed — the stack is brought up via community.docker.docker_compose_v2.
+- name: "[online] Download JumpServer installer tarball from GitHub"
+  get_url:
+    url: "{{ jumpserver_download_url }}"
+    dest: "{{ jumpserver_install_path }}/{{ jumpserver_tarball_name }}"
+    mode: "0644"
+  when: jumpserver_install_mode == "online"
+
+- name: "[offline] Copy JumpServer installer tarball from Ansible controller"
+  copy:
+    src: "{{ jumpserver_offline_pkg_src }}"
+    dest: "{{ jumpserver_install_path }}/{{ jumpserver_tarball_name }}"
+    mode: "0644"
+  when: jumpserver_install_mode == "offline"
+
+- name: Check if installer directory already exists
+  stat:
+    path: "{{ jumpserver_installer_dir }}"
+  register: _installer_dir
+
+- name: Extract installer tarball (compose files + config_init only)
+  unarchive:
+    src: "{{ jumpserver_install_path }}/{{ jumpserver_tarball_name }}"
+    dest: "{{ jumpserver_install_path }}"
+    remote_src: true
+  when: not _installer_dir.stat.exists

@@ -1,0 +1,11 @@
+---
+- name: Installer les outils d'administration du bastion
+  ansible.builtin.apt:
+    name:
+      - openssh-client
+      - nmap
+      - tcpdump
+      - mtr-tiny
+    state: present
+    update_cache: true
+

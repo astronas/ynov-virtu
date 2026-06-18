@@ -1,0 +1,37 @@
+---
+- name: Installer les paquets du socle
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - vim
+      - git
+      - htop
+      - rsyslog
+      - chrony
+      - qemu-guest-agent
+    state: present
+    update_cache: true
+
+- name: Activer les services communs
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - rsyslog
+    - chrony
+    - qemu-guest-agent
+
+- name: Durcir SSH avec une configuration commune
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/99-workshop.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication yes
+      PubkeyAuthentication yes
+  notify: Restart ssh
+

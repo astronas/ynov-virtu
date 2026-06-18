@@ -1,0 +1,54 @@
+---
+- name: Assert required secrets are set
+  assert:
+    that:
+      - jumpserver_secret_key | length > 0
+      - jumpserver_bootstrap_token | length > 0
+    fail_msg: >-
+      jumpserver_secret_key and jumpserver_bootstrap_token must be set (via
+      vault.yml). Generate them once with `openssl rand -hex 32` /
+      `openssl rand -hex 16` and keep them stable across runs.
+
+- name: Ensure JumpServer config directory exists
+  file:
+    path: "{{ jumpserver_config_dir }}"
+    state: directory
+    mode: "0700"
+
+- name: Ensure certs directory exists (for Redis/HTTPS TLS)
+  file:
+    path: "{{ jumpserver_config_dir }}/certs"
+    state: directory
+    mode: "0700"
+
+- name: Seed config_init files (nginx, redis, db configs) into the config dir
+  # NB: ansible.builtin.copy + remote_src ne copie PAS recursivement les sous-dossiers
+  # (limitation connue du module) -> redis/redis.conf & co n'etaient jamais seedes,
+  # d'ou l'echec "redis.conf is absent". On passe par cp -a (recursif + preserve
+  # perms/owner) ; -n = ne clobber jamais un fichier deja personnalise (equivalent
+  # de l'ancien force: false). `creates` rend la tache idempotente (seed une fois).
+  command:
+    cmd: cp -an {{ jumpserver_installer_dir }}/config_init/. {{ jumpserver_config_dir }}/
+    creates: "{{ jumpserver_config_dir }}/redis/redis.conf"
+
+- name: Template JumpServer config.txt
+  template:
+    src: config.txt.j2
+    dest: "{{ jumpserver_config_dir }}/config.txt"
+    mode: "0600"
+  notify: restart jumpserver
+
+- name: Ensure bundled redis.conf is readable by the redis container
+  file:
+    path: "{{ jumpserver_config_dir }}/redis/redis.conf"
+    mode: "0644"
+  when: jumpserver_redis_host == 'redis'
+
+# docker compose reads its substitution variables from a .env file in the
+# project directory. Point it at config.txt, exactly like the upstream installer.
+- name: Link config.txt as the docker compose .env file
+  file:
+    src: "{{ jumpserver_config_dir }}/config.txt"
+    dest: "{{ jumpserver_installer_dir }}/.env"
+    state: link
+    force: true

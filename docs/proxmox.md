@@ -241,4 +241,4 @@ dmesg | grep -i lacp
 - [configs/proxmox/](../configs/proxmox/) — Fichiers `/etc/network/interfaces` exemple
 - [docs/ceph.md](ceph.md) — Déploiement Ceph
 - [docs/opnsense.md](opnsense.md) — VM OPNsense
-- [scripts/network-tests.md](../scripts/network-tests.md) — Commandes de validation
+- [Tests réseau](network-tests.md) — Commandes de validation

@@ -1,0 +1,36 @@
+---
+- import_playbook: socle.yml   # socle commun (role common) sur tous les hotes
+
+- name: Configurer le bastion
+  hosts: bastion
+  become: true
+  roles:
+    - bastion       # local : outils d'admin (nmap, tcpdump, mtr...)
+    - docker        # local : Docker Engine + Compose (requis par JumpServer)
+    - jumpserver    # astronas/jumpserver : PAM/bastion conteneurise (Docker)
+
+# IMPORTANT : la supervision est configuree AVANT les hotes web/db, car ces
+# derniers s'enregistrent sur le serveur via l'API (zabbix_api_create_hosts) ;
+# l'API/frontend doit donc deja tourner.
+- name: Configurer la supervision (serveur Zabbix)
+  hosts: zabbix
+  become: true
+  roles:
+    - zabbix                           # local : MariaDB + client PyMySQL (prerequis)
+    - community.zabbix.zabbix_server   # serveur Zabbix (backend MySQL)
+    - community.zabbix.zabbix_web      # frontend nginx + php-fpm
+    - community.zabbix.zabbix_agent    # agent local (auto-supervision de l'hote)
+
+- name: Configurer le frontal web + agent Zabbix
+  hosts: web
+  become: true
+  roles:
+    - web
+    - community.zabbix.zabbix_agent    # agent + enregistrement auto sur le serveur
+
+- name: Configurer la base de donnees + agent Zabbix
+  hosts: db
+  become: true
+  roles:
+    - db
+    - community.zabbix.zabbix_agent    # agent + enregistrement auto sur le serveur

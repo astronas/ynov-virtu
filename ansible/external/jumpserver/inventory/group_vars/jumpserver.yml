@@ -1,0 +1,5 @@
+---
+# Override role defaults here for this environment.
+# Secrets (db/redis passwords) must be stored in vault.yml.
+jumpserver_version: "v4.10.16"
+jumpserver_install_mode: online  # online | offline

@@ -1,0 +1,19 @@
+---
+- name: Installer le frontal web PHP
+  ansible.builtin.apt:
+    name:
+      - nginx
+      - php-fpm
+      - php-mysql
+      - php-cli
+    state: present
+    update_cache: true
+
+- name: Creer l'arborescence applicative
+  ansible.builtin.file:
+    path: /var/www/app
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+

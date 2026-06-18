@@ -1,0 +1,15 @@
+#cloud-config
+hostname: bastion
+manage_etc_hosts: true
+package_update: true
+packages:
+  - qemu-guest-agent
+  - curl
+  - vim
+  - git
+  - rsync
+  - net-tools
+  - dnsutils
+  - htop
+runcmd:
+  - systemctl enable --now qemu-guest-agent

@@ -1,20 +1,21 @@
 ---
-# Collections Ansible requises
-# Installer avec : ansible-galaxy collection install -r requirements.yml
-
+# Installer avec :
+#   ANSIBLE_CONFIG=./ansible.cfg ansible-galaxy collection install -r requirements.yml
 collections:
-  # Collection officielle Arista EOS — switch management
-  - name: arista.eos
-    version: ">=6.0.0"
-
-  # Collection communautaire générale (modules divers)
-  - name: community.general
-    version: ">=9.0.0"
-
-  # Collection Windows (WinRM — NAT Windows)
-  - name: ansible.windows
-    version: ">=2.0.0"
-
-  # Collection pour les posix (gestion fichiers, templates)
+  # Debian 13 (Trixie) n'est supporté que sur la branche `main` upstream : aucune
+  # release ne l'a encore (la 4.2.0, dernière en date, ne connaît que Debian 11/12
+  # -> erreur "'dict object' has no attribute '13'"). On épingle donc un commit de
+  # main qui contient le support Debian-13 (rôles zabbix_server + zabbix_agent).
+  - name: https://github.com/ansible-collections/community.zabbix.git
+    type: git
+    version: 4486daa7615aec3554313ae3638129387a07dd61  # main @ 2026-06-03
+  # Dépendances des rôles zabbix_server / zabbix_web (backend MySQL/MariaDB)
+  - name: community.mysql
   - name: ansible.posix
-    version: ">=1.5.0"
+  - name: community.general
+  - name: ansible.netcommon   # requis par le role zabbix_agent
+  # Requis par astronas/jumpserver (deploiement via docker compose v2)
+  # <5.0.0 : community.docker 5.x exige ansible-core >=2.17, or le controleur est
+  # en 2.16.3 -> on reste sur la branche 4.x (4.8.7 : requires_ansible >=2.15).
+  - name: community.docker
+    version: ">=3.6.0,<5.0.0"

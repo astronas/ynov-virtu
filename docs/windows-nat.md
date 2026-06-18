@@ -70,7 +70,7 @@ Set-NetIPInterface -InterfaceAlias "Ethernet" -Forwarding Enabled
 Set-NetIPInterface -InterfaceAlias "Wi-Fi" -Forwarding Enabled
 ```
 
-> Utiliser le **script complet** pour une mise en place robuste : [scripts/windows-nat-setup.ps1](../scripts/windows-nat-setup.ps1)
+> Script de référence : [configs/windows/nat-powershell.ps1](../configs/windows/nat-powershell.ps1)
 
 ---
 
@@ -118,7 +118,7 @@ Set-NetIPInterface -InterfaceAlias "Ethernet" -Forwarding Disabled
 Set-NetIPInterface -InterfaceAlias "Wi-Fi" -Forwarding Disabled
 ```
 
-Script complet : [scripts/windows-nat-cleanup.ps1](../scripts/windows-nat-cleanup.ps1)
+Script de référence : [configs/windows/nat-powershell.ps1](../configs/windows/nat-powershell.ps1)
 
 ---
 
@@ -157,6 +157,5 @@ Set-NetIPInterface -InterfaceAlias "Ethernet" -InterfaceMetric 1000
 
 ## Voir aussi
 
-- [scripts/windows-nat-setup.ps1](../scripts/windows-nat-setup.ps1) — Script complet de mise en place
-- [scripts/windows-nat-cleanup.ps1](../scripts/windows-nat-cleanup.ps1) — Script de nettoyage
+- [configs/windows/nat-powershell.ps1](../configs/windows/nat-powershell.ps1) — Script PowerShell de référence (NAT)
 - [docs/troubleshooting.md](troubleshooting.md) — Résolution de problèmes

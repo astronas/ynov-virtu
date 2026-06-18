@@ -1,0 +1,6 @@
+---
+- name: Deploy JumpServer
+  hosts: jumpserver
+  become: true
+  roles:
+    - jumpserver

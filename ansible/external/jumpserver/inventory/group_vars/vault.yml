@@ -1,0 +1,12 @@
+---
+# Encrypt this file with: ansible-vault encrypt inventory/group_vars/vault.yml
+# Then reference it via: ansible-playbook site.yml --ask-vault-pass
+
+jumpserver_db_password: "CHANGE_ME"
+jumpserver_redis_password: "CHANGE_ME"
+
+# Required and must stay stable across runs. Generate once:
+#   openssl rand -hex 32   (secret key)
+#   openssl rand -hex 16   (bootstrap token)
+jumpserver_secret_key: "CHANGE_ME"
+jumpserver_bootstrap_token: "CHANGE_ME"
