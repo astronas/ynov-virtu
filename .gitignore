@@ -1,0 +1,18 @@
+# --- Caches & artefacts régénérables (hors versionnement) ---
+
+# Collections Ansible installées localement (contiennent des symlinks
+# non supportés par git sous Windows). Régénérables via :
+#   ansible-galaxy collection install -r ansible/requirements.yml
+ansible/collections/
+
+# Logs de run Ansible (log_path dans ansible.cfg)
+ansible/ansible.log
+**/ansible-navigator.log
+
+# État et cache de providers OpenTofu / Terraform (le .lock.hcl reste suivi)
+**/.terraform/
+*.tfstate
+*.tfstate.*
+
+# Variables locales (peuvent contenir des secrets) — garder les .example
+**/terraform.tfvars
