@@ -8,7 +8,8 @@
 > <img src="assets/logo_ynov_campus_sophia.png" class="inline-logo-ynov" alt="YNOV Campus Sophia-Antipolis"> YNOV Campus Sophia-Antipolis
 
 Lab orienté entreprise basé sur **Proxmox VE** <img src="assets/logos/proxmox.png" class="inline-logo" alt="">, **OPNsense** <img src="assets/logos/opnsense.svg" class="inline-logo" alt="">, **Ceph** <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> et un switch **Arista 7050TX-64** <img src="assets/logos/arista.png" class="inline-logo" alt="">.  
-Le repo couvre toute la stack : documentation, configs réseau, IaC (**Terraform** <img src="assets/logos/terraform.svg" class="inline-logo" alt=""> + **Ansible** <img src="assets/logos/ansible.svg" class="inline-logo" alt="">) et **GitHub** Pages <img src="assets/logos/github.svg" class="inline-logo" alt="">.
+Par-dessus cet underlay physique, une **couche workload** (bastion JumpServer, web, db, supervision Zabbix) est déployée en IaC : **OpenTofu** <img src="assets/logos/terraform.svg" class="inline-logo" alt=""> + **cloud-init** + **Ansible** <img src="assets/logos/ansible.svg" class="inline-logo" alt="">.  
+Le repo couvre toute la stack : documentation, configs réseau, IaC et **GitHub** Pages <img src="assets/logos/github.svg" class="inline-logo" alt="">.
 
 ---
 
@@ -103,26 +104,38 @@ graph TD
 
 ---
 
+## Couche workload (VMs)
+
+| VM | Rôle | VLAN | IP |
+|----|------|------|----|
+| **bastion** | JumpServer (PAM) + outils d'admin | 20 — DMZ | `10.0.20.1` |
+| **web** | Frontal nginx + php-fpm | 30 — SRV-LAN | `10.0.30.4` |
+| **db** | Base de données MariaDB | 30 — SRV-LAN | `10.0.30.5` |
+| **zabbix** | Supervision (serveur + web + MariaDB) | 30 — SRV-LAN | `10.0.30.6` |
+
+---
+
 ## Quickstart
 
 ```bash
 # 1. Cloner le repo
 git clone https://github.com/astronas/ynov-virtu && cd ynov-virtu
 
-# 2. Installer les collections Ansible
-ansible-galaxy collection install -r ansible/requirements.yml
+# 2. Provisionner les VMs avec OpenTofu (clone du template cloud-init)
+cd opentofu
+cp terraform.tfvars.example terraform.tfvars   # API Proxmox, node, template, réseau
+tofu init && tofu apply
+cd ..
 
-# 3. Initialiser Terraform
-cd terraform/proxmox
-cp terraform.tfvars.example terraform.tfvars  # remplir les variables
-terraform init && terraform plan
+# 3. Installer les collections + rôle externe Ansible
+cd ansible
+ANSIBLE_CONFIG=./ansible.cfg ansible-galaxy collection install -r requirements.yml
 
-# 4. Déployer le switch Arista
-ansible-playbook ansible/playbooks/arista-network.yml
-
-# 5. Configurer les nœuds Proxmox + Ceph
-ansible-playbook ansible/playbooks/site.yml --tags proxmox,ceph
+# 4. Configurer les VMs (socle commun + rôles + services)
+ansible-playbook playbooks/roles.yml
 ```
+
+> Détails : [OpenTofu & cloud-init](opentofu.md) · [Configuration Ansible](ansible.md)
 
 ---
 
@@ -136,6 +149,8 @@ ansible-playbook ansible/playbooks/site.yml --tags proxmox,ceph
 | [Ceph](ceph.md) | Déploiement OSD/MON/MGR, pools, bench |
 | [OPNsense](opnsense.md) | VM, interfaces, firewall, NAT, DNS |
 | [NAT Windows](windows-nat.md) | Passerelle Wi-Fi→Ethernet, PowerShell |
+| [OpenTofu & cloud-init](opentofu.md) | Provisionnement des VMs (template, provider, variables) |
+| [Configuration Ansible](ansible.md) | Socle, rôles, JumpServer, supervision Zabbix |
 | [Sécurité](security.md) | Politique inter-VLAN, VLAN 4094, hardening |
 | [Dépannage](troubleshooting.md) | Problèmes rencontrés et résolutions |
 | [Tests réseau](network-tests.md) | Matrice de validation complète |

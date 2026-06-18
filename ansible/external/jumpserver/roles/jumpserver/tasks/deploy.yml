@@ -1,0 +1,48 @@
+---
+# Build the list of compose files to apply, mirroring the upstream installer's
+# service-selection logic (get_docker_compose_cmd_line) but driven by variables.
+- name: Build docker compose file list
+  set_fact:
+    jumpserver_compose_files: "{{ _net + _core + _redis + _db + _lb + _es + _minio + _loki }}"
+  vars:
+    _net: "{{ ['compose/network-v6.yml'] if jumpserver_use_ipv6 else ['compose/network.yml'] }}"
+    _core:
+      - compose/core.yml
+      - compose/celery.yml
+      - compose/koko.yml
+      - compose/lion.yml
+      - compose/chen.yml
+      - compose/web.yml
+    _redis: "{{ ['compose/redis.yml'] if jumpserver_redis_host == 'redis' else [] }}"
+    _db: >-
+      {{ ['compose/postgres.yml'] if (jumpserver_db_engine == 'postgresql' and jumpserver_db_host == 'postgresql')
+         else (['compose/mysql.yml'] if (jumpserver_db_engine == 'mysql' and jumpserver_db_host == 'mysql') else []) }}
+    _lb: "{{ ['compose/lb.yml'] if jumpserver_https_enabled else [] }}"
+    _es: "{{ ['compose/es.yml'] if jumpserver_use_es else [] }}"
+    _minio: "{{ ['compose/minio.yml'] if jumpserver_use_minio else [] }}"
+    _loki: "{{ ['compose/loki.yml'] if jumpserver_use_loki else [] }}"
+
+- name: Add receptor service (when enabled)
+  set_fact:
+    jumpserver_compose_files: "{{ jumpserver_compose_files + ['compose/receptor.yml'] }}"
+  when: jumpserver_receptor_enabled
+
+- name: Deploy JumpServer stack (docker compose up -d)
+  community.docker.docker_compose_v2:
+    project_src: "{{ jumpserver_installer_dir }}"
+    project_name: jms
+    files: "{{ jumpserver_compose_files }}"
+    state: present
+    pull: missing
+  environment: "{{ jumpserver_compose_env }}"
+  register: _compose_up
+
+- name: Show docker compose result
+  debug:
+    msg: "{{ _compose_up.actions | default([]) }}"
+
+- name: Wait for the JumpServer web port to accept connections
+  wait_for:
+    host: 127.0.0.1
+    port: "{{ jumpserver_https_port if jumpserver_https_enabled else jumpserver_http_port }}"
+    timeout: 300

@@ -1,0 +1,32 @@
+---
+# Agent Zabbix sur les hotes supervises (web, db).
+# S'applique au groupe [agents:children] defini dans hosts.ini.
+
+# ===== Agent (agent2) =====
+zabbix_agent2: true
+zabbix_agent_version: "7.0"          # aligne sur le serveur (group_vars/zabbix.yml)
+
+# Serveur Zabbix : verifications passives (Server=) ET actives (ServerActive=)
+zabbix_agent_server: "10.0.30.6"
+zabbix_agent_serveractive: "10.0.30.6"
+
+# IP declaree par l'agent (sert aussi a l'interface creee sur le serveur)
+zabbix_agent_listenip: "{{ ansible_host }}"
+# zabbix_agent_hostname vaut "{{ inventory_hostname }}" par defaut -> "web" / "db"
+
+# ===== Provisionnement automatique de l'hote sur le serveur (API Zabbix) =====
+# Chaque hote s'enregistre tout seul aupres du serveur apres installation de l'agent.
+zabbix_api_create_hosts: true
+zabbix_api_server_host: "10.0.30.6"  # frontend nginx (zabbix_web) sur l'hote zabbix
+zabbix_api_use_ssl: false
+zabbix_api_server_port: "80"
+zabbix_api_login_user: Admin
+# Mot de passe de l'utilisateur Admin du frontend (valeur par defaut a la 1ere install).
+# TODO: a chiffrer avec ansible-vault (cf. group_vars/zabbix.yml).
+zabbix_api_login_pass: "zabbix"
+
+# Groupe d'hotes + template lies a l'hote cree
+zabbix_host_groups:
+  - Linux servers
+zabbix_agent_link_templates:
+  - Linux by Zabbix agent

@@ -1,0 +1,14 @@
+#cloud-config
+hostname: web
+manage_etc_hosts: true
+package_update: true
+packages:
+  - qemu-guest-agent
+  - nginx
+  - php-fpm
+  - php-mysql
+  - php-cli
+runcmd:
+  - systemctl enable --now qemu-guest-agent
+  - mkdir -p /var/www/app
+

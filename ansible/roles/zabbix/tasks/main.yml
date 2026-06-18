@@ -1,0 +1,36 @@
+---
+# Prérequis pour les rôles community.zabbix.zabbix_server / zabbix_web.
+# La base de données tourne en local sur l'hôte zabbix (backend MariaDB).
+- name: Installer le serveur de base de donnees local et le client Python MySQL
+  ansible.builtin.apt:
+    name:
+      - mariadb-server
+      - python3-pymysql   # requis par community.mysql pour creer la base/utilisateur
+      - gnupg
+      - curl
+    state: present
+    update_cache: true
+
+- name: S'assurer que MariaDB est demarre et active
+  ansible.builtin.service:
+    name: mariadb
+    state: started
+    enabled: true
+
+# Contournement d'un bug de community.zabbix (branche main) : la tache
+# "MySQL | Register active MySQL authentication plugins" (initialize-mysql.yml)
+# omet `login_unix_socket` et se connecte donc en TCP comme root -> echec
+# "1698 Access denied for user 'root'@'localhost'" (sur Debian, le root MariaDB
+# utilise l'auth unix_socket, sans mot de passe). En posant le socket dans
+# /root/.my.cnf, tous les modules community.mysql lances en root le lisent par
+# defaut (read_default_file) et passent par le socket. Sert aussi de filet de
+# securite pour toute autre tache qui omettrait le socket.
+- name: Fournir le socket MariaDB par defaut a root (/root/.my.cnf)
+  ansible.builtin.copy:
+    dest: /root/.my.cnf
+    content: |
+      [client]
+      socket={{ zabbix_server_mysql_login_unix_socket | default('/run/mysqld/mysqld.sock') }}
+    owner: root
+    group: root
+    mode: "0600"

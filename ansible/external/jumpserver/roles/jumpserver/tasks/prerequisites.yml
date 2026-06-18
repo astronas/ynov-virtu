@@ -1,0 +1,48 @@
+---
+- name: Assert architecture is x86_64
+  assert:
+    that: ansible_architecture == "x86_64"
+    fail_msg: "JumpServer only supports x86_64 (got {{ ansible_architecture }})"
+
+- name: Extract numeric kernel version
+  set_fact:
+    _kernel_numeric: "{{ ansible_kernel.split('-')[0] }}"
+
+- name: Assert Linux kernel >= 4.0
+  assert:
+    that: _kernel_numeric is version('4.0', '>=')
+    fail_msg: "JumpServer requires kernel >= 4.0 (got {{ ansible_kernel }})"
+
+- name: Install prerequisite packages (Debian/Ubuntu)
+  apt:
+    name: [tar]
+    state: present
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+- name: Install prerequisite packages (RedHat/CentOS)
+  dnf:
+    name: [tar]
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Check Docker Engine and the compose v2 plugin are available
+  command: docker compose version
+  register: _docker_compose_check
+  changed_when: false
+  failed_when: false
+
+- name: Assert Docker Engine and the compose v2 plugin are installed
+  assert:
+    that: _docker_compose_check.rc == 0
+    fail_msg: >-
+      Docker Engine with the 'docker compose' v2 plugin is required on the target
+      but was not found ('docker compose version' returned
+      {{ _docker_compose_check.rc }}). Install Docker + the compose plugin before
+      running this role.
+
+- name: Ensure /opt exists
+  file:
+    path: "{{ jumpserver_install_path }}"
+    state: directory
+    mode: "0755"

@@ -1,0 +1,12 @@
+#cloud-config
+hostname: db
+manage_etc_hosts: true
+package_update: true
+packages:
+  - qemu-guest-agent
+  - mariadb-server
+  - mariadb-client
+runcmd:
+  - systemctl enable --now qemu-guest-agent
+  - systemctl enable --now mariadb
+

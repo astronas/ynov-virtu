@@ -1,0 +1,69 @@
+# JumpServer configuration — managed by Ansible, do not edit manually
+# Used both as the container env_file and as the docker compose .env file.
+# Docs: https://docs.jumpserver.org/zh/v3/guide/env/
+# Version: {{ jumpserver_version }} (image tag {{ jumpserver_image_tag }})
+
+# ── Installation ────────────────────────────────────────────────────────────────
+VOLUME_DIR={{ jumpserver_volume_dir }}
+SECRET_KEY={{ jumpserver_secret_key }}
+BOOTSTRAP_TOKEN={{ jumpserver_bootstrap_token }}
+LOG_LEVEL={{ jumpserver_log_level }}
+DOCKER_SUBNET={{ jumpserver_docker_subnet }}
+USE_IPV6={{ 1 if jumpserver_use_ipv6 else 0 }}
+DOCKER_SUBNET_IPV6={{ jumpserver_docker_subnet_ipv6 }}
+TZ={{ jumpserver_tz }}
+
+# ── Database ──────────────────────────────────────────────────────────────────
+DB_ENGINE={{ jumpserver_db_engine }}
+DB_HOST={{ jumpserver_db_host }}
+DB_PORT={{ jumpserver_db_port }}
+DB_USER={{ jumpserver_db_user }}
+DB_PASSWORD={{ jumpserver_db_password }}
+DB_NAME={{ jumpserver_db_name }}
+
+# ── Redis ─────────────────────────────────────────────────────────────────────
+REDIS_HOST={{ jumpserver_redis_host }}
+REDIS_PORT={{ jumpserver_redis_port }}
+REDIS_PASSWORD={{ jumpserver_redis_password }}
+{% if jumpserver_redis_use_sentinel %}
+REDIS_USE_SENTINEL=True
+REDIS_SENTINEL_HOSTS={{ jumpserver_redis_sentinel_hosts }}
+{% if jumpserver_redis_sentinel_password %}
+REDIS_SENTINEL_PASSWORD={{ jumpserver_redis_sentinel_password }}
+{% endif %}
+{% endif %}
+REDIS_DB_CELERY={{ jumpserver_redis_db_celery }}
+REDIS_DB_CACHE={{ jumpserver_redis_db_cache }}
+REDIS_DB_SESSION={{ jumpserver_redis_db_session }}
+REDIS_DB_WS={{ jumpserver_redis_db_ws }}
+{% if jumpserver_redis_use_ssl %}
+REDIS_USE_SSL=True
+# Place TLS certs in {{ jumpserver_config_dir }}/certs/:
+#   CA-only:    redis_ca.crt
+#   Mutual TLS: redis_ca.crt + redis_client.crt + redis_client.key
+{% endif %}
+
+# ── Access / Web ────────────────────────────────────────────────────────────────
+HTTP_PORT={{ jumpserver_http_port }}
+{% if jumpserver_https_enabled %}
+HTTPS_PORT={{ jumpserver_https_port }}
+SERVER_NAME={{ jumpserver_server_name }}
+SSL_CERTIFICATE={{ jumpserver_ssl_certificate }}
+SSL_CERTIFICATE_KEY={{ jumpserver_ssl_certificate_key }}
+{% endif %}
+CLIENT_MAX_BODY_SIZE={{ jumpserver_client_max_body_size }}
+GZIP={{ jumpserver_gzip }}
+USE_LB={{ 1 if jumpserver_use_lb else 0 }}
+USE_XPACK={{ 1 if jumpserver_use_xpack else 0 }}
+CORE_HOST={{ jumpserver_core_host }}
+
+# ── Component ports ─────────────────────────────────────────────────────────────
+SSH_PORT={{ jumpserver_ssh_port }}
+RDP_PORT={{ jumpserver_rdp_port }}
+
+# ── Component toggles (set to 0 to disable a component) ──────────────────────────
+CORE_ENABLED=1
+KOKO_ENABLED=1
+LION_ENABLED=1
+CHEN_ENABLED=1
+WEB_ENABLED=1

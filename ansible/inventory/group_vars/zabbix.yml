@@ -1,0 +1,38 @@
+---
+# ===== Version de Zabbix (LTS) =====
+zabbix_server_version: "7.0"
+zabbix_web_version: "7.0"
+
+# ===== Base de donnees (MariaDB locale sur l'hote zabbix) =====
+zabbix_server_database: mysql
+zabbix_server_dbhost: localhost
+zabbix_server_dbname: zabbix
+zabbix_server_dbuser: zabbix
+# TODO: a chiffrer avec ansible-vault (voir notes en fin de reponse)
+zabbix_server_dbpassword: "CHANGE_ME_zabbix_db"
+
+# Laisser le role creer la base + charger le schema SQL
+zabbix_server_database_creation: true
+zabbix_server_database_sqlload: true
+zabbix_server_dbhost_run_install: true
+
+# Connexion admin pour creer la base : root via socket Unix (defaut Debian/MariaDB)
+zabbix_server_mysql_login_host: localhost
+zabbix_server_mysql_login_user: root
+zabbix_server_mysql_login_unix_socket: /run/mysqld/mysqld.sock
+
+# ===== Frontend web (nginx + php-fpm) =====
+zabbix_web_http_server: nginx
+zabbix_web_vhost_port: 80
+zabbix_api_server_url: "{{ ansible_host }}"   # accessible via http://10.0.30.6/
+zabbix_server_hostname: localhost             # le serveur zabbix tourne en local
+zabbix_server_name: "Workshop Zabbix"
+
+# ===== Agent local (auto-supervision de l'hote zabbix) =====
+# L'agent du role zabbix_agent (cf. playbooks/roles.yml) supervise l'hote lui-meme,
+# qui se monitore via l'hote "Zabbix server" pre-cree par le schema -> pas de
+# zabbix_api_create_hosts ici.
+zabbix_agent2: true
+zabbix_agent_version: "7.0"
+zabbix_agent_server: 127.0.0.1
+zabbix_agent_serveractive: 127.0.0.1

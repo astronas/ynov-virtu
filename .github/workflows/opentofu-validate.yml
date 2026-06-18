@@ -1,0 +1,38 @@
+name: OpenTofu Validate
+
+on:
+  pull_request:
+    paths:
+      - "opentofu/**"
+      - ".github/workflows/opentofu-validate.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "opentofu/**"
+      - ".github/workflows/opentofu-validate.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate opentofu/
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: opentofu
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: "1.8.0"
+
+      - name: OpenTofu fmt check
+        run: tofu fmt -check -recursive
+
+      - name: OpenTofu init
+        run: tofu init -backend=false
+
+      - name: OpenTofu validate
+        run: tofu validate

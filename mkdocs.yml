@@ -1,5 +1,5 @@
 site_name: YNOV-VIRTU — Lab d'infrastructure virtualisée
-site_description: "Lab Proxmox 3 nœuds · OPNsense · Ceph · Arista 7050TX-64 · IaC Terraform & Ansible"
+site_description: "Lab Proxmox 3 nœuds · OPNsense · Ceph · Arista 7050TX-64 — VMs déployées en IaC (OpenTofu + cloud-init + Ansible) : bastion JumpServer, web, db, supervision Zabbix"
 site_author: YNOV Campus
 repo_url: https://github.com/astronas/ynov-virtu
 repo_name: ynov-virtu
@@ -46,11 +46,14 @@ nav:
   - Architecture:
       - Vue d'ensemble: architecture.md
       - Plan réseau & VLANs: network-plan.md
-  - Composants:
+  - Infrastructure physique:
       - Proxmox VE: proxmox.md
       - Ceph: ceph.md
       - OPNsense: opnsense.md
       - NAT Windows: windows-nat.md
+  - Déploiement (IaC):
+      - OpenTofu & cloud-init: opentofu.md
+      - Configuration Ansible: ansible.md
   - Sécurité: security.md
   - Dépannage: troubleshooting.md
   - Tests réseau: network-tests.md

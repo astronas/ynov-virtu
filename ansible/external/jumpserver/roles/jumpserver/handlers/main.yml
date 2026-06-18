@@ -1,0 +1,8 @@
+---
+- name: restart jumpserver
+  community.docker.docker_compose_v2:
+    project_src: "{{ jumpserver_installer_dir }}"
+    project_name: jms
+    files: "{{ jumpserver_compose_files }}"
+    state: restarted
+  environment: "{{ jumpserver_compose_env }}"

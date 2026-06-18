@@ -1,0 +1,106 @@
+---
+jumpserver_version: "v4.10.16"
+
+# Docker image tag. JumpServer open-source images on Docker Hub carry the "-ce"
+# suffix (e.g. jumpserver/core:v4.10.16-ce). This is the image tag only — it is
+# NOT part of the GitHub release asset name.
+jumpserver_image_tag: "{{ jumpserver_version }}-ce"
+jumpserver_registry: docker.io
+
+# online: download the installer tarball from GitHub releases (for its compose
+#         files + config_init only — no script is ever executed)
+# offline: copy tarball from jumpserver_offline_pkg_src on the controller
+jumpserver_install_mode: online
+
+# Path on the Ansible controller where the offline tarball lives (offline mode only)
+jumpserver_offline_pkg_src: "/tmp/jumpserver-installer-{{ jumpserver_version }}.tar.gz"
+
+# Paths on the target host
+jumpserver_install_path: /opt
+jumpserver_config_dir: /opt/jumpserver/config
+
+# Persistent data directory (recordings, DB, logs). Maps to VOLUME_DIR.
+jumpserver_volume_dir: /data/jumpserver
+
+# Derived names — override only if your tarball/dir naming differs
+jumpserver_tarball_name: "jumpserver-installer-{{ jumpserver_version }}.tar.gz"
+jumpserver_download_url: "https://github.com/jumpserver/installer/releases/download/{{ jumpserver_version }}/{{ jumpserver_tarball_name }}"
+# Directory the tarball extracts to; used as the docker compose project_src
+jumpserver_installer_dir: "{{ jumpserver_install_path }}/jumpserver-installer-{{ jumpserver_version }}"
+
+# ── Secrets (set these via vault.yml — required) ────────────────────────────────
+# SECRET_KEY must stay stable across restarts or sessions/encrypted data break.
+#   Generate with:  openssl rand -hex 32
+#   Generate token: openssl rand -hex 16
+jumpserver_secret_key: ""
+jumpserver_bootstrap_token: ""
+
+# ── Database ──────────────────────────────────────────────────────────────────
+# Supported engines: postgresql (default since April 2024), mysql
+# Set DB_HOST to the service name ("postgresql"/"mysql") to run a bundled
+# container, or to a reachable host/IP for an external database.
+jumpserver_db_engine: postgresql
+jumpserver_db_host: postgresql          # bundled container; use host/IP for external DB
+jumpserver_db_port: 5432                # 5432 for postgresql, 3306 for mysql
+jumpserver_db_name: jumpserver
+jumpserver_db_user: jumpserver
+jumpserver_db_password: "CHANGE_ME"     # override in vault.yml
+
+# ── Redis ─────────────────────────────────────────────────────────────────────
+# Set REDIS_HOST to "redis" for a bundled container, or to a host/IP for external.
+jumpserver_redis_host: redis            # bundled container; use host/IP for external Redis
+jumpserver_redis_port: 6379
+jumpserver_redis_password: "CHANGE_ME"  # override in vault.yml
+
+# Sentinel HA (set jumpserver_redis_use_sentinel: true to enable)
+jumpserver_redis_use_sentinel: false
+jumpserver_redis_sentinel_hosts: ""      # e.g. "mymaster/host1:26379,host2:26379"
+jumpserver_redis_sentinel_password: ""
+
+# Redis DB indices (do not change unless you know what you're doing)
+jumpserver_redis_db_celery: 3
+jumpserver_redis_db_cache: 4
+jumpserver_redis_db_session: 5
+jumpserver_redis_db_ws: 6
+
+# Redis TLS (certs go in {{ jumpserver_config_dir }}/certs/)
+jumpserver_redis_use_ssl: false
+
+# ── Network ───────────────────────────────────────────────────────────────────
+jumpserver_http_port: 80
+jumpserver_https_enabled: false          # true also pulls in the lb (nginx) service
+jumpserver_https_port: 443
+jumpserver_server_name: ""               # FQDN for HTTPS vhost
+jumpserver_ssl_certificate: ""           # cert filename under {{ config_dir }}/nginx/cert/
+jumpserver_ssl_certificate_key: ""       # key filename under {{ config_dir }}/nginx/cert/
+jumpserver_ssh_port: 2222
+jumpserver_rdp_port: 3389
+
+# Internal docker network for the JumpServer containers
+jumpserver_docker_subnet: 192.168.250.0/24
+jumpserver_use_ipv6: false
+jumpserver_docker_subnet_ipv6: "fc00:1010:1111:200::/64"
+
+# Built-in software load balancer (set false if a front proxy sets X-Forwarded-For)
+jumpserver_use_lb: true
+jumpserver_gzip: "on"
+jumpserver_client_max_body_size: "4096m"
+jumpserver_log_level: ERROR
+jumpserver_tz: "Asia/Shanghai"
+jumpserver_core_host: "http://core:8080"
+
+# ── Optional components ─────────────────────────────────────────────────────────
+jumpserver_receptor_enabled: false
+jumpserver_use_es: false                 # external log storage (Elasticsearch)
+jumpserver_use_minio: false              # object storage
+jumpserver_use_loki: false               # log aggregation
+jumpserver_use_xpack: false              # enterprise components (no-op on open source)
+
+# Environment passed to `docker compose` for variable substitution that is NOT
+# stored in config.txt (config.txt is used as the compose .env file).
+jumpserver_compose_env:
+  VERSION: "{{ jumpserver_image_tag }}"
+  REGISTRY: "{{ jumpserver_registry }}"
+  CONFIG_DIR: "{{ jumpserver_config_dir }}"
+  CONFIG_FILE: "{{ jumpserver_config_dir }}/config.txt"
+  COMPOSE_PROJECT_NAME: jms
