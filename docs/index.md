@@ -4,13 +4,13 @@ hide:
   - toc
 ---
 
-<div align="center">
-  <img src="assets/logo_ynov_campus_sophia.png" alt="YNOV Campus Sophia-Antipolis" height="52">
-</div>
-
 # YNOV-VIRTU — Lab d'infrastructure virtualisée
 
-> **Cours de Virtualisation** — M1 Expert Cloud, Sécurité & Infrastructure  
+<div align="center">
+  <img src="assets/logo_ynov_campus_sophia.png" alt="YNOV Campus Sophia-Antipolis" height="32">
+</div>
+
+> Module **Virtualisation** (M1 Expert Cloud, Sécurité & Infrastructure)
 > <img src="assets/logo_ynov_campus_sophia.png" class="inline-logo-ynov" alt="YNOV Campus Sophia-Antipolis"> YNOV Campus Sophia-Antipolis
 
 Lab orienté entreprise basé sur **Proxmox VE** <img src="assets/logos/proxmox.png" class="inline-logo" alt="">, **OPNsense** <img src="assets/logos/opnsense.svg" class="inline-logo" alt="">, **Ceph** <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> et un switch **Arista 7050TX-64** <img src="assets/logos/arista.png" class="inline-logo" alt="">.  
