@@ -53,7 +53,9 @@ img[src*="logo_ynov_campus_sophia"] {
   transition: background 0.2s ease, padding 0.2s ease, border-radius 0.2s ease;
 }
 
-[data-md-color-scheme="slate"] img[src*="logo_ynov_campus_sophia"] {
+/* Fond blanc derrière le logo SEULEMENT dans le contenu (.md-typeset) en mode
+   sombre — surtout PAS sur le logo du header (qui doit rester blanc, voir plus bas). */
+[data-md-color-scheme="slate"] .md-typeset img[src*="logo_ynov_campus_sophia"] {
   background: rgba(255, 255, 255, 0.92);
   border-radius: 8px;
   padding: 6px 10px;
@@ -111,9 +113,13 @@ html {
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-/* Logo YNOV (noir) -> blanc pour rester lisible sur le header bleu */
-.md-header__button.md-logo img {
+/* Logo YNOV du header : TOUJOURS blanc (clair ET sombre), jamais de fond/boîte. */
+.md-header__button.md-logo img,
+[data-md-color-scheme="slate"] .md-header__button.md-logo img {
   filter: brightness(0) invert(1);
+  background: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
   height: 1.5rem;
 }
 
