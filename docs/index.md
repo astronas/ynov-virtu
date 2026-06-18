@@ -5,7 +5,7 @@ hide:
 ---
 
 <div align="center">
-  <img src="assets/logo_ynov_campus_sophia.png" alt="YNOV Campus Sophia-Antipolis" height="72">
+  <img src="assets/logo_ynov_campus_sophia.png" alt="YNOV Campus Sophia-Antipolis" height="52">
 </div>
 
 # YNOV-VIRTU — Lab d'infrastructure virtualisée
