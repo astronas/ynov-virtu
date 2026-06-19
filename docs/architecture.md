@@ -54,6 +54,10 @@ graph TD
     C3 --- PRX3
 ```
 
+### Schéma de brassage
+
+![Schéma de brassage](assets/skema.png)
+
 ---
 
 ## Composants et rôles
@@ -101,6 +105,21 @@ VM hébergée sur PRX3. Sert de passerelle et pare-feu pour l'ensemble du lab :
 ### 💻 PC Windows
 
 Passerelle WAN temporaire. Partage une connexion Wi-Fi (4G/5G ou autre) vers le VLAN 99 via NAT PowerShell. Connecté au switch via `Et1` (VLAN 99 access).
+
+---
+
+## Couche workload (VMs)
+
+Au-dessus de l'underlay physique, les VMs métier sont déployées en IaC (OpenTofu + cloud-init + Ansible) :
+
+| VM | Rôle | VLAN | IP |
+|----|------|------|----|
+| **bastion** | JumpServer (PAM) + outils d'admin | 20 — DMZ | `10.0.20.1` |
+| **web** | Frontal nginx + php-fpm | 30 — SRV-LAN | `10.0.30.4` |
+| **db** | Base de données MariaDB | 30 — SRV-LAN | `10.0.30.5` |
+| **zabbix** | Supervision (serveur + web + MariaDB) | 30 — SRV-LAN | `10.0.30.6` |
+
+> Détails du provisionnement : [OpenTofu & cloud-init](opentofu.md) · [Configuration Ansible](ansible.md)
 
 ---
 

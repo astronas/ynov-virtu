@@ -1,0 +1,146 @@
+# ============================================================================
+# Configuration Zensical — YNOV-VIRTU
+# Migré depuis mkdocs.yml (Material for MkDocs).
+# Doc : https://zensical.org/docs/
+# ============================================================================
+
+[project]
+site_name = "YNOV-VIRTU — Lab d'infrastructure virtualisée"
+site_description = "Lab Proxmox 3 nœuds · OPNsense · Ceph · Arista 7050TX-64 — VMs déployées en IaC (OpenTofu + cloud-init + Ansible) : bastion JumpServer, web, db, supervision Zabbix"
+site_author = "YNOV Campus Sophia-Antipolis"
+site_url = "https://astronas.github.io/ynov-virtu/"
+repo_url = "https://github.com/astronas/ynov-virtu"
+repo_name = "astronas/ynov-virtu"
+edit_uri = "edit/main/docs/"
+copyright = """
+Copyright &copy; 2026 YNOV Campus Sophia-Antipolis — M1 Expert Cloud, Sécurité &amp; Infrastructure
+"""
+
+docs_dir = "docs"
+site_dir = "site"
+
+extra_css = ["stylesheets/extra.css"]
+
+nav = [
+  { "Accueil" = "index.md" },
+  { "Architecture" = [
+    { "Vue d'ensemble" = "architecture.md" },
+    { "Plan réseau & VLANs" = "network-plan.md" },
+  ] },
+  { "Infrastructure physique" = [
+    { "Proxmox VE" = "proxmox.md" },
+    { "Ceph" = "ceph.md" },
+    { "OPNsense" = "opnsense.md" },
+    { "NAT Windows" = "windows-nat.md" },
+  ] },
+  { "Déploiement (IaC)" = [
+    { "OpenTofu & cloud-init" = "opentofu.md" },
+    { "Configuration Ansible" = "ansible.md" },
+  ] },
+  { "Sécurité" = "security.md" },
+  { "Dépannage" = "troubleshooting.md" },
+  { "Tests réseau" = "network-tests.md" },
+]
+
+# ----------------------------------------------------------------------------
+# Thème
+# ----------------------------------------------------------------------------
+[project.theme]
+language = "fr"
+custom_dir = "overrides"
+logo = "assets/logo_ynov_campus_sophia.png"
+favicon = "assets/favicon.svg"
+
+features = [
+  "announce.dismiss",
+  "navigation.instant",
+  "navigation.instant.progress",
+  "navigation.tracking",
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+  "navigation.sections",
+  "navigation.indexes",
+  "navigation.top",
+  "navigation.footer",
+  "toc.follow",
+  "search.highlight",
+  "content.code.copy",
+  "content.code.annotate",
+  "content.code.select",
+  "content.tooltips",
+  "content.action.edit",
+  "content.action.view",
+]
+
+[project.theme.font]
+text = "Inter"
+code = "JetBrains Mono"
+
+# Palette : auto + clair + sombre, couleurs de marque YNOV via "custom"
+# (variables définies dans docs/stylesheets/extra.css).
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/sun"
+toggle.name = "Basculer en mode sombre"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/moon"
+toggle.name = "Basculer en mode clair"
+
+# ----------------------------------------------------------------------------
+# Extra (réseaux sociaux du pied de page)
+# ----------------------------------------------------------------------------
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/astronas/ynov-virtu"
+name = "Dépôt GitHub du projet"
+
+[[project.extra.social]]
+icon = "fontawesome/solid/graduation-cap"
+link = "https://www.ynov.com"
+name = "YNOV Campus"
+
+# ----------------------------------------------------------------------------
+# Extensions Markdown
+# ----------------------------------------------------------------------------
+[project.markdown_extensions.abbr]
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.def_list]
+[project.markdown_extensions.footnotes]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.toc]
+permalink = true
+title = "Sur cette page"
+
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+line_spans = "__span"
+pygments_lang_class = true
+[project.markdown_extensions.pymdownx.inlinehilite]
+[project.markdown_extensions.pymdownx.snippets]
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+[project.markdown_extensions.pymdownx.details]
+[project.markdown_extensions.pymdownx.keys]
+[project.markdown_extensions.pymdownx.mark]
+[project.markdown_extensions.pymdownx.caret]
+[project.markdown_extensions.pymdownx.tilde]
+[project.markdown_extensions.pymdownx.smartsymbols]
+[project.markdown_extensions.pymdownx.critic]
+[project.markdown_extensions.pymdownx.tasklist]
+custom_checkbox = true
+[project.markdown_extensions.pymdownx.emoji]
+emoji_index = "zensical.extensions.emoji.twemoji"
+emoji_generator = "zensical.extensions.emoji.to_svg"
