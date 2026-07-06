@@ -11,6 +11,16 @@ La VM **`VL-GITLAB`** (nœud PRX1) héberge une instance **GitLab** qui joue deu
 1. **Remote Git du dépôt** - le projet `ynov-virtu` y est hébergé (ou mirroré depuis GitHub) ;
 2. **Backend d'état Terraform** - GitLab stocke l'état **OpenTofu** via son [backend HTTP Terraform state](https://docs.gitlab.com/ee/user/infrastructure/iac/terraform_state.html), pour un état **distant et verrouillé** (travail en équipe / CI) plutôt que l'état local par défaut.
 
+```mermaid
+graph LR
+    classDef gl fill:#e24329,stroke:#b5301f,color:#fff
+    classDef box fill:#37474f,stroke:#263238,color:#fff
+    DEV["Poste / CI"]:::box -->|git push| GL["GitLab\nVL-GITLAB (PRX1)"]:::gl
+    TOFU["OpenTofu"]:::box -->|backend HTTP\nstate + lock| GL
+    GL --> REPO["Dépôt ynov-virtu"]:::box
+    GL --> STATE["État Terraform\ndistant & verrouillé"]:::box
+```
+
 ![Dépôt ynov-virtu sur GitLab](assets/gitlab_repo.png)
 
 !!! info "Déployé hors IaC"

@@ -12,6 +12,18 @@ La supervision du lab repose sur **Zabbix 7.4** <img src="assets/logos/ansible.s
 - **frontend** web **Apache + PHP** (`mod_php`), accessible sur **`http://10.0.30.6/`** ;
 - **agents** (agent2) sur `web`, `db` et `netbox`, qui **s'enregistrent automatiquement** sur le serveur via l'API (`zabbix_api_create_hosts`).
 
+```mermaid
+graph LR
+    classDef agent fill:#2e7d32,stroke:#1b5e20,color:#fff
+    classDef srv fill:#c0392b,stroke:#922b21,color:#fff
+    classDef out fill:#e65c00,stroke:#bf360c,color:#fff
+    W["web"]:::agent -->|agent2| Z
+    D["db"]:::agent -->|agent2| Z
+    N["netbox"]:::agent -->|agent2| Z["Serveur Zabbix\n10.0.30.6\nMariaDB + Apache"]:::srv
+    Z -->|frontend| UI["http://10.0.30.6/"]
+    Z -.->|triggers| AL["Alertes / Problems"]:::out
+```
+
 ![Tableau de bord Zabbix - hôtes supervisés (web, db, netbox) et santé du serveur](assets/zabbix_dash.png)
 
 !!! info "Ordre de déploiement"

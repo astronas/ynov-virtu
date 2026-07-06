@@ -410,6 +410,25 @@ html {
   margin: 1.2em 0;
 }
 
+/* ---- Flèches Mermaid animées (le flux "coule" vers la pointe) ------- */
+.md-typeset .mermaid .flowchart-link,
+.md-typeset .mermaid .edgePaths path {
+  stroke-dasharray: 6 5;
+  animation: mermaid-flow 1.1s linear infinite;
+}
+@keyframes mermaid-flow {
+  to {
+    stroke-dashoffset: -22;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset .mermaid .flowchart-link,
+  .md-typeset .mermaid .edgePaths path {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
+
 /* ---- Barre de défilement personnalisée ----------------------------- */
 * {
   scrollbar-width: thin;

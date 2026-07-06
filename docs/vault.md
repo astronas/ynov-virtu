@@ -8,6 +8,15 @@
 
 La VM **`VL-VAULT`** (nœud PRX1) héberge un **[HashiCorp Vault](https://developer.hashicorp.com/vault)** qui centralise les **secrets** du lab. Objectif : sortir les mots de passe et tokens des fichiers `group_vars/*` et `terraform.tfvars` (aujourd'hui en clair sous forme de `CHANGE_ME` / valeurs de démonstration) vers un **coffre chiffré** consommé par Ansible et OpenTofu.
 
+```mermaid
+graph LR
+    classDef v fill:#111827,stroke:#000,color:#ffd814
+    classDef box fill:#37474f,stroke:#263238,color:#fff
+    ANS["Ansible"]:::box -->|lookup KV| V["HashiCorp Vault\nVL-VAULT (PRX1)\nmoteur KV v2"]:::v
+    TOFU["OpenTofu"]:::box -->|data KV| V
+    V --> S["Secrets chiffrés\nmots de passe DB,\ntokens, clés"]:::box
+```
+
 ![Interface HashiCorp Vault](assets/hashi_vault.png)
 
 !!! info "Déployé hors IaC"
