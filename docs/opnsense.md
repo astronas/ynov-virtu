@@ -10,6 +10,8 @@ OPNsense <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> est d�
 - **Serveur DHCP** optionnel pour les VLANs (recommandé pour VLAN 30).
 - **Serveur DNS** (Unbound) pour les VMs internes.
 
+![Tableau de bord OPNsense](assets/opn_sense_dash.png)
+
 ---
 
 ## Création de la VM OPNsense sur PRX3
@@ -113,6 +115,8 @@ Identifiants par défaut : `admin` / `opnsense`
 **Interfaces → OPT1** → renommer en `DMZ`
 **Interfaces → OPT2** → renommer en `SRV`
 
+![Interfaces OPNsense (WAN, LAN, DMZ, SRV)](assets/opn_sense_interfaces.png)
+
 ### Configurer la gateway WAN
 
 **System → Gateways → Add** :
@@ -134,6 +138,8 @@ Identifiants par défaut : `admin` / `opnsense`
 ![Règles firewall OPNsense](assets/opnsense-firewall-rules-full.png)
 
 ![Preuve firewall](assets/fw.png)
+
+![Règles firewall dans l'interface OPNsense](assets/opn_sense_firewall_rules.png)
 
 ### Tableau récapitulatif des règles actives
 

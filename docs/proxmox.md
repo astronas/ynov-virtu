@@ -15,6 +15,8 @@ Ces trois PC MSI constituent les **nœuds du cluster Proxmox VE**.
 | **SSD (système)** | 512 Go (~256 Go utilisables) | 512 Go (~256 Go utilisables) | 512 Go (~256 Go utilisables) |
 | **HDD (données / OSD Ceph)** | 1,8 To | 1,8 To | 1,8 To |
 
+![Vue d'ensemble du cluster dans l'interface Proxmox VE](assets/proxmox_dash.png)
+
 ---
 
 ## Prérequis
