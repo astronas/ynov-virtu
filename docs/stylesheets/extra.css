@@ -26,7 +26,8 @@
    grille .tech-logos ET les usages inline (via le nom de fichier). */
 [data-md-color-scheme="slate"] img[src*="proxmox.png"],
 [data-md-color-scheme="slate"] img[src*="arista.png"],
-[data-md-color-scheme="slate"] img[src*="netbox.png"] {
+[data-md-color-scheme="slate"] img[src*="netbox.png"],
+[data-md-color-scheme="slate"] img[src*="opnsense.png"] {
   filter: brightness(0) invert(1);
 }
 

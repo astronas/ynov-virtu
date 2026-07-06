@@ -30,7 +30,6 @@ nav = [
   { "Infrastructure physique" = [
     { "Proxmox VE" = "proxmox.md" },
     { "Ceph" = "ceph.md" },
-    { "OPNsense" = "opnsense.md" },
     { "NAT Windows" = "windows-nat.md" },
   ] },
   { "Déploiement (IaC)" = [
@@ -38,12 +37,17 @@ nav = [
     { "Configuration Ansible" = "ansible.md" },
   ] },
   { "Services & applicatifs" = [
-    { "NetBox (IPAM/DCIM)" = "netbox.md" },
-    { "Services web & db" = "services.md" },
-    { "Bastion JumpServer" = "jumpserver.md" },
-    { "Supervision Zabbix" = "supervision.md" },
-    { "GitLab" = "gitlab.md" },
-    { "Vault" = "vault.md" },
+    { "🔒 Réseau & sécurité" = [
+      { "🔥 OPNsense (pare-feu)" = "opnsense.md" },
+      { "🛡 Bastion JumpServer" = "jumpserver.md" },
+      { "🔑 Vault (secrets)" = "vault.md" },
+    ] },
+    { "🧩 Plateforme & données" = [
+      { "🧭 NetBox (IPAM/DCIM)" = "netbox.md" },
+      { "🦊 GitLab" = "gitlab.md" },
+      { "🌐 Services web & db" = "services.md" },
+    ] },
+    { "📈 Supervision Zabbix" = "supervision.md" },
   ] },
   { "Sécurité" = "security.md" },
   { "Dépannage" = "troubleshooting.md" },
