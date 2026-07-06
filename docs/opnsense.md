@@ -1,4 +1,8 @@
-# <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> OPNsense - Pare-feu et routage inter-VLAN
+# OPNsense - Pare-feu et routage inter-VLAN
+
+<div align="center">
+  <img src="assets/logos/opnsense.png" alt="OPNsense" class="logo-hero">
+</div>
 
 ## Présentation
 
