@@ -1,10 +1,10 @@
-# Troubleshooting — Résolution de problèmes
+# Troubleshooting - Résolution de problèmes
 
 Ce document répertorie les problèmes rencontrés pendant le déploiement du lab, ainsi que les procédures de diagnostic et de résolution.
 
 ---
 
-## Problème 1 — Ping VLAN 10 → VLAN 30 ne fonctionne pas
+## Problème 1 - Ping VLAN 10 → VLAN 30 ne fonctionne pas
 
 ### Symptôme
 
@@ -13,7 +13,7 @@ Un PC admin branché en VLAN 10 (`10.0.10.x`) ne parvient pas à pinger le rése
 ### Investigation
 
 ```bash
-# Sur le PC Windows admin — vérifier les routes actives
+# Sur le PC Windows admin - vérifier les routes actives
 route print
 
 # Chercher des routes conflictuelles
@@ -32,7 +32,7 @@ Le PC admin avait une interface **Wi-Fi active** avec une route par défaut hér
 ### Résolution
 
 ```powershell
-# Sur le PC admin Windows — Vérifier toutes les routes
+# Sur le PC admin Windows - Vérifier toutes les routes
 route print
 
 # Supprimer la route par défaut problématique sur l'interface Wi-Fi (si non nécessaire)
@@ -55,7 +55,7 @@ Lorsqu'un PC a plusieurs interfaces réseau actives (Ethernet + Wi-Fi), les rout
 
 ---
 
-## Problème 2 — <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> OPNsense ne ping pas Internet (`1.1.1.1`)
+## Problème 2 - <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> OPNsense ne ping pas Internet (`1.1.1.1`)
 
 ### Symptôme
 
@@ -85,7 +85,7 @@ Get-NetIPInterface | Where-Object { $_.Forwarding -eq "Enabled" }
 
 ---
 
-## Problème 3 — LACP Po1/Po2 ne monte pas (<img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph)
+## Problème 3 - LACP Po1/Po2 ne monte pas (<img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph)
 
 ### Symptôme
 
@@ -94,7 +94,7 @@ Le bond LACP sur PRX1 ou PRX3 ne s'établit pas. L'interface `bond0` est dans l'
 ### Diagnostic
 
 ```bash
-# Sur PRX1 ou PRX3 — état du bond
+# Sur PRX1 ou PRX3 - état du bond
 cat /proc/net/bonding/bond0
 
 # Vérifier les logs
@@ -136,7 +136,7 @@ Tous les ports doivent être `(P)` (bundled).
 
 ---
 
-## Problème 4 — Ceph en état HEALTH_WARN
+## Problème 4 - Ceph en état HEALTH_WARN
 
 ### Symptôme
 
@@ -166,7 +166,7 @@ ceph osd dump | grep "down"
 journalctl -u ceph-osd@0 --since "1 hour ago"
 ```
 
-### Résolution — OSD down
+### Résolution - OSD down
 
 ```bash
 # Identifier l'OSD down
@@ -182,7 +182,7 @@ ceph osd in <id>
 
 ---
 
-## Problème 5 — Interface Proxmox inaccessible après modification `/etc/network/interfaces`
+## Problème 5 - Interface Proxmox inaccessible après modification `/etc/network/interfaces`
 
 ### Symptôme
 

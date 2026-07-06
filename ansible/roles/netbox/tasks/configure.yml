@@ -1,0 +1,26 @@
+---
+# netbox-docker lit ses variables depuis env/*.env (references par env_file dans le
+# docker-compose.yml upstream). On ecrase les fichiers d'exemple livres par le depot
+# par nos versions templatees -> source unique de verite dans group_vars/netbox.yml.
+- name: Deposer les fichiers d'environnement NetBox (secrets, DB, Redis)
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "{{ netbox_install_dir }}/env/{{ item }}"
+    owner: root
+    group: root
+    mode: "0640"
+  loop:
+    - netbox.env
+    - postgres.env
+    - redis.env
+    - redis-cache.env
+  no_log: true
+
+# Le compose upstream n'expose aucun port sur l'hote ; l'override publie le frontend.
+- name: Publier le frontend NetBox via docker-compose.override.yml
+  ansible.builtin.template:
+    src: docker-compose.override.yml.j2
+    dest: "{{ netbox_install_dir }}/docker-compose.override.yml"
+    owner: root
+    group: root
+    mode: "0644"

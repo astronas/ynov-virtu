@@ -1,0 +1,7 @@
+---
+# Deploiement de NetBox (IPAM/DCIM) via netbox-docker (docker compose v2).
+# Meme decoupage que le role jumpserver : prerequis -> clone -> config -> deploy.
+- import_tasks: prerequisites.yml
+- import_tasks: download.yml
+- import_tasks: configure.yml
+- import_tasks: deploy.yml

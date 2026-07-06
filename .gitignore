@@ -14,6 +14,10 @@ ansible/ansible.log
 *.tfstate
 *.tfstate.*
 
+# Fichiers de plan OpenTofu (binaires, non versionnés)
+tfplan
+*.tfplan
+
 # Variables locales (peuvent contenir des secrets) — garder les .example
 **/terraform.tfvars
 

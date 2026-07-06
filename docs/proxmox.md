@@ -1,4 +1,4 @@
-# <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> Proxmox VE — Configuration des nœuds
+# <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> Proxmox VE - Configuration des nœuds
 
 ## Identification du matériel
 
@@ -70,7 +70,7 @@ Les exemples de configuration se trouvent dans [configs/proxmox/](../configs/pro
 
 ## Structure des bridges Proxmox
 
-### `vmbr0` — Bridge principal VLAN-aware
+### `vmbr0` - Bridge principal VLAN-aware
 
 Présent sur les trois nœuds. Raccordé à l'interface physique principale (nic0).
 
@@ -85,7 +85,7 @@ vmbr0 (bridge-vlan-aware yes, bridge-vids 10 20 30 99)
 - Trafic tagué VLAN 30 → SRV/LAN
 - Trafic tagué VLAN 99 → WAN OPNsense
 
-### `bond0` — Bond LACP <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph (PRX1 et PRX3 uniquement)
+### `bond0` - Bond LACP <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph (PRX1 et PRX3 uniquement)
 
 Agrège deux interfaces SFP en LACP 802.3ad vers le switch.
 
@@ -97,7 +97,7 @@ bond0 (LACP 802.3ad)
        └── bond0.102 → Ceph private (VLAN 102)
 ```
 
-### `nic2` — Interface Ceph public PRX2
+### `nic2` - Interface Ceph public PRX2
 
 Interface SFP→RJ45 directe, sans bond, sans VLAN tag (port access VLAN 101 côté switch).
 
@@ -238,7 +238,7 @@ dmesg | grep -i lacp
 
 ---
 
-- [configs/proxmox/](../configs/proxmox/) — Fichiers `/etc/network/interfaces` exemple
-- [docs/ceph.md](ceph.md) — Déploiement Ceph
-- [docs/opnsense.md](opnsense.md) — VM OPNsense
-- [Tests réseau](network-tests.md) — Commandes de validation
+- [configs/proxmox/](../configs/proxmox/) - Fichiers `/etc/network/interfaces` exemple
+- [docs/ceph.md](ceph.md) - Déploiement Ceph
+- [docs/opnsense.md](opnsense.md) - VM OPNsense
+- [Tests réseau](network-tests.md) - Commandes de validation

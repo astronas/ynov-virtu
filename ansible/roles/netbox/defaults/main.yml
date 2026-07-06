@@ -1,0 +1,36 @@
+---
+# ===== Source netbox-docker (clonee sur l'hote, servie comme project_src compose) =====
+# On reprend la demarche du role jumpserver : on ne fabrique pas le compose a la
+# main, on clone le depot upstream a une version epinglee puis on depose nos
+# fichiers env/*.env + un docker-compose.override.yml.
+netbox_docker_repo: "https://github.com/netbox-community/netbox-docker.git"
+# La release netbox-docker determine l'image netboxcommunity/netbox embarquee.
+# TODO: verifier la derniere sur https://github.com/netbox-community/netbox-docker/releases
+netbox_docker_version: "3.3.0"
+netbox_install_dir: /opt/netbox-docker
+
+# ===== Reseau =====
+# Port publie sur l'hote -> conteneur netbox (8080). http://<ip>:{{ netbox_http_port }}/
+netbox_http_port: 8080
+# ALLOWED_HOSTS (Django). Surcharge dans group_vars/netbox.yml avec l'IP reelle.
+netbox_allowed_hosts: "*"
+
+# ===== Secrets - A SURCHARGER via un vault.yml chiffre =====
+# SECRET_KEY : minimum 50 caracteres, stable dans le temps. openssl rand -base64 48
+netbox_secret_key: "CHANGE_ME_generer_une_cle_secrete_de_50_caracteres_minimum"
+
+# ===== Base de donnees PostgreSQL (conteneur embarque `postgres`) =====
+netbox_db_name: netbox
+netbox_db_user: netbox
+netbox_db_password: "CHANGE_ME_netbox_db"
+
+# ===== Redis (conteneurs embarques : file d'attente `redis` + cache `redis-cache`) =====
+netbox_redis_password: "CHANGE_ME_netbox_redis"
+netbox_redis_cache_password: "CHANGE_ME_netbox_redis_cache"
+
+# ===== Compte super-utilisateur initial (cree au 1er demarrage) =====
+netbox_superuser_name: admin
+netbox_superuser_email: admin@lab.local
+netbox_superuser_password: "CHANGE_ME_netbox_admin"
+# Jeton API 40 caracteres hex. openssl rand -hex 20
+netbox_superuser_api_token: "0123456789abcdef0123456789abcdef01234567"

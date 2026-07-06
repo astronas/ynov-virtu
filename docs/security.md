@@ -4,9 +4,9 @@
 
 Le lab applique une approche de **défense en profondeur** à plusieurs niveaux :
 
-1. **Sécurisation L2** — Neutralisation du VLAN 1, isolation des ports inutilisés, VLAN blackhole.
-2. **Segmentation VLAN** — Chaque zone réseau est isolée dans son propre VLAN.
-3. **Filtrage inter-VLAN** — OPNsense contrôle tous les flux entre VLANs.
+1. **Sécurisation L2** - Neutralisation du VLAN 1, isolation des ports inutilisés, VLAN blackhole.
+2. **Segmentation VLAN** - Chaque zone réseau est isolée dans son propre VLAN.
+3. **Filtrage inter-VLAN** - OPNsense contrôle tous les flux entre VLANs.
 
 ---
 
@@ -30,7 +30,7 @@ interface Vlan1
 ! Tous les trunks ont un native VLAN différent de 1 (VLAN 10 ou 4094)
 ```
 
-### VLAN 4094 — Blackhole
+### VLAN 4094 - Blackhole
 
 Le VLAN 4094 est un VLAN de quarantaine qui n'est routé nulle part et n'est attribué à aucun équipement légitime.
 
@@ -45,7 +45,7 @@ interface Ethernet8-48
    switchport access vlan 4094
    shutdown
 
-! Trunks Ceph — native VLAN blackhole
+! Trunks Ceph - native VLAN blackhole
 interface Port-Channel1
    switchport trunk native vlan 4094
 interface Port-Channel2
@@ -64,7 +64,7 @@ Tout autre VLAN (101, 102, 4094) est implicitement rejeté sur ces trunks. Un at
 
 ### Ports d'administration
 
-Les ports admin (`Et5`, `Et7`) sont en **access VLAN 10** (MGMT). Ils ne peuvent pas accéder aux VLANs DMZ, SRV ou WAN directement — le trafic doit passer par OPNsense.
+Les ports admin (`Et5`, `Et7`) sont en **access VLAN 10** (MGMT). Ils ne peuvent pas accéder aux VLANs DMZ, SRV ou WAN directement - le trafic doit passer par OPNsense.
 
 ---
 
@@ -74,7 +74,7 @@ Les ports admin (`Et5`, `Et7`) sont en **access VLAN 10** (MGMT). Ils ne peuvent
 
 OPNsense est le seul point de routage entre les VLANs. Sans règle firewall, aucun trafic inter-VLAN n'est possible. La politique par défaut est **deny all** entre VLANs.
 
-**Politique appliquée** — chaque interface (MGMT, DMZ, SRV) n'autorise que des flux explicites ; tout le reste tombe dans le **deny all** implicite d'OPNsense.
+**Politique appliquée** - chaque interface (MGMT, DMZ, SRV) n'autorise que des flux explicites ; tout le reste tombe dans le **deny all** implicite d'OPNsense.
 
 #### Diagramme des flux autorisés
 
@@ -135,22 +135,22 @@ flowchart LR
 
 !!! note "Alias `! IP_Priv`"
     `! IP_Priv` désigne « **tout sauf les plages privées RFC1918** ». Les règles 7, 10 et 11
-    n'autorisent donc que la **sortie Internet** (egress) — elles n'ouvrent **aucun** flux
+    n'autorisent donc que la **sortie Internet** (egress) - elles n'ouvrent **aucun** flux
     inter-VLAN vers une autre zone interne.
 
 **Principes qui en découlent :**
 
 - **MGMT → tout** : les administrateurs (VLAN 10) atteignent toutes les zones et services.
 - **Bastion → SRV** : seul le **bastion** (PAM / jump host) de la DMZ accède aux serveurs internes ; le reste de la DMZ n'a pas ce droit.
-- **DMZ / SRV → MGMT** : ❌ implicitement bloqué — un service compromis ne peut pas remonter vers le management.
+- **DMZ / SRV → MGMT** : ❌ implicitement bloqué - un service compromis ne peut pas remonter vers le management.
 - **DMZ / SRV → Internet** : autorisé via `! IP_Priv` (mises à jour, API, accès web).
 - **WAN entrant** : ❌ aucun service exposé directement (deny par défaut d'OPNsense).
 
 #### Preuve de configuration
 
-> Export des règles appliquées depuis l'interface OPNsense (*Firewall → Rules* — interfaces MGMT, DMZ et SRV) :
+> Export des règles appliquées depuis l'interface OPNsense (*Firewall → Rules* - interfaces MGMT, DMZ et SRV) :
 
-![Règles firewall OPNsense — interfaces MGMT, DMZ (Bastion) et SRV](assets/opnsense-firewall-rules-full.png)
+![Règles firewall OPNsense - interfaces MGMT, DMZ (Bastion) et SRV](assets/opnsense-firewall-rules-full.png)
 
 ### Anti-spoofing
 
@@ -168,7 +168,7 @@ OPNsense active par défaut le **Block private networks** et **Block bogon netwo
 
 ### Exposition de services via <img src="assets/logos/cloudflare.svg" class="inline-logo" alt=""> Cloudflare Tunnel
 
-> **Idée d'évolution — non implémenté dans ce lab**
+> **Idée d'évolution - non implémenté dans ce lab**
 
 En cas de connexion derrière CG-NAT (4G/5G), il est impossible d'ouvrir des ports entrants. Cloudflare Tunnel permettrait d'exposer des services publics via une connexion sortante depuis la DMZ, sans port-forwarding et avec TLS automatique + protection DDoS.
 
@@ -192,12 +192,12 @@ En cas de connexion derrière CG-NAT (4G/5G), il est impossible d'ouvrir des por
 ### Mots de passe
 
 - Ne jamais laisser les mots de passe par défaut (`admin`/`opnsense`, `root`/vide, etc.).
-- Les mots de passe ne sont pas stockés dans ce dépôt Git — utiliser un gestionnaire de secrets.
+- Les mots de passe ne sont pas stockés dans ce dépôt Git - utiliser un gestionnaire de secrets.
 
 ---
 
 ## Voir aussi
 
-- [configs/arista/running-config-current.eos](../configs/arista/running-config-current.eos) — Config switch sécurisée
-- [configs/opnsense/firewall-rules.md](../configs/opnsense/firewall-rules.md) — Règles firewall Phase 2
-- [docs/troubleshooting.md](troubleshooting.md) — Résolution de problèmes réseau
+- [configs/arista/running-config-current.eos](../configs/arista/running-config-current.eos) - Config switch sécurisée
+- [configs/opnsense/firewall-rules.md](../configs/opnsense/firewall-rules.md) - Règles firewall Phase 2
+- [docs/troubleshooting.md](troubleshooting.md) - Résolution de problèmes réseau

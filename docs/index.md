@@ -13,7 +13,7 @@ hide:
 ## Module **Virtualisation** (M1 Expert Cloud, Sécurité & Infrastructure)
 
 Lab orienté entreprise basé sur **Proxmox VE** <img src="assets/logos/proxmox.png" class="inline-logo" alt="">, **OPNsense** <img src="assets/logos/opnsense.svg" class="inline-logo" alt="">, **Ceph** <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> et un switch **Arista 7050TX-64** <img src="assets/logos/arista.png" class="inline-logo" alt="">.  
-Par-dessus cet underlay physique, une **couche workload** (bastion JumpServer, web, db, supervision Zabbix) est déployée en IaC : **OpenTofu** <img src="assets/logos/terraform.svg" class="inline-logo" alt=""> + **cloud-init** + **Ansible** <img src="assets/logos/ansible.svg" class="inline-logo" alt="">.  
+Par-dessus cet underlay physique, une **couche workload** (bastion JumpServer, web, db, supervision Zabbix, IPAM NetBox) est déployée en IaC : **OpenTofu** <img src="assets/logos/terraform.svg" class="inline-logo" alt=""> + **cloud-init** + **Ansible** <img src="assets/logos/ansible.svg" class="inline-logo" alt="">.  
 Le repo couvre toute la stack : documentation, configs réseau, IaC et **GitHub** Pages <img src="assets/logos/github.svg" class="inline-logo" alt="">.
 
 ## L'Équipe sur ce lab
@@ -61,17 +61,15 @@ Le repo couvre toute la stack : documentation, configs réseau, IaC et **GitHub*
 
 <figure markdown>
   ![Arista 7050TX-64](assets/arista-7050tx-64.png){ style="height:120px;width:auto" }
-  <figcaption><strong>Switch réseau</strong> &mdash; Arista 7050TX-64 <img src="assets/logos/arista.png" class="inline-logo" alt=""><br>(48&times; RJ45 10G + 4&times; QSFP+ 40G SFP)</figcaption>
+  <figcaption><strong>Switch réseau</strong> - Arista 7050TX-64 <img src="assets/logos/arista.png" class="inline-logo" alt=""><br>(48&times; RJ45 10G + 4&times; QSFP+ 40G SFP)</figcaption>
 </figure>
 
 <figure markdown>
-  ![Serveurs Proxmox — MSI MS-7D59](assets/pc.png){ style="height:260px;width:auto" }
-  <figcaption><strong>Serveurs</strong> &mdash; 3&times; MSI MS-7D59 (PRX-1, PRX-2, PRX-3)</figcaption>
+  ![Serveurs Proxmox - MSI MS-7D59](assets/pc.png){ style="height:260px;width:auto" }
+  <figcaption><strong>Serveurs</strong> - 3&times; MSI MS-7D59 (PRX-1, PRX-2, PRX-3)</figcaption>
 </figure>
 
 </div>
-
-
 
 ## Quickstart
 
@@ -94,6 +92,3 @@ ansible-playbook playbooks/roles.yml
 ```
 
 > Détails : [OpenTofu & cloud-init](opentofu.md) · [Configuration Ansible](ansible.md)
-
-
-

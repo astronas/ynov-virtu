@@ -1,12 +1,12 @@
-# <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph — Stockage distribué
+# <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> Ceph - Stockage distribué
 
 ## Architecture Ceph du lab
 
 | Nœud | Rôle Ceph | OSD | MON | MGR | Réseau public (101) | Réseau private (102) |
 |---|---|---|---|---|---|---|
 | PRX1 | OSD + MON + MGR | ✅ | ✅ | ✅ | `10.0.101.1/24` | `10.0.102.1/24` |
-| PRX2 | MON + MGR + Quorum | ❌ | ✅ | ✅ | `10.0.101.2/24` | — |
-| PRX3 | OSD + MON | ✅ | ✅ | — | `10.0.101.3/24` | `10.0.102.3/24` |
+| PRX2 | MON + MGR + Quorum | ❌ | ✅ | ✅ | `10.0.101.2/24` | - |
+| PRX3 | OSD + MON | ✅ | ✅ | - | `10.0.101.3/24` | `10.0.102.3/24` |
 
 **PRX2 ne porte pas d'OSD.** Il sert uniquement de tiebreaker/quorum pour garantir le quorum Ceph sans doubler le stockage. Il accède au cluster via le réseau public uniquement.
 
@@ -34,7 +34,7 @@ ceph-volume inventory
 
 ## Initialisation Ceph via l'interface Proxmox
 
-### Étape 1 — Créer le cluster Ceph sur PRX1
+### Étape 1 - Créer le cluster Ceph sur PRX1
 
 Dans Proxmox GUI → `PRX1` → `Ceph` → `Install Ceph` :
 
@@ -49,13 +49,13 @@ Ou en ligne de commande depuis PRX1 :
 pveceph init --network 10.0.101.0/24 --cluster-network 10.0.102.0/24
 ```
 
-### Étape 2 — Installer Ceph sur PRX2 et PRX3
+### Étape 2 - Installer Ceph sur PRX2 et PRX3
 
 Depuis l'interface Proxmox de chaque nœud → `Ceph` → `Install Ceph`.
 
 Le réseau cluster sera automatiquement ignoré sur PRX2 (pas d'interface `bond0.102`).
 
-### Étape 3 — Créer les MONs
+### Étape 3 - Créer les MONs
 
 Sur les trois nœuds, créer le MON :
 
@@ -71,7 +71,7 @@ ceph mon stat
 ceph quorum_status --format json-pretty
 ```
 
-### Étape 4 — Créer le MGR
+### Étape 4 - Créer le MGR
 
 ```bash
 # Sur PRX1 (actif) et PRX2 (standby)
@@ -84,7 +84,7 @@ Vérifier :
 ceph mgr stat
 ```
 
-### Étape 5 — Créer les OSD
+### Étape 5 - Créer les OSD
 
 Sur **PRX1** uniquement (adapter `/dev/sdX` au disque réel) :
 
@@ -107,7 +107,7 @@ ceph osd stat
 ceph osd tree
 ```
 
-### Étape 6 — Créer un pool Ceph
+### Étape 6 - Créer un pool Ceph
 
 ```bash
 # Pool pour les images de VMs Proxmox
@@ -205,7 +205,7 @@ ceph osd reweight-by-utilization
 ceph pg stat
 ceph pg dump | grep -v active+clean
 
-# Réseau — vérifier MTU (recommandé 9000 pour Ceph si possible)
+# Réseau - vérifier MTU (recommandé 9000 pour Ceph si possible)
 ip link show bond0
 ip link show bond0.101
 ip link show bond0.102
@@ -217,10 +217,10 @@ ip link show bond0.102
 
 ### Capture du statut Ceph
 
-![Ceph status — Proxmox Datacenter Manager](assets/PDM_Ceph.png)
+![Ceph status - Proxmox Datacenter Manager](assets/PDM_Ceph.png)
 
 ---
 
-- [diagrams/ceph-network.mmd](../diagrams/ceph-network.mmd) — Topologie réseau Ceph
-- [configs/proxmox/](../configs/proxmox/) — Interfaces réseau des nœuds
-- [docs/network-plan.md](network-plan.md) — Adresses IP des réseaux Ceph
+- [diagrams/ceph-network.mmd](../diagrams/ceph-network.mmd) - Topologie réseau Ceph
+- [configs/proxmox/](../configs/proxmox/) - Interfaces réseau des nœuds
+- [docs/network-plan.md](network-plan.md) - Adresses IP des réseaux Ceph

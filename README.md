@@ -4,11 +4,11 @@
 
 # ynov-virtu
 
-> **Cours de Virtualisation** — M1 Expert Cloud, Sécurité & Infrastructure  
+> **Cours de Virtualisation** - M1 Expert Cloud, Sécurité & Infrastructure  
 > YNOV Campus Sophia-Antipolis
 
 Lab orienté entreprise basé sur **Proxmox VE**, **OPNsense**, **Ceph** et un switch **Arista 7050TX-64**.  
-Par-dessus cet underlay physique, une **couche workload** (bastion JumpServer, web, db, supervision Zabbix) est déployée en **Infrastructure as Code** : **OpenTofu** + **cloud-init** + **Ansible**.
+Par-dessus cet underlay physique, une **couche workload** (bastion JumpServer, web, db, supervision Zabbix, IPAM/DCIM NetBox) est déployée en **Infrastructure as Code** : **OpenTofu** + **cloud-init** + **Ansible**.
 
 **Équipe :** Jonathan Panzer · Redouane Kachour · Thibaut Gianola · Sacha Veylon-Busser
 
@@ -28,10 +28,10 @@ Par-dessus cet underlay physique, une **couche workload** (bastion JumpServer, w
 
 Le lab s'organise en deux couches :
 
-- **Underlay physique** — cluster Proxmox 3 nœuds, stockage Ceph, switch Arista, pare-feu OPNsense, NAT Windows pour le WAN.
-- **Couche workload** — VMs métier provisionnées par OpenTofu et configurées par Ansible, sur les VLANs 20 (DMZ) et 30 (SRV-LAN).
+- **Underlay physique** - cluster Proxmox 3 nœuds, stockage Ceph, switch Arista, pare-feu OPNsense, NAT Windows pour le WAN.
+- **Couche workload** - VMs métier provisionnées par OpenTofu et configurées par Ansible, sur les VLANs 20 (DMZ) et 30 (SRV-LAN).
 
-> **Switch physique** — Arista 7050TX-64 (48× RJ45 10G + 4× QSFP+ 40G SFP)
+> **Switch physique** - Arista 7050TX-64 (48× RJ45 10G + 4× QSFP+ 40G SFP)
 >
 > ![Arista 7050TX-64](docs/assets/arista-7050tx-64.png)
 
@@ -57,7 +57,7 @@ graph TD
     SW -- "Et6 VLAN 101" --> PRX2_CEPH["PRX2 nic2\nCeph public"]:::ceph
     SW -- "Po2 LACP\nVLAN 101+102" --> PRX3_CEPH["PRX3 bond0\nCeph 2×10G"]:::ceph
 
-    subgraph CLUSTER["Proxmox Cluster — YNOV-CLUSTER"]
+    subgraph CLUSTER["Proxmox Cluster - YNOV-CLUSTER"]
         PRX1["🖥 PRX1\n10.0.10.1\nOSD + MON + MGR"]:::proxmox
         PRX2["🖥 PRX2\n10.0.10.2\nMON + MGR (quorum)"]:::quorum
         PRX3["🖥 PRX3\n10.0.10.3\nOSD + MON"]:::proxmox
@@ -106,7 +106,7 @@ graph TD
     classDef priv   fill:#1b5e20,stroke:#004d40,color:#fff
     classDef direct fill:#e65c00,stroke:#bf360c,color:#fff
 
-    subgraph PRX1["PRX1 — OSD + MON + MGR"]
+    subgraph PRX1["PRX1 - OSD + MON + MGR"]
         B1["bond0\nenic1 + enic2\nLACP 802.3ad"]:::bond
         P101A["bond0.101\n10.0.101.1/24"]:::pub
         P102A["bond0.102\n10.0.102.1/24"]:::priv
@@ -114,11 +114,11 @@ graph TD
         B1 --> P102A
     end
 
-    subgraph PRX2["PRX2 — MON + MGR (quorum only)"]
+    subgraph PRX2["PRX2 - MON + MGR (quorum only)"]
         N2["nic2 direct\nSFP→RJ45\n10.0.101.2/24"]:::direct
     end
 
-    subgraph PRX3["PRX3 — OSD + MON"]
+    subgraph PRX3["PRX3 - OSD + MON"]
         B3["bond0\nenic1 + enic2\nLACP 802.3ad"]:::bond
         P101C["bond0.101\n10.0.101.3/24"]:::pub
         P102C["bond0.102\n10.0.102.3/24"]:::priv
@@ -141,7 +141,7 @@ graph TD
 | 99 | WAN-OPNSENSE | 10.0.99.0/24 | PC Windows=.1, OPNsense WAN=.2 |
 | 101 | CEPH-PUBLIC | 10.0.101.0/24 | PRX1=.1, PRX2=.2, PRX3=.3 |
 | 102 | CEPH-PRIVATE | 10.0.102.0/24 | PRX1=.1, PRX3=.3 (PRX2 sans private) |
-| 4094 | BLACKHOLE | — | VLAN natif des ports inutilisés + trunks Ceph |
+| 4094 | BLACKHOLE | - | VLAN natif des ports inutilisés + trunks Ceph |
 
 ## Couche workload (VMs)
 
@@ -149,10 +149,11 @@ VMs provisionnées par OpenTofu (clone d'un template cloud-init) puis configuré
 
 | VM | Rôle | VLAN | IP | vCPU / RAM / Disque |
 |----|------|------|----|---------------------|
-| **bastion** | JumpServer (PAM) + outils d'admin | 20 — DMZ | `10.0.20.1` | 1 / 1 Go / 16 Go |
-| **web** | Frontal nginx + php-fpm | 30 — SRV-LAN | `10.0.30.4` | 2 / 2 Go / 20 Go |
-| **db** | Base de données MariaDB | 30 — SRV-LAN | `10.0.30.5` | 2 / 2 Go / 24 Go |
-| **zabbix** | Supervision (serveur + web + MariaDB) | 30 — SRV-LAN | `10.0.30.6` | 2 / 3 Go / 24 Go |
+| **bastion** | JumpServer (PAM) + outils d'admin | 20 - DMZ | `10.0.20.1` | 1 / 1 Go / 16 Go |
+| **web** | Frontal nginx + php-fpm | 30 - SRV-LAN | `10.0.30.4` | 2 / 2 Go / 20 Go |
+| **db** | Base de données MariaDB | 30 - SRV-LAN | `10.0.30.5` | 2 / 2 Go / 24 Go |
+| **zabbix** | Supervision (serveur + web + MariaDB) | 30 - SRV-LAN | `10.0.30.6` | 2 / 3 Go / 24 Go |
+| **netbox** | IPAM/DCIM NetBox (docker compose) | 30 - SRV-LAN | `10.0.30.7` | 2 / 4 Go / 30 Go |
 
 ---
 
@@ -189,19 +190,19 @@ ynov-virtu/
 │   ├── network-plan.md            # Plan IP, VLANs, ports switch
 │   ├── proxmox.md                 # Cluster Proxmox (nœuds, bridges, interfaces)
 │   ├── ceph.md                    # Déploiement Ceph (OSD, MON, MGR, pools)
-│   ├── opnsense.md                # VM OPNsense — interfaces, firewall, NAT
+│   ├── opnsense.md                # VM OPNsense - interfaces, firewall, NAT
 │   ├── windows-nat.md             # Passerelle NAT Windows Wi-Fi→Ethernet
-│   ├── opentofu.md                # IaC — provisioning des VMs (template, provider)
-│   ├── ansible.md                 # IaC — configuration des VMs (rôles, services)
+│   ├── opentofu.md                # IaC - provisioning des VMs (template, provider)
+│   ├── ansible.md                 # IaC - configuration des VMs (rôles, services)
 │   ├── security.md                # Politique de sécurité réseau
 │   ├── troubleshooting.md         # Problèmes rencontrés et résolutions
 │   └── network-tests.md           # Matrice de validation réseau
 │
-├── opentofu/                      # Provisioning VMs — provider Telmate/proxmox 3.0.2-rc07
-│   ├── providers.tf               # Provider + authentification (token API / user)
+├── opentofu/                      # Provisioning VMs - Telmate/proxmox + e-breuninger/netbox
+│   ├── providers.tf               # Providers Proxmox + NetBox (allocateur d'IP)
 │   ├── backend.tf                 # Backend local (HTTP GitLab en option)
-│   ├── variables.tf               # Variables + var.vms (bastion / web / db / zabbix)
-│   ├── main.tf                    # proxmox_vm_qemu — clone du template cloud-init
+│   ├── variables.tf               # Variables + var.vms (bastion / web / db / zabbix / netbox)
+│   ├── main.tf                    # proxmox_vm_qemu + netbox_available_ip_address
 │   ├── outputs.tf                 # vm_ips + ssh_commands
 │   └── terraform.tfvars.example   # Modèle de variables
 │
@@ -209,18 +210,21 @@ ynov-virtu/
 │   ├── bastion-user-data.yaml
 │   ├── web-user-data.yaml
 │   ├── db-user-data.yaml
-│   └── zabbix-user-data.yaml
+│   ├── zabbix-user-data.yaml
+│   └── netbox-user-data.yaml
 │
 ├── ansible/
 │   ├── ansible.cfg                # inventaire, roles_path, collections_path
-│   ├── requirements.yml           # community.zabbix, community.mysql, community.docker...
+│   ├── requirements.yml           # community.zabbix, community.mysql, community.docker, netbox.netbox
 │   ├── inventory/
-│   │   ├── hosts.ini              # bastion / web / db / zabbix (+ groupe agents)
-│   │   └── group_vars/            # bastion.yml, zabbix.yml, agents.yml
+│   │   ├── hosts.ini              # bastion / web / db / zabbix / netbox (+ groupe agents)
+│   │   └── group_vars/            # bastion.yml, zabbix.yml, agents.yml, netbox.yml
 │   ├── playbooks/
 │   │   ├── socle.yml              # rôle common sur tous les hôtes
-│   │   └── roles.yml              # playbook principal (socle + rôles + services)
-│   ├── roles/                     # common, bastion, docker, web, db, zabbix
+│   │   ├── roles.yml              # playbook principal (socle + rôles + services)
+│   │   ├── netbox-seed.yml        # peuple l'IPAM NetBox depuis le plan réseau
+│   │   └── vars/netbox_ipam.yml   # données IPAM (VLANs, préfixes, IPs) du lab
+│   ├── roles/                     # common, bastion, docker, web, db, zabbix, netbox
 │   └── external/jumpserver/       # rôle externe cloné (astronas/jumpserver)
 │
 ├── configs/                       # Configs de référence
@@ -242,13 +246,16 @@ ynov-virtu/
 
 ---
 
-## IaC — OpenTofu
+## IaC - OpenTofu
 
 Provisionne les **VMs de workload** sur le cluster Proxmox via le provider
-[`Telmate/proxmox`](https://registry.terraform.io/providers/Telmate/proxmox/latest) `3.0.2-rc07`.
+[`Telmate/proxmox`](https://registry.terraform.io/providers/Telmate/proxmox/latest) `3.0.2-rc07`,
+et s'appuie sur [`e-breuninger/netbox`](https://registry.terraform.io/providers/e-breuninger/netbox/latest)
+pour l'allocation d'IP.
 
-- **main.tf** : ressource `proxmox_vm_qemu` (`for_each = var.vms`) — clone complet du template, cloud-init (IP, user, DNS), VLAN tag, disque sur le stockage Proxmox.
-- **variables.tf** : variable `vms` décrivant les 4 VMs (bastion, web, db, zabbix), plus le provider, le réseau et le template.
+- **main.tf** : ressource `proxmox_vm_qemu` (`for_each = var.vms`), clone complet du template, cloud-init (IP, user, DNS), VLAN tag, disque sur le stockage Proxmox.
+- **NetBox comme allocateur d'IP** : pour une VM sans `ip` statique, `netbox_available_ip_address` réserve la prochaine adresse libre du `prefix` indiqué. NetBox devient la source de vérité IPAM (fini les IP en dur).
+- **variables.tf** : variable `vms` décrivant les VMs (bastion, web, db, zabbix, netbox), plus les providers, le réseau et le template.
 - **cloud-init/** : `#cloud-config` par VM pour le bootstrap au premier boot (la config applicative est ensuite gérée par Ansible).
 - **backend.tf** : état local par défaut, backend HTTP GitLab en option (commenté).
 
@@ -264,7 +271,7 @@ tofu output ssh_commands
 
 > **Prérequis** : un template Proxmox Debian 12 compatible cloud-init et un token API avec droits de clonage.
 
-## IaC — Ansible
+## IaC - Ansible
 
 Configure les VMs après provisioning : socle commun, rôles applicatifs, bastion JumpServer et supervision Zabbix.
 
@@ -272,11 +279,13 @@ Configure les VMs après provisioning : socle commun, rôles applicatifs, bastio
 |-------------------|-------|
 | `community.zabbix` (commit `main`) | Serveur, frontend web et agents Zabbix 7.0 (support Debian 13) |
 | `community.mysql` | Backend MariaDB des rôles Zabbix |
-| `community.docker` `>=3.6,<5` | Déploiement JumpServer (docker compose v2) |
+| `community.docker` `>=3.6,<5` | Déploiement JumpServer et NetBox (docker compose v2) |
+| `netbox.netbox` | Peuplement de l'IPAM NetBox (playbook netbox-seed, requiert pynetbox) |
 | `astronas/jumpserver` (rôle externe) | Bastion / PAM conteneurisé sur la VM bastion |
 
-- `playbooks/socle.yml` — rôle `common` sur tous les hôtes (paquets, services, durcissement SSH).
-- `playbooks/roles.yml` — playbook principal : `bastion` (+ docker + jumpserver), `zabbix` (serveur/web/agent), `web` et `db` (+ agent Zabbix auto-enregistré via l'API).
+- `playbooks/socle.yml` : rôle `common` sur tous les hôtes (paquets, services, durcissement SSH).
+- `playbooks/roles.yml` : playbook principal : `bastion` (+ docker + jumpserver), `zabbix` (serveur/web/agent), `web` et `db` (+ agent Zabbix), `netbox` (docker + netbox-docker + agent Zabbix).
+- `playbooks/netbox-seed.yml` : peuple l'IPAM NetBox (VLANs, préfixes, IPs) depuis `docs/network-plan.md`, via la collection `netbox.netbox`.
 
 ```bash
 cd ansible

@@ -1,0 +1,25 @@
+---
+# ===== Application "demoapp" (TD monitoring) =====
+# Variables PARTAGEES entre la VM web (deploiement + variables de connexion) et la
+# VM db (creation base/table + utilisateur applicatif). Source unique de verite :
+# on ne duplique pas les identifiants de connexion cote web et cote db.
+
+# Depot fourni par le TD (application web minimale + defaut applicatif embarque).
+demoapp_repo: "https://github.com/sountrust/ynov-zabbix-trigger.git"
+demoapp_repo_version: "main"
+
+# Repertoire web cible sur la VM web (docroot nginx).
+demoapp_web_root: /var/www/app
+
+# ----- Connexion a la base applicative -----
+demoapp_db_name: demoapp
+demoapp_db_user: demo
+# TODO: chiffrer avec ansible-vault (cf. group_vars/zabbix.yml, bastion.yml).
+demoapp_db_password: "CHANGE_ME_demoapp_db"
+demoapp_db_port: 3306
+
+# IP de la VM db (portee par DB_HOST cote web) et IP de la VM web (utilisee pour le
+# GRANT MySQL cote db). Derivees directement de l'inventaire (hosts.ini) -> aucune
+# adresse en dur a maintenir a deux endroits.
+demoapp_db_host: "{{ hostvars['db'].ansible_host }}"
+demoapp_web_host: "{{ hostvars['web'].ansible_host }}"

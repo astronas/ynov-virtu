@@ -1,0 +1,23 @@
+---
+# docker-compose.yml + docker-compose.override.yml sont fusionnes automatiquement
+# par `docker compose` (pas besoin de lister les fichiers). Une modif des env/*.env
+# ou de l'override provoque la recreation des conteneurs concernes au `up -d`.
+- name: Deployer la stack NetBox (docker compose up -d)
+  community.docker.docker_compose_v2:
+    project_src: "{{ netbox_install_dir }}"
+    project_name: netbox
+    state: present
+    pull: missing
+  register: _netbox_compose
+
+- name: Afficher le resultat de docker compose
+  ansible.builtin.debug:
+    msg: "{{ _netbox_compose.actions | default([]) }}"
+
+# Au 1er demarrage NetBox execute les migrations avant d'ouvrir le port : on laisse
+# jusqu'a 5 minutes au frontend pour repondre.
+- name: Attendre que le frontend NetBox accepte les connexions
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: "{{ netbox_http_port }}"
+    timeout: 300

@@ -95,12 +95,24 @@ variable "gateway" {
   type        = string
 }
 
+variable "netbox_url" {
+  description = "URL de l'API NetBox, ex: http://10.0.30.7:8080"
+  type        = string
+}
+
+variable "netbox_api_token" {
+  description = "Token API NetBox utilise pour l'allocation d'IP."
+  type        = string
+  sensitive   = true
+}
+
 variable "vms" {
   description = "Definition des VMs finales issues du template."
   type = map(object({
     vmid        = optional(number)
     hostname    = string
-    ip          = string
+    ip          = optional(string) # IP statique ; si absente -> allouee par NetBox depuis `prefix`
+    prefix      = optional(string) # prefixe NetBox d'ou allouer l'IP, ex "10.0.30.0/24"
     cidr        = number
     vlan_id     = optional(number)
     cores       = number
@@ -154,6 +166,17 @@ variable "vms" {
       disk_size   = "24G"
       description = "Supervision centralisee"
       role        = "zabbix"
+    }
+    netbox = {
+      hostname    = "netbox"
+      ip          = "192.168.10.50"
+      cidr        = 24
+      vlan_id     = 30
+      cores       = 2
+      memory      = 4096
+      disk_size   = "30G"
+      description = "IPAM/DCIM NetBox (docker compose)"
+      role        = "netbox"
     }
   }
 }

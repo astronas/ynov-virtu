@@ -1,0 +1,17 @@
+---
+# Docker Engine + plugin Compose sont fournis par le role `docker` (cf.
+# playbooks/roles.yml) ; git est deja installe par le role `common` mais on le
+# garantit ici pour rendre le role autoportant.
+- name: Installer les prerequis (git pour cloner netbox-docker)
+  ansible.builtin.apt:
+    name:
+      - git
+      - ca-certificates
+    state: present
+    update_cache: true
+
+- name: S'assurer que Docker est demarre et actif
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
