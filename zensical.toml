@@ -37,17 +37,21 @@ nav = [
     { "Configuration Ansible" = "ansible.md" },
   ] },
   { "Services & applicatifs" = [
-    { "🔒 Réseau & sécurité" = [
-      { "🔥 OPNsense (pare-feu)" = "opnsense.md" },
-      { "🛡 Bastion JumpServer" = "jumpserver.md" },
-      { "🔑 Vault (secrets)" = "vault.md" },
+    { "Sécurité" = [
+      { "Bastion JumpServer" = "jumpserver.md" },
+      { "Vault (secrets)" = "vault.md" },
     ] },
-    { "🧩 Plateforme & données" = [
-      { "🧭 NetBox (IPAM/DCIM)" = "netbox.md" },
-      { "🦊 GitLab" = "gitlab.md" },
-      { "🌐 Services web & db" = "services.md" },
+    { "Réseau" = [
+      { "OPNsense (pare-feu)" = "opnsense.md" },
+      { "NetBox (IPAM/DCIM)" = "netbox.md" },
     ] },
-    { "📈 Supervision Zabbix" = "supervision.md" },
+    { "Systèmes" = [
+      { "Services web & db" = "services.md" },
+      { "GitLab" = "gitlab.md" },
+    ] },
+    { "Supervision" = [
+      { "Zabbix" = "supervision.md" },
+    ] },
   ] },
   { "Sécurité" = "security.md" },
   { "Dépannage" = "troubleshooting.md" },
