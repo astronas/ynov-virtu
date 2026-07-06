@@ -1,4 +1,4 @@
-# <img src="assets/logos/webdb.png" class="inline-logo" alt=""> Services web & db (demoapp)
+# Services web & db (demoapp)
 
 <div align="center">
   <img src="assets/logos/webdb.png" alt="web & db" class="logo-hero">

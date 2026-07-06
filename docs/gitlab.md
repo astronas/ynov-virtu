@@ -1,4 +1,4 @@
-# <img src="assets/logos/gitlab.svg" class="inline-logo" alt=""> GitLab
+# GitLab
 
 <div align="center">
   <img src="assets/logos/gitlab.svg" alt="GitLab" class="logo-hero">
