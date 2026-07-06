@@ -1,7 +1,7 @@
-# <img src="assets/logos/vault.svg" class="inline-logo" alt=""> Vault
+# <img src="assets/logos/vault.png" class="inline-logo" alt=""> Vault
 
 <div align="center">
-  <img src="assets/logos/vault.svg" alt="Vault" height="120">
+  <img src="assets/logos/vault.png" alt="Vault" height="120">
 </div>
 
 ## Présentation
