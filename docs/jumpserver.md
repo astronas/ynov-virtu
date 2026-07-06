@@ -1,7 +1,7 @@
 # <img src="assets/logos/jumpserver.png" class="inline-logo" alt=""> Bastion JumpServer (PAM)
 
 <div align="center">
-  <img src="assets/logos/jumpserver.png" alt="JumpServer" height="120">
+  <img src="assets/logos/jumpserver.png" alt="JumpServer" class="logo-hero">
 </div>
 
 ## Présentation

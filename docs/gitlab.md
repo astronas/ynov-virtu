@@ -1,7 +1,7 @@
 # <img src="assets/logos/gitlab.svg" class="inline-logo" alt=""> GitLab
 
 <div align="center">
-  <img src="assets/logos/gitlab.svg" alt="GitLab" height="120">
+  <img src="assets/logos/gitlab.svg" alt="GitLab" class="logo-hero">
 </div>
 
 ## Présentation

@@ -1,7 +1,7 @@
 # <img src="assets/logos/netbox.png" class="inline-logo" alt=""> NetBox (IPAM / DCIM)
 
 <div align="center">
-  <img src="assets/logos/netbox.png" alt="NetBox" height="120">
+  <img src="assets/logos/netbox.png" alt="NetBox" class="logo-hero">
 </div>
 
 ## Présentation

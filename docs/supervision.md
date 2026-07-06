@@ -1,7 +1,7 @@
 # <img src="assets/logos/zabbix.png" class="inline-logo" alt=""> Supervision Zabbix
 
 <div align="center">
-  <img src="assets/logos/zabbix.png" alt="Zabbix" height="120">
+  <img src="assets/logos/zabbix.png" alt="Zabbix" class="logo-hero">
 </div>
 
 ## Présentation

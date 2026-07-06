@@ -1,7 +1,7 @@
 # <img src="assets/logos/vault.png" class="inline-logo" alt=""> Vault
 
 <div align="center">
-  <img src="assets/logos/vault.png" alt="Vault" height="120" class="logo-ondark">
+  <img src="assets/logos/vault.png" alt="Vault" class="logo-hero logo-ondark">
 </div>
 
 ## Présentation
