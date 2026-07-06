@@ -80,7 +80,7 @@
 | `Ethernet5` | Access | 10 | PC Admin | Administration directe |
 | `Ethernet6` | Access | 101 | PRX2 nic2 (SFP→RJ45) | Ceph public PRX2 uniquement |
 | `Ethernet7` | Access | 10 | PC Admin 2 | Second poste d'administration |
-| `Ethernet8–48` | Access | 4094 | - | Ports inutilisés, **shutdown** |
+| `Ethernet8-48` | Access | 4094 | - | Ports inutilisés, **shutdown** |
 | `Ethernet49/1` | - | - | PRX1 SFP lien 1 | Membre de Po1 |
 | `Ethernet49/2` | - | - | PRX1 SFP lien 2 | Membre de Po1 |
 | `Ethernet49/3` | - | - | PRX3 SFP lien 1 | Membre de Po2 |
@@ -133,15 +133,15 @@ Switch Po1 (trunk, VLANs 101+102, native 4094)
 
 | Plage | Usage |
 |---|---|
-| `10.0.10.1–10` | Nœuds Proxmox et infrastructure |
-| `10.0.10.100–200` | VMs management (DHCP ou statique) |
-| `10.0.10.253–254` | Switch et OPNsense (fixes) |
-| `10.0.20.1–10` | VMs DMZ fixes (reverse proxy) |
-| `10.0.20.100–200` | VMs DMZ dynamiques |
-| `10.0.30.100–200` | VMs SRV/LAN (DHCP via OPNsense) |
-| `10.0.99.1–2` | PC Windows et OPNsense WAN (fixes) |
-| `10.0.101.1–3` | Nœuds Ceph public (fixes) |
-| `10.0.102.1–3` | Nœuds Ceph private (fixes, PRX1+PRX3 seulement) |
+| `10.0.10.1-10` | Nœuds Proxmox et infrastructure |
+| `10.0.10.100-200` | VMs management (DHCP ou statique) |
+| `10.0.10.253-254` | Switch et OPNsense (fixes) |
+| `10.0.20.1-10` | VMs DMZ fixes (reverse proxy) |
+| `10.0.20.100-200` | VMs DMZ dynamiques |
+| `10.0.30.100-200` | VMs SRV/LAN (DHCP via OPNsense) |
+| `10.0.99.1-2` | PC Windows et OPNsense WAN (fixes) |
+| `10.0.101.1-3` | Nœuds Ceph public (fixes) |
+| `10.0.102.1-3` | Nœuds Ceph private (fixes, PRX1+PRX3 seulement) |
 
 ---
 

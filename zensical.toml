@@ -1,19 +1,19 @@
 # ============================================================================
-# Configuration Zensical — YNOV-VIRTU
+# Configuration Zensical - YNOV-VIRTU
 # Migré depuis mkdocs.yml (Material for MkDocs).
 # Doc : https://zensical.org/docs/
 # ============================================================================
 
 [project]
-site_name = "YNOV-VIRTU — Lab d'infrastructure virtualisée"
-site_description = "Lab Proxmox 3 nœuds · OPNsense · Ceph · Arista 7050TX-64 — VMs déployées en IaC (OpenTofu + cloud-init + Ansible) : bastion JumpServer, web, db, supervision Zabbix"
+site_name = "YNOV-VIRTU - Lab d'infrastructure virtualisée"
+site_description = "Lab Proxmox 3 nœuds · OPNsense · Ceph · Arista 7050TX-64 - VMs déployées en IaC (OpenTofu + cloud-init + Ansible) : bastion JumpServer, web, db, supervision Zabbix"
 site_author = "YNOV Campus Sophia-Antipolis"
 site_url = "https://astronas.github.io/ynov-virtu/"
 repo_url = "https://github.com/astronas/ynov-virtu"
 repo_name = "astronas/ynov-virtu"
 edit_uri = "edit/main/docs/"
 copyright = """
-Copyright &copy; 2026 YNOV Campus Sophia-Antipolis — M1 Expert Cloud, Sécurité &amp; Infrastructure
+Copyright &copy; 2026 YNOV Campus Sophia-Antipolis - M1 Expert Cloud, Sécurité &amp; Infrastructure
 """
 
 docs_dir = "docs"
@@ -145,7 +145,11 @@ alternate_style = true
 [project.markdown_extensions.pymdownx.mark]
 [project.markdown_extensions.pymdownx.caret]
 [project.markdown_extensions.pymdownx.tilde]
+# ndash/mdash desactives : on ne veut AUCUN tiret typographique genere au rendu
+# (`--` -> – et `---` -> — sinon). Les autres symboles (fleches, (c), ...) restent.
 [project.markdown_extensions.pymdownx.smartsymbols]
+ndash = false
+mdash = false
 [project.markdown_extensions.pymdownx.critic]
 [project.markdown_extensions.pymdownx.tasklist]
 custom_checkbox = true
