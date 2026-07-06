@@ -1,5 +1,9 @@
 # <img src="assets/logos/vault.svg" class="inline-logo" alt=""> Vault
 
+<div align="center">
+  <img src="assets/logos/vault.svg" alt="Vault" height="120">
+</div>
+
 ## Présentation
 
 La VM **`VL-VAULT`** (nœud PRX1) héberge un **[HashiCorp Vault](https://developer.hashicorp.com/vault)** qui centralise les **secrets** du lab. Objectif : sortir les mots de passe et tokens des fichiers `group_vars/*` et `terraform.tfvars` (aujourd'hui en clair sous forme de `CHANGE_ME` / valeurs de démonstration) vers un **coffre chiffré** consommé par Ansible et OpenTofu.

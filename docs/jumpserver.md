@@ -1,5 +1,9 @@
 # <img src="assets/logos/jumpserver.png" class="inline-logo" alt=""> Bastion JumpServer (PAM)
 
+<div align="center">
+  <img src="assets/logos/jumpserver.png" alt="JumpServer" height="120">
+</div>
+
 ## Présentation
 
 Le point d'entrée d'administration du lab est un bastion **[JumpServer](https://www.jumpserver.org/)** (**Privileged Access Management**), déployé en conteneurs (docker compose v2) sur la VM `bastion` (`10.0.20.1`, VLAN 20 DMZ), version **`v4.10.16`**.
