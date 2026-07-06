@@ -452,3 +452,39 @@ html {
     transform: none;
   }
 }
+
+/* ---- Icônes de navigation par thème (section Services & applicatifs) ------
+   Icônes Font Awesome sobres injectées en mask, colorées selon le thème. */
+.md-nav__link[href*="/jumpserver/"],
+.md-nav__link[href*="/vault/"] {
+  --nav-ico: url("../assets/icons/shield.svg");
+}
+.md-nav__link[href*="/opnsense/"],
+.md-nav__link[href*="/netbox/"] {
+  --nav-ico: url("../assets/icons/network.svg");
+}
+.md-nav__link[href*="/services/"],
+.md-nav__link[href*="/gitlab/"] {
+  --nav-ico: url("../assets/icons/server.svg");
+}
+.md-nav__link[href*="/supervision/"] {
+  --nav-ico: url("../assets/icons/chart.svg");
+}
+.md-nav__link[href*="/jumpserver/"]::before,
+.md-nav__link[href*="/vault/"]::before,
+.md-nav__link[href*="/opnsense/"]::before,
+.md-nav__link[href*="/netbox/"]::before,
+.md-nav__link[href*="/services/"]::before,
+.md-nav__link[href*="/gitlab/"]::before,
+.md-nav__link[href*="/supervision/"]::before {
+  content: "";
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 0.95em;
+  height: 0.95em;
+  margin-right: 0.55em;
+  vertical-align: -0.15em;
+  background-color: currentColor;
+  -webkit-mask: var(--nav-ico) center / contain no-repeat;
+  mask: var(--nav-ico) center / contain no-repeat;
+}
