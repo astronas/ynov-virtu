@@ -1,4 +1,4 @@
-# GitLab
+# <img src="assets/logos/gitlab.svg" class="inline-logo" alt=""> GitLab
 
 ## Présentation
 

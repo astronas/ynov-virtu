@@ -1,4 +1,4 @@
-# Supervision Zabbix
+# <img src="assets/logos/zabbix.svg" class="inline-logo" alt=""> Supervision Zabbix
 
 ## Présentation
 

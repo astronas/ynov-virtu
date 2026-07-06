@@ -38,6 +38,7 @@ nav = [
     { "Configuration Ansible" = "ansible.md" },
   ] },
   { "Services & applicatifs" = [
+    { "NetBox (IPAM/DCIM)" = "netbox.md" },
     { "Services web & db" = "services.md" },
     { "Bastion JumpServer" = "jumpserver.md" },
     { "Supervision Zabbix" = "supervision.md" },

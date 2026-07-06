@@ -1,4 +1,4 @@
-# Vault
+# <img src="assets/logos/vault.svg" class="inline-logo" alt=""> Vault
 
 ## Présentation
 

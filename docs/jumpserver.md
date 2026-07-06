@@ -1,4 +1,4 @@
-# Bastion JumpServer (PAM)
+# <img src="assets/logos/jumpserver.png" class="inline-logo" alt=""> Bastion JumpServer (PAM)
 
 ## Présentation
 
