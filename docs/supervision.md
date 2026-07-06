@@ -1,7 +1,7 @@
-# <img src="assets/logos/zabbix.svg" class="inline-logo" alt=""> Supervision Zabbix
+# <img src="assets/logos/zabbix.png" class="inline-logo" alt=""> Supervision Zabbix
 
 <div align="center">
-  <img src="assets/logos/zabbix.svg" alt="Zabbix" height="120">
+  <img src="assets/logos/zabbix.png" alt="Zabbix" height="120">
 </div>
 
 ## Présentation
