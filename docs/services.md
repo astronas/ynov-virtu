@@ -1,4 +1,8 @@
-# Services web & db (demoapp)
+# <img src="assets/logos/webdb.png" class="inline-logo" alt=""> Services web & db (demoapp)
+
+<div align="center">
+  <img src="assets/logos/webdb.png" alt="web & db" height="120">
+</div>
 
 ## Présentation
 
