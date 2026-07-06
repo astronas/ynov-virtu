@@ -411,10 +411,14 @@ html {
 }
 
 /* ---- Flèches Mermaid animées (le flux "coule" vers la pointe) ------- */
-.md-typeset .mermaid .flowchart-link,
-.md-typeset .mermaid .edgePaths path {
-  stroke-dasharray: 6 5;
-  animation: mermaid-flow 1.1s linear infinite;
+/* !important obligatoire : Mermaid injecte un <style> interne (sélecteur #id,
+   spécificité supérieure) qui rend les arêtes solides -> sans !important le
+   stroke-dasharray est écrasé et l'animation du dashoffset reste invisible. */
+.mermaid .flowchart-link,
+.mermaid .edgePaths path,
+.mermaid .edgePath .path {
+  stroke-dasharray: 6 5 !important;
+  animation: mermaid-flow 1.1s linear infinite !important;
 }
 @keyframes mermaid-flow {
   to {
@@ -422,10 +426,11 @@ html {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .md-typeset .mermaid .flowchart-link,
-  .md-typeset .mermaid .edgePaths path {
-    animation: none;
-    stroke-dasharray: none;
+  .mermaid .flowchart-link,
+  .mermaid .edgePaths path,
+  .mermaid .edgePath .path {
+    animation: none !important;
+    stroke-dasharray: none !important;
   }
 }
 
