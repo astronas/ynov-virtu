@@ -16,7 +16,7 @@ graph LR
     classDef gl fill:#e24329,stroke:#b5301f,color:#fff
     classDef box fill:#37474f,stroke:#263238,color:#fff
     DEV["Poste / CI"]:::box -->|git push| GL["GitLab\nVL-GITLAB (PRX1)"]:::gl
-    TOFU["OpenTofu"]:::box -->|backend HTTP\nstate + lock| GL
+    TOFU["OpenTofu"]:::box -->|"backend HTTP (state + lock)"| GL
     GL --> REPO["Dépôt ynov-virtu"]:::box
     GL --> STATE["État Terraform\ndistant & verrouillé"]:::box
 ```
