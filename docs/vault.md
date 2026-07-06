@@ -1,4 +1,4 @@
-# <img src="assets/logos/vault.png" class="inline-logo" alt=""> Vault
+# Vault
 
 <div align="center">
   <img src="assets/logos/vault.png" alt="Vault" class="logo-hero logo-ondark">

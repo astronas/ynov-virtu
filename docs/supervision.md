@@ -1,4 +1,4 @@
-# <img src="assets/logos/zabbix.png" class="inline-logo" alt=""> Supervision Zabbix
+# Supervision Zabbix
 
 <div align="center">
   <img src="assets/logos/zabbix.png" alt="Zabbix" class="logo-hero">
