@@ -76,9 +76,9 @@ Les exemples de configuration se trouvent dans [configs/proxmox/](../configs/pro
 
 Présent sur les trois nœuds. Raccordé à l'interface physique principale (nic0).
 
-```
-vmbr0 (bridge-vlan-aware yes, bridge-vids 10 20 30 99)
-  └── nic0 → switch trunk (native VLAN 10)
+```mermaid
+graph LR
+    BR["vmbr0\n(VLAN-aware · vids 10 20 30 99)"] --> NIC["nic0"] -->|"trunk (natif VLAN 10)"| SW["Switch"]
 ```
 
 **Comportement :**
@@ -91,12 +91,12 @@ vmbr0 (bridge-vlan-aware yes, bridge-vids 10 20 30 99)
 
 Agrège deux interfaces SFP en LACP 802.3ad vers le switch.
 
-```
-bond0 (LACP 802.3ad)
-  ├── enic1 → Et49/1 (PRX1) ou Et49/3 (PRX3)
-  └── enic2 → Et49/2 (PRX1) ou Et49/4 (PRX3)
-       ├── bond0.101 → Ceph public (VLAN 101)
-       └── bond0.102 → Ceph private (VLAN 102)
+```mermaid
+graph TD
+    E1["enic1 : Et49/1 (PRX1) / Et49/3 (PRX3)"] --> BOND["bond0\n(LACP 802.3ad)"]
+    E2["enic2 : Et49/2 (PRX1) / Et49/4 (PRX3)"] --> BOND
+    BOND --> B101["bond0.101\nCeph public (VLAN 101)"]
+    BOND --> B102["bond0.102\nCeph private (VLAN 102)"]
 ```
 
 ### `nic2` - Interface Ceph public PRX2

@@ -25,8 +25,17 @@
    mode clair, passés en blanc en mode sombre pour rester lisibles. Cible la
    grille .tech-logos ET les usages inline (via le nom de fichier). */
 [data-md-color-scheme="slate"] img[src*="proxmox.png"],
-[data-md-color-scheme="slate"] img[src*="arista.png"] {
+[data-md-color-scheme="slate"] img[src*="arista.png"],
+[data-md-color-scheme="slate"] img[src*="netbox.png"] {
   filter: brightness(0) invert(1);
+}
+
+/* Vault : logo jaune (variante fond sombre) illisible sur blanc en mode clair.
+   Puce sombre derrière le gros logo pour rester lisible dans les deux thèmes. */
+.md-typeset img.logo-ondark {
+  background: #16161d;
+  border-radius: 12px;
+  padding: 12px 18px;
 }
 
 .tech-logos img:hover {
