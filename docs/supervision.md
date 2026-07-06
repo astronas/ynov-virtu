@@ -1,5 +1,9 @@
 # <img src="assets/logos/zabbix.svg" class="inline-logo" alt=""> Supervision Zabbix
 
+<div align="center">
+  <img src="assets/logos/zabbix.svg" alt="Zabbix" height="120">
+</div>
+
 ## Présentation
 
 La supervision du lab repose sur **Zabbix 7.4** <img src="assets/logos/ansible.svg" class="inline-logo" alt=""> déployé par Ansible sur l'hôte `zabbix` (`10.0.30.6`, VLAN 30 SRV-LAN) :

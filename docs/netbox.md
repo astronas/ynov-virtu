@@ -1,5 +1,9 @@
 # <img src="assets/logos/netbox.png" class="inline-logo" alt=""> NetBox (IPAM / DCIM)
 
+<div align="center">
+  <img src="assets/logos/netbox.png" alt="NetBox" height="120">
+</div>
+
 ## Présentation
 
 **NetBox** est la **source de vérité réseau** du lab (*IP Address Management* / *Data Center Infrastructure Management*). Il est déployé en conteneurs (docker compose v2, via **netbox-docker**) sur la VM `netbox` (`10.0.30.7`, VLAN 30 SRV-LAN), et alimente **OpenTofu** pour l'allocation d'adresses IP.

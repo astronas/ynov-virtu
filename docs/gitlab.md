@@ -1,5 +1,9 @@
 # <img src="assets/logos/gitlab.svg" class="inline-logo" alt=""> GitLab
 
+<div align="center">
+  <img src="assets/logos/gitlab.svg" alt="GitLab" height="120">
+</div>
+
 ## Présentation
 
 La VM **`VL-GITLAB`** (nœud PRX1) héberge une instance **GitLab** qui joue deux rôles dans le lab :
