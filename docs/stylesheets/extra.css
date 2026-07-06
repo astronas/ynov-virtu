@@ -30,12 +30,21 @@
   filter: brightness(0) invert(1);
 }
 
+/* Logos "hero" en tête des pages services : boîte uniforme (hauteur ET largeur
+   bornées) pour un rendu homogène quel que soit le ratio du logo. */
+.md-typeset img.logo-hero {
+  height: auto;
+  width: auto;
+  max-height: 60px;
+  max-width: 190px;
+}
+
 /* Vault : logo jaune (variante fond sombre) illisible sur blanc en mode clair.
-   Puce sombre derrière le gros logo pour rester lisible dans les deux thèmes. */
+   Puce sombre derrière le logo pour rester lisible dans les deux thèmes. */
 .md-typeset img.logo-ondark {
   background: #16161d;
-  border-radius: 12px;
-  padding: 12px 18px;
+  border-radius: 10px;
+  padding: 7px 11px;
 }
 
 .tech-logos img:hover {
