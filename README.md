@@ -194,6 +194,7 @@ ynov-virtu/
 │   ├── windows-nat.md             # Passerelle NAT Windows Wi-Fi→Ethernet
 │   ├── opentofu.md                # IaC - provisioning des VMs (template, provider)
 │   ├── ansible.md                 # IaC - configuration des VMs (rôles, services)
+│   ├── netbox.md                  # NetBox IPAM/DCIM (seed + allocateur d'IP)
 │   ├── services.md                # web & db (demoapp) + défaut disque supervisé
 │   ├── jumpserver.md              # Bastion PAM JumpServer
 │   ├── supervision.md             # Zabbix (serveur, agents, monitoring web)
