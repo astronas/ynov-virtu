@@ -4,14 +4,15 @@
 
 Le PC Windows sert de **passerelle WAN temporaire** pour OPNsense, en attendant une connexion Internet dédiée. Il partage une connexion Wi-Fi (4G/5G ou fixe) vers le VLAN 99 via NAT PowerShell natif.
 
-```
-[Internet]
-    │ Wi-Fi (DHCP opérateur)
-[PC Windows]
-    │ Ethernet - 10.0.99.1/24
-[Switch Arista - Et1 - VLAN 99]
-    │
-[OPNsense WAN - 10.0.99.254/24]
+```mermaid
+graph TD
+    classDef net fill:#1565c0,stroke:#0d47a1,color:#fff
+    classDef win fill:#2d6a4f,stroke:#1b4332,color:#fff
+    classDef sw fill:#c0392b,stroke:#922b21,color:#fff
+    classDef opn fill:#e65c00,stroke:#bf360c,color:#fff
+    NET["🌐 Internet"]:::net -->|"Wi-Fi (DHCP opérateur)"| PC["🖥 PC Windows"]:::win
+    PC -->|"Ethernet 10.0.99.1/24"| SW["🔀 Switch Arista\nEt1 · VLAN 99"]:::sw
+    SW --> OPN["🛡 OPNsense WAN\n10.0.99.254/24"]:::opn
 ```
 
 ---

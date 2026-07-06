@@ -94,18 +94,13 @@
 
 Les ports `Et2`, `Et3`, `Et4` sont configurés en trunk avec VLAN natif 10. Côté Proxmox, `vmbr0` est VLAN-aware et supporte les VLAN IDs 10, 20, 30 et 99.
 
-```
-Switch Et2/3/4 (trunk, native VLAN 10)
-         │
-      vmbr0 (bridge VLAN-aware, bridge-vids 10 20 30 99)
-         │
-   ┌─────┴──────┐
-   │   VMs      │
-   │ tag vide   │→ VLAN 10 (MGMT, trafic natif)
-   │ tag 20     │→ VLAN 20 (DMZ)
-   │ tag 30     │→ VLAN 30 (SRV/LAN)
-   │ tag 99     │→ VLAN 99 (WAN OPNsense)
-   └────────────┘
+```mermaid
+graph TD
+    SW["Switch Et2/3/4\n(trunk · natif VLAN 10)"] --> BR["vmbr0\n(VLAN-aware · vids 10 20 30 99)"]
+    BR -->|"tag vide"| V10["VLAN 10 · MGMT (natif)"]
+    BR -->|"tag 20"| V20["VLAN 20 · DMZ"]
+    BR -->|"tag 30"| V30["VLAN 30 · SRV/LAN"]
+    BR -->|"tag 99"| V99["VLAN 99 · WAN OPNsense"]
 ```
 
 ---
@@ -114,15 +109,11 @@ Switch Et2/3/4 (trunk, native VLAN 10)
 
 Les Port-Channels 1 et 2 transportent les VLANs 101 et 102. Le VLAN natif est 4094 (blackhole), ce qui garantit qu'aucun trafic non tagué ne circule accidentellement sur ces liens.
 
-```
-Switch Po1 (trunk, VLANs 101+102, native 4094)
-         │
-      bond0 (LACP) sur PRX1
-         │
-   ┌─────┴──────┐
-   │ bond0.101  │→ 10.0.101.1/24 (Ceph public)
-   │ bond0.102  │→ 10.0.102.1/24 (Ceph private)
-   └────────────┘
+```mermaid
+graph TD
+    SW["Switch Po1\n(trunk VLANs 101+102 · natif 4094)"] --> BOND["bond0 (LACP) sur PRX1"]
+    BOND --> B101["bond0.101 : 10.0.101.1/24 (Ceph public)"]
+    BOND --> B102["bond0.102 : 10.0.102.1/24 (Ceph private)"]
 ```
 
 ![LACP trunk Ceph - Port-Channel 1 & 2](assets/lacp%20trunk.png)
