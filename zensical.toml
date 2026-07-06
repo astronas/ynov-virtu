@@ -145,11 +145,7 @@ alternate_style = true
 [project.markdown_extensions.pymdownx.mark]
 [project.markdown_extensions.pymdownx.caret]
 [project.markdown_extensions.pymdownx.tilde]
-# ndash/mdash desactives : on ne veut AUCUN tiret typographique genere au rendu
-# (`--` -> – et `---` -> — sinon). Les autres symboles (fleches, (c), ...) restent.
 [project.markdown_extensions.pymdownx.smartsymbols]
-ndash = false
-mdash = false
 [project.markdown_extensions.pymdownx.critic]
 [project.markdown_extensions.pymdownx.tasklist]
 custom_checkbox = true
