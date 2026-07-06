@@ -1,16 +1,16 @@
-# Plan réseau — VLANs, IPs et ports switch
+# Plan réseau - VLANs, IPs et ports switch
 
 ## VLANs
 
 | VLAN | Nom | Réseau | Masque | Gateway (OPNsense) | Rôle |
 |---|---|---|---|---|---|
 | **10** | MGMT | `10.0.10.0` | `/24` | `10.0.10.254` | Management Proxmox, switch, OPNsense LAN |
-| **20** | DMZ | `10.0.20.0` | `/24` | `10.0.20.254` | Zone DMZ — reverse proxy, services exposés |
+| **20** | DMZ | `10.0.20.0` | `/24` | `10.0.20.254` | Zone DMZ - reverse proxy, services exposés |
 | **30** | SRV-LAN | `10.0.30.0` | `/24` | `10.0.30.254` | Services internes, VMs métier |
 | **99** | WAN-OPNSENSE | `10.0.99.0` | `/24` | `10.0.99.1` (PC Win) | WAN OPNsense via NAT Windows |
-| **101** | CEPH-PUBLIC | `10.0.101.0` | `/24` | — | Accès client Ceph, MON/MGR |
-| **102** | CEPH-PRIVATE | `10.0.102.0` | `/24` | — | Réplication OSD Ceph (PRX1 ↔ PRX3) |
-| **4094** | BLACKHOLE | — | — | — | VLAN poubelle / native sécurisée |
+| **101** | CEPH-PUBLIC | `10.0.101.0` | `/24` | - | Accès client Ceph, MON/MGR |
+| **102** | CEPH-PRIVATE | `10.0.102.0` | `/24` | - | Réplication OSD Ceph (PRX1 ↔ PRX3) |
+| **4094** | BLACKHOLE | - | - | - | VLAN poubelle / native sécurisée |
 
 ![Configuration VLANs sur le switch Arista](assets/vlan.png)
 
@@ -18,7 +18,7 @@
 
 ## Plan IP complet
 
-### VLAN 10 — MGMT (`10.0.10.0/24`)
+### VLAN 10 - MGMT (`10.0.10.0/24`)
 
 | Équipement | Adresse IP | Remarques |
 |---|---|---|
@@ -29,28 +29,28 @@
 | OPNsense LAN/MGMT | `10.0.10.254/24` | Gateway du VLAN MGMT |
 | PC Admin | DHCP ou statique | Branché sur Et5 ou Et7, access VLAN 10 |
 
-### VLAN 20 — DMZ (`10.0.20.0/24`)
+### VLAN 20 - DMZ (`10.0.20.0/24`)
 
 | Équipement | Adresse IP | Remarques |
 |---|---|---|
 | OPNsense DMZ | `10.0.20.254/24` | Gateway de la DMZ |
 | Reverse proxy | `10.0.20.10/24` | NGINX, Traefik ou Caddy |
 
-### VLAN 30 — SRV/LAN (`10.0.30.0/24`)
+### VLAN 30 - SRV/LAN (`10.0.30.0/24`)
 
 | Équipement | Adresse IP | Remarques |
 |---|---|---|
 | OPNsense SRV/LAN | `10.0.30.254/24` | Gateway des services internes |
 | VMs métier | `10.0.30.x/24` | Attribution libre, DHCP via OPNsense possible |
 
-### VLAN 99 — WAN OPNsense (`10.0.99.0/24`)
+### VLAN 99 - WAN OPNsense (`10.0.99.0/24`)
 
 | Équipement | Adresse IP | Remarques |
 |---|---|---|
 | PC Windows (NAT) | `10.0.99.1/24` | Carte Ethernet vers switch, pas de gateway |
 | OPNsense WAN | `10.0.99.254/24` | Gateway : `10.0.99.1` |
 
-### VLAN 101 — Ceph public (`10.0.101.0/24`)
+### VLAN 101 - Ceph public (`10.0.101.0/24`)
 
 | Équipement | Adresse IP | Remarques |
 |---|---|---|
@@ -58,7 +58,7 @@
 | PRX2 | `10.0.101.2/24` | Interface `nic2` (Et6, SFP→RJ45) |
 | PRX3 | `10.0.101.3/24` | Interface `bond0.101` (LACP Po2) |
 
-### VLAN 102 — Ceph private (`10.0.102.0/24`)
+### VLAN 102 - Ceph private (`10.0.102.0/24`)
 
 | Équipement | Adresse IP | Remarques |
 |---|---|---|
@@ -80,11 +80,11 @@
 | `Ethernet5` | Access | 10 | PC Admin | Administration directe |
 | `Ethernet6` | Access | 101 | PRX2 nic2 (SFP→RJ45) | Ceph public PRX2 uniquement |
 | `Ethernet7` | Access | 10 | PC Admin 2 | Second poste d'administration |
-| `Ethernet8–48` | Access | 4094 | — | Ports inutilisés, **shutdown** |
-| `Ethernet49/1` | — | — | PRX1 SFP lien 1 | Membre de Po1 |
-| `Ethernet49/2` | — | — | PRX1 SFP lien 2 | Membre de Po1 |
-| `Ethernet49/3` | — | — | PRX3 SFP lien 1 | Membre de Po2 |
-| `Ethernet49/4` | — | — | PRX3 SFP lien 2 | Membre de Po2 |
+| `Ethernet8–48` | Access | 4094 | - | Ports inutilisés, **shutdown** |
+| `Ethernet49/1` | - | - | PRX1 SFP lien 1 | Membre de Po1 |
+| `Ethernet49/2` | - | - | PRX1 SFP lien 2 | Membre de Po1 |
+| `Ethernet49/3` | - | - | PRX3 SFP lien 1 | Membre de Po2 |
+| `Ethernet49/4` | - | - | PRX3 SFP lien 2 | Membre de Po2 |
 | `Port-Channel1` | Trunk | 101, 102 (natif 4094) | PRX1 Ceph | LACP 2×10G |
 | `Port-Channel2` | Trunk | 101, 102 (natif 4094) | PRX3 Ceph | LACP 2×10G |
 
@@ -125,7 +125,7 @@ Switch Po1 (trunk, VLANs 101+102, native 4094)
    └────────────┘
 ```
 
-![LACP trunk Ceph — Port-Channel 1 & 2](assets/lacp%20trunk.png)
+![LACP trunk Ceph - Port-Channel 1 & 2](assets/lacp%20trunk.png)
 
 ---
 
@@ -147,6 +147,6 @@ Switch Po1 (trunk, VLANs 101+102, native 4094)
 
 ## Voir aussi
 
-- [docs/architecture.md](architecture.md) — Vue d'ensemble
-- [configs/arista/running-config-current.eos](../configs/arista/running-config-current.eos) — Configuration switch
-- [diagrams/vlan-flow.mmd](../diagrams/vlan-flow.mmd) — Flux inter-VLAN
+- [docs/architecture.md](architecture.md) - Vue d'ensemble
+- [configs/arista/running-config-current.eos](../configs/arista/running-config-current.eos) - Configuration switch
+- [diagrams/vlan-flow.mmd](../diagrams/vlan-flow.mmd) - Flux inter-VLAN

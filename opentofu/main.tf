@@ -2,6 +2,31 @@ locals {
   dns_nameserver = join(" ", var.dns_servers)
 }
 
+# --- NetBox comme allocateur d'IP (source de verite IPAM) --------------------
+# Pour chaque VM SANS `ip` statique, on demande a NetBox la prochaine IP libre du
+# `prefix` indique. Les VMs avec `ip` renseignee restent statiques (ex: netbox
+# elle-meme, pour ne pas creer de dependance circulaire tofu <-> NetBox).
+data "netbox_prefix" "vm" {
+  for_each = { for k, v in var.vms : k => v if v.ip == null }
+  prefix   = each.value.prefix
+}
+
+resource "netbox_available_ip_address" "vm" {
+  for_each  = { for k, v in var.vms : k => v if v.ip == null }
+  prefix_id = data.netbox_prefix.vm[each.key].id
+  status    = "active"
+  dns_name  = "${each.value.hostname}.${var.search_domain}"
+}
+
+locals {
+  # IP CIDR finale par VM : statique ("ip/cidr") ou allouee par NetBox (deja en CIDR).
+  vm_ip_cidr = {
+    for k, v in var.vms : k => (
+      v.ip != null ? "${v.ip}/${v.cidr}" : netbox_available_ip_address.vm[k].ip_address
+    )
+  }
+}
+
 resource "proxmox_vm_qemu" "vm" {
   for_each = var.vms
 
@@ -28,7 +53,7 @@ resource "proxmox_vm_qemu" "vm" {
 
   ciuser       = var.ci_user
   cipassword   = var.ci_password
-  ipconfig0    = "ip=${each.value.ip}/${each.value.cidr},gw=${var.gateway}"
+  ipconfig0    = "ip=${local.vm_ip_cidr[each.key]},gw=${var.gateway}"
   nameserver   = local.dns_nameserver
   searchdomain = var.search_domain
 

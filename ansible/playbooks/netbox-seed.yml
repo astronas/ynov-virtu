@@ -1,0 +1,71 @@
+---
+# Peuple NetBox (IPAM) a partir du plan reseau documente (vars/netbox_ipam.yml).
+# Idempotent : rejouable sans creer de doublons. S'execute sur le CONTROLEUR
+# (appels API NetBox), pas sur les hotes -> hosts: localhost.
+#
+# Prerequis (une fois) :
+#   pipx inject ansible pynetbox            # lib Python requise par netbox.netbox
+#   ANSIBLE_CONFIG=./ansible.cfg ansible-galaxy collection install -r requirements.yml
+#
+# Lancement :
+#   ANSIBLE_CONFIG=./ansible.cfg ansible-playbook playbooks/netbox-seed.yml
+- name: Seed NetBox IPAM depuis le plan reseau
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/netbox_ipam.yml
+  vars:
+    netbox_url: "http://10.0.30.7:8080"
+    # TODO: deplacer dans un vault chiffre. Token cree au 1er boot du conteneur
+    # (SUPERUSER_API_TOKEN = netbox_superuser_api_token de group_vars/netbox.yml).
+    netbox_api_token: "0123456789abcdef0123456789abcdef01234567"
+  module_defaults:
+    group/netbox.netbox.netbox:
+      netbox_url: "{{ netbox_url }}"
+      netbox_token: "{{ netbox_api_token }}"
+      validate_certs: false
+  tasks:
+    - name: "Site {{ netbox_site }}"
+      netbox.netbox.netbox_site:
+        data:
+          name: "{{ netbox_site }}"
+          slug: "{{ netbox_site | lower | replace(' ', '-') }}"
+        state: present
+
+    - name: "VLANs"
+      netbox.netbox.netbox_vlan:
+        data:
+          vid: "{{ item.vid }}"
+          name: "{{ item.name }}"
+          site: "{{ netbox_site }}"
+        state: present
+      loop: "{{ netbox_vlans }}"
+      loop_control:
+        label: "vlan {{ item.vid }} ({{ item.name }})"
+
+    - name: "Prefixes"
+      netbox.netbox.netbox_prefix:
+        data:
+          prefix: "{{ item.prefix }}"
+          site: "{{ netbox_site }}"
+          vlan:
+            vid: "{{ item.vid }}"
+            site: "{{ netbox_site }}"
+          description: "{{ item.description | default(omit) }}"
+        state: present
+      loop: "{{ netbox_prefixes }}"
+      loop_control:
+        label: "{{ item.prefix }}"
+
+    - name: "IP addresses (reservations statiques)"
+      netbox.netbox.netbox_ip_address:
+        data:
+          address: "{{ item.address }}"
+          dns_name: "{{ item.dns_name | default(omit) }}"
+          description: "{{ item.description | default(omit) }}"
+          status: active
+        state: present
+      loop: "{{ netbox_ips }}"
+      loop_control:
+        label: "{{ item.address }}"

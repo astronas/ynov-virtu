@@ -1,0 +1,10 @@
+#cloud-config
+hostname: netbox
+manage_etc_hosts: true
+package_update: true
+packages:
+  - qemu-guest-agent
+  - curl
+  - git
+runcmd:
+  - systemctl enable --now qemu-guest-agent

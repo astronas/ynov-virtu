@@ -1,0 +1,3 @@
+---
+# Nom du vhost / du fichier de conf nginx pour l'application demoapp.
+web_site_name: demoapp

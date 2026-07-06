@@ -4,7 +4,7 @@
 
 # ===== Agent (agent2) =====
 zabbix_agent2: true
-zabbix_agent_version: "7.0"          # aligne sur le serveur (group_vars/zabbix.yml)
+zabbix_agent_version: "7.4"          # aligne sur le serveur (group_vars/zabbix.yml)
 
 # Serveur Zabbix : verifications passives (Server=) ET actives (ServerActive=)
 zabbix_agent_server: "10.0.30.6"

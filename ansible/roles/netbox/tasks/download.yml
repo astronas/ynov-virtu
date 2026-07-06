@@ -1,0 +1,17 @@
+---
+# On clone le depot netbox-docker a la version epinglee. Il fournit le
+# docker-compose.yml, le Dockerfile et l'arborescence configuration/ ; il sert de
+# project_src a `docker compose`. On ne touche jamais aux fichiers upstream : nos
+# surcharges passent par env/*.env et docker-compose.override.yml (cf. configure.yml).
+# force=true : le role ecrase ensuite les fichiers env/*.env versionnes par upstream
+# (cf. configure.yml). Sans force, au 2e run git refuse le checkout ("Local
+# modifications exist"). L'ordre download -> configure garantit que nos valeurs sont
+# reappliquees juste apres le reset git. Les donnees vivent dans les volumes Docker.
+- name: Cloner (ou mettre a jour) netbox-docker a la version epinglee
+  ansible.builtin.git:
+    repo: "{{ netbox_docker_repo }}"
+    dest: "{{ netbox_install_dir }}"
+    version: "{{ netbox_docker_version }}"
+    depth: 1
+    force: true
+  register: _netbox_git

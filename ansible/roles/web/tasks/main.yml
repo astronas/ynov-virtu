@@ -1,4 +1,6 @@
 ---
+# ===== Frontal web PHP + application demoapp (TD monitoring, sections 1/3/4) =====
+
 - name: Installer le frontal web PHP
   ansible.builtin.apt:
     name:
@@ -6,14 +8,117 @@
       - php-fpm
       - php-mysql
       - php-cli
+      - git            # pour recuperer les fichiers de l'application
     state: present
     update_cache: true
 
-- name: Creer l'arborescence applicative
+# La version de PHP-FPM (donc les chemins pool.d / socket / service) depend de la
+# release Debian. On la determine dynamiquement pour rester portable.
+- name: Determiner la version de PHP-FPM installee
+  ansible.builtin.shell:
+    cmd: "set -o pipefail; ls -d /etc/php/*/fpm 2>/dev/null | awk -F/ '{print $4}' | sort -V | tail -1"
+    executable: /bin/bash
+  register: _phpfpm_ver
+  changed_when: false
+
+- name: Enregistrer les chemins PHP-FPM
+  ansible.builtin.set_fact:
+    php_version: "{{ _phpfpm_ver.stdout | trim }}"
+    php_fpm_pool: "/etc/php/{{ _phpfpm_ver.stdout | trim }}/fpm/pool.d/www.conf"
+    php_fpm_socket: "/run/php/php{{ _phpfpm_ver.stdout | trim }}-fpm.sock"
+    php_fpm_service: "php{{ _phpfpm_ver.stdout | trim }}-fpm"
+
+- name: Verifier que PHP-FPM a bien ete detecte
+  ansible.builtin.assert:
+    that: php_version | length > 0
+    fail_msg: "Impossible de detecter la version de PHP-FPM sous /etc/php/*/fpm."
+
+# ----- Deploiement de l'application fournie (TD section 4) -----
+# On clone dans un repertoire SOURCE dedie, HORS docroot : la VM web contient deja
+# un checkout du workshop precedent dans /var/www/app (dont le remote origin est
+# absent/casse), ce qui ferait echouer un git directement sur le docroot
+# ("'origin' does not appear to be a git repository"). Ce repertoire source n'est
+# manipule que par Ansible -> clone/maj toujours propre, aucune commande git dans
+# le docroot (donc aucun probleme d'ownership ni de .git servi par nginx).
+- name: Recuperer l'application demoapp depuis le depot fourni (repertoire source)
+  ansible.builtin.git:
+    repo: "{{ demoapp_repo }}"
+    dest: /opt/demoapp-src
+    version: "{{ demoapp_repo_version }}"
+    depth: 1
+    force: true
+
+- name: S'assurer que le docroot existe
   ansible.builtin.file:
-    path: /var/www/app
+    path: "{{ demoapp_web_root }}"
     state: directory
     owner: www-data
     group: www-data
     mode: "0755"
 
+- name: Deployer les fichiers applicatifs dans le docroot (droits www-data)
+  ansible.builtin.copy:
+    src: /opt/demoapp-src/
+    dest: "{{ demoapp_web_root }}/"
+    remote_src: true
+    owner: www-data
+    group: www-data
+    mode: preserve
+
+# L'application ecrit dans storage/session-cache (comportement embarque du TD).
+# On le pre-cree en ecriture pour www-data : c'est ce repertoire qui se remplit et
+# provoque la derive disque observee en section 6.
+- name: Creer le repertoire de stockage applicatif (ecrivable par www-data)
+  ansible.builtin.file:
+    path: "{{ demoapp_web_root }}/storage/session-cache"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0775"
+
+# ----- Variables de connexion a la base (TD section 3) -----
+# L'application lit DB_* via getenv(). Avec PHP-FPM, on porte donc ces variables
+# dans le pool www (les entrees env[] sont toujours exportees vers le process PHP).
+- name: Porter les variables de connexion DB dans le pool PHP-FPM
+  ansible.builtin.blockinfile:
+    path: "{{ php_fpm_pool }}"
+    marker: "; {mark} ANSIBLE MANAGED - demoapp DB env"
+    block: |
+      env[DB_HOST] = {{ demoapp_db_host }}
+      env[DB_PORT] = {{ demoapp_db_port }}
+      env[DB_NAME] = {{ demoapp_db_name }}
+      env[DB_USER] = {{ demoapp_db_user }}
+      env[DB_PASS] = {{ demoapp_db_password }}
+  notify: Redemarrer PHP-FPM
+
+# ----- Configuration du service web (TD section 4) -----
+- name: Deployer le vhost nginx de l'application
+  ansible.builtin.template:
+    src: demoapp.nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ web_site_name }}.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Recharger nginx
+
+- name: Activer le vhost demoapp
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ web_site_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ web_site_name }}.conf"
+    state: link
+  notify: Recharger nginx
+
+- name: Desactiver le vhost nginx par defaut (occupe le port 80)
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Recharger nginx
+
+- name: S'assurer que nginx et PHP-FPM sont demarres et actives
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - nginx
+    - "{{ php_fpm_service }}"

@@ -1,4 +1,4 @@
-# NAT Windows — Passerelle WAN temporaire
+# NAT Windows - Passerelle WAN temporaire
 
 ## Rôle
 
@@ -8,10 +8,10 @@ Le PC Windows sert de **passerelle WAN temporaire** pour OPNsense, en attendant 
 [Internet]
     │ Wi-Fi (DHCP opérateur)
 [PC Windows]
-    │ Ethernet — 10.0.99.1/24
-[Switch Arista — Et1 — VLAN 99]
+    │ Ethernet - 10.0.99.1/24
+[Switch Arista - Et1 - VLAN 99]
     │
-[OPNsense WAN — 10.0.99.254/24]
+[OPNsense WAN - 10.0.99.254/24]
 ```
 
 ---
@@ -24,8 +24,8 @@ La carte Ethernet du PC, connectée au switch sur `Et1` (access VLAN 99), doit �
 |---|---|
 | Adresse IP | `10.0.99.1` |
 | Masque | `255.255.255.0` |
-| Gateway | *(vide — aucune)* |
-| DNS | *(optionnel — `1.1.1.1`)* |
+| Gateway | *(vide - aucune)* |
+| DNS | *(optionnel - `1.1.1.1`)* |
 
 > **Important** : ne pas mettre de gateway sur l'interface Ethernet. Seule l'interface Wi-Fi doit avoir une gateway vers Internet.
 
@@ -157,5 +157,5 @@ Set-NetIPInterface -InterfaceAlias "Ethernet" -InterfaceMetric 1000
 
 ## Voir aussi
 
-- [configs/windows/nat-powershell.ps1](../configs/windows/nat-powershell.ps1) — Script PowerShell de référence (NAT)
-- [docs/troubleshooting.md](troubleshooting.md) — Résolution de problèmes
+- [configs/windows/nat-powershell.ps1](../configs/windows/nat-powershell.ps1) - Script PowerShell de référence (NAT)
+- [docs/troubleshooting.md](troubleshooting.md) - Résolution de problèmes

@@ -1,4 +1,4 @@
-# <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> OPNsense — Pare-feu et routage inter-VLAN
+# <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> OPNsense - Pare-feu et routage inter-VLAN
 
 ## Présentation
 
@@ -50,10 +50,10 @@ Démarrer la VM depuis l'ISO OPNsense. L'installeur installe le système sur le 
 Au premier démarrage, OPNsense propose d'assigner les interfaces :
 
 ```
-WAN  → vtnet0  (VLAN 99 — trafic tagué 99 par Proxmox)
-LAN  → vtnet1  (VLAN 10 — trafic natif, non tagué)
-OPT1 → vtnet2  (VLAN 20 — DMZ)
-OPT2 → vtnet3  (VLAN 30 — SRV/LAN)
+WAN  → vtnet0  (VLAN 99 - trafic tagué 99 par Proxmox)
+LAN  → vtnet1  (VLAN 10 - trafic natif, non tagué)
+OPT1 → vtnet2  (VLAN 20 - DMZ)
+OPT2 → vtnet3  (VLAN 30 - SRV/LAN)
 ```
 
 ### 3. Configuration IP initiale (console)
@@ -139,7 +139,7 @@ Identifiants par défaut : `admin` / `opnsense`
 
 | # | Interface | Version | Protocole | Source | Port src | Destination | Port dst | Description |
 |---|-----------|---------|-----------|--------|----------|-------------|----------|-------------|
-| 1 | OPT1 + SRV30 | IPv4 | TCP/UDP | OPT1 network, SRV30 network | * | * | web | — |
+| 1 | OPT1 + SRV30 | IPv4 | TCP/UDP | OPT1 network, SRV30 network | * | * | web | - |
 | 2 | WAN | IPv4 | TCP | * | * | DMZ network | 80 (http) | allow 80 WAN to DMZ |
 | 3 | WAN | IPv4 | TCP | * | * | DMZ network | 443 (https) | allow 443 WAN to DMZ |
 | 4 | OPT1 | IPv4 | TCP | OPT1 network | * | OPT1 adresse | 443 (https) | allow admin from MGMT net |
@@ -243,7 +243,7 @@ traceroute 1.1.1.1
 
 ## Voir aussi
 
-- [configs/opnsense/interfaces.md](../configs/opnsense/interfaces.md) — Tableau des interfaces
-- [configs/opnsense/firewall-rules.md](../configs/opnsense/firewall-rules.md) — Règles firewall
-- [configs/opnsense/nat.md](../configs/opnsense/nat.md) — Outbound NAT
-- [docs/windows-nat.md](windows-nat.md) — Configuration du NAT Windows (WAN)
+- [configs/opnsense/interfaces.md](../configs/opnsense/interfaces.md) - Tableau des interfaces
+- [configs/opnsense/firewall-rules.md](../configs/opnsense/firewall-rules.md) - Règles firewall
+- [configs/opnsense/nat.md](../configs/opnsense/nat.md) - Outbound NAT
+- [docs/windows-nat.md](windows-nat.md) - Configuration du NAT Windows (WAN)

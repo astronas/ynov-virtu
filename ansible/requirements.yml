@@ -19,3 +19,7 @@ collections:
   # en 2.16.3 -> on reste sur la branche 4.x (4.8.7 : requires_ansible >=2.15).
   - name: community.docker
     version: ">=3.6.0,<5.0.0"
+  # Modules IPAM/DCIM pour peupler NetBox via son API (playbooks/netbox-seed.yml).
+  # Requiert la lib Python pynetbox sur le controleur :
+  #   pipx inject ansible pynetbox   (ou : pip install pynetbox)
+  - name: netbox.netbox

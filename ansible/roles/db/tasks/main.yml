@@ -4,6 +4,7 @@
     name:
       - mariadb-server
       - mariadb-client
+      - python3-pymysql   # requis par les modules community.mysql
     state: present
     update_cache: true
 
@@ -13,3 +14,83 @@
     state: started
     enabled: true
 
+# Sur Debian, le root MariaDB s'authentifie via unix_socket (sans mot de passe).
+# En posant le socket dans /root/.my.cnf, tous les modules community.mysql lances
+# en root passent par le socket local (evite "1698 Access denied for root@localhost").
+- name: Fournir le socket MariaDB par defaut a root (/root/.my.cnf)
+  ansible.builtin.copy:
+    dest: /root/.my.cnf
+    content: |
+      [client]
+      socket=/run/mysqld/mysqld.sock
+    owner: root
+    group: root
+    mode: "0600"
+
+# Par defaut MariaDB n'ecoute que sur 127.0.0.1 : la VM web (demoapp_web_host) ne
+# pourrait pas joindre la base. On ouvre l'ecoute reseau (les VMs sont sur un reseau
+# prive de lab, protege par le firewall OPNsense en amont).
+- name: Autoriser MariaDB a ecouter sur le reseau (acces depuis la VM web)
+  ansible.builtin.copy:
+    dest: /etc/mysql/mariadb.conf.d/99-app.cnf
+    content: |
+      [mysqld]
+      bind-address = 0.0.0.0
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Redemarrer MariaDB
+
+# ===== Base applicative demoapp (TD section 2) =====
+# Tous les modules mysql tournent en root via le socket local (anchor YAML).
+- name: Initialiser la base applicative demoapp
+  module_defaults:
+    community.mysql.mysql_db: &mysql_root
+      login_user: root
+      login_unix_socket: /run/mysqld/mysqld.sock
+    community.mysql.mysql_query: *mysql_root
+    community.mysql.mysql_user: *mysql_root
+  block:
+    - name: Creer la base demoapp (utf8mb4)
+      community.mysql.mysql_query:
+        login_db: mysql
+        query: >-
+          CREATE DATABASE IF NOT EXISTS {{ demoapp_db_name }}
+          CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+    - name: Creer la table reports
+      community.mysql.mysql_query:
+        login_db: "{{ demoapp_db_name }}"
+        query: >-
+          CREATE TABLE IF NOT EXISTS reports (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            status VARCHAR(50) NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+          );
+
+    - name: Verifier si la table reports est deja peuplee
+      community.mysql.mysql_query:
+        login_db: "{{ demoapp_db_name }}"
+        query: "SELECT COUNT(*) AS c FROM reports;"
+      register: _reports_count
+      changed_when: false
+
+    - name: Inserer les donnees de demonstration (une seule fois)
+      community.mysql.mysql_query:
+        login_db: "{{ demoapp_db_name }}"
+        query: >-
+          INSERT INTO reports (title, status) VALUES
+          ('Daily sales export', 'ok'),
+          ('Inventory sync', 'warning'),
+          ('Customer import', 'ok'),
+          ('Supplier feed', 'pending');
+      when: (_reports_count.query_result[0][0].c | int) == 0
+
+    - name: Creer l'utilisateur applicatif (accessible depuis la VM web)
+      community.mysql.mysql_user:
+        name: "{{ demoapp_db_user }}"
+        password: "{{ demoapp_db_password }}"
+        host: "{{ demoapp_web_host }}"
+        priv: "{{ demoapp_db_name }}.*:SELECT,INSERT,UPDATE,DELETE"
+        state: present

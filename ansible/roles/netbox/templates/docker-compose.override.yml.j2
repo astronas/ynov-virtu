@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+# Surcharge fusionnee automatiquement avec le docker-compose.yml de netbox-docker.
+# Publie le frontend NetBox sur l'hote (le conteneur ecoute en interne sur 8080).
+services:
+  netbox:
+    ports:
+      - "{{ netbox_http_port }}:8080"

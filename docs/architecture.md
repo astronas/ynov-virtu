@@ -1,12 +1,12 @@
-# Architecture — Vue d'ensemble
+# Architecture - Vue d'ensemble
 
 ## Présentation générale
 
 Le lab YNOV-VIRTU est une infrastructure de virtualisation d'entreprise miniaturisée, construite autour de trois couches :
 
-1. **Couche réseau** — Switch Arista 7050TX-64 <img src="assets/logos/arista.png" class="inline-logo" alt=""> (`YNOV-SW-LAB`), segmentation VLAN, LACP pour Ceph <img src="assets/logos/ceph.svg" class="inline-logo" alt="">.
-2. **Couche compute** — Cluster Proxmox <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> 3 nœuds (PRX1, PRX2, PRX3), hyperviseur KVM/LXC.
-3. **Couche service** — OPNsense <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> (routage/firewall), Ceph <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> (stockage distribué), Windows NAT (WAN temporaire).
+1. **Couche réseau** - Switch Arista 7050TX-64 <img src="assets/logos/arista.png" class="inline-logo" alt=""> (`YNOV-SW-LAB`), segmentation VLAN, LACP pour Ceph <img src="assets/logos/ceph.svg" class="inline-logo" alt="">.
+2. **Couche compute** - Cluster Proxmox <img src="assets/logos/proxmox.png" class="inline-logo" alt=""> 3 nœuds (PRX1, PRX2, PRX3), hyperviseur KVM/LXC.
+3. **Couche service** - OPNsense <img src="assets/logos/opnsense.svg" class="inline-logo" alt=""> (routage/firewall), Ceph <img src="assets/logos/ceph.svg" class="inline-logo" alt=""> (stockage distribué), Windows NAT (WAN temporaire).
 
 ---
 
@@ -28,20 +28,20 @@ graph TD
     SW["🔀 YNOV-SW-LAB\nArista 7050TX-64\n10.0.10.253"]:::switch
 
     INET -->|Wi-Fi| WIN
-    WIN -->|Et1 — VLAN 99| SW
+    WIN -->|Et1 - VLAN 99| SW
 
     SW -->|Et2 trunk\n10/20/30/99\nnatif 10| PRX1
     SW -->|Et3 trunk\n10/20/30/99\nnatif 10| PRX2
     SW -->|Et4 trunk\n10/20/30/99\nnatif 10| PRX3
 
-    SW -->|Et5 — VLAN 10| PCADM["🖥 PC Admin\nVLAN MGMT"]:::admin
-    SW -->|Et7 — VLAN 10| PCADM2["🖥 PC Admin 2\nVLAN MGMT"]:::admin
+    SW -->|Et5 - VLAN 10| PCADM["🖥 PC Admin\nVLAN MGMT"]:::admin
+    SW -->|Et7 - VLAN 10| PCADM2["🖥 PC Admin 2\nVLAN MGMT"]:::admin
 
-    SW -->|Po1 — LACP 2×10G\nEt49/1+49/2\nVLAN 101+102| C1["PRX1 bond0\nCeph public+private"]:::ceph
-    SW -->|Et6 — VLAN 101| C2["PRX2 nic2\nCeph public"]:::ceph
-    SW -->|Po2 — LACP 2×10G\nEt49/3+49/4\nVLAN 101+102| C3["PRX3 bond0\nCeph public+private"]:::ceph
+    SW -->|Po1 - LACP 2×10G\nEt49/1+49/2\nVLAN 101+102| C1["PRX1 bond0\nCeph public+private"]:::ceph
+    SW -->|Et6 - VLAN 101| C2["PRX2 nic2\nCeph public"]:::ceph
+    SW -->|Po2 - LACP 2×10G\nEt49/3+49/4\nVLAN 101+102| C3["PRX3 bond0\nCeph public+private"]:::ceph
 
-    subgraph CLUSTER["☁️ Proxmox Cluster — YNOV-CLUSTER"]
+    subgraph CLUSTER["☁️ Proxmox Cluster - YNOV-CLUSTER"]
         PRX1["🖥 PRX1\n10.0.10.1\nOSD · MON · MGR"]:::proxmox
         PRX2["🖥 PRX2\n10.0.10.2\nMON · MGR quorum"]:::quorum
         PRX3["🖥 PRX3\n10.0.10.3\nOSD · MON"]:::proxmox
@@ -97,10 +97,10 @@ Le switch est le cœur L2 du lab. Il assure :
 
 VM hébergée sur PRX3. Sert de passerelle et pare-feu pour l'ensemble du lab :
 
-- **WAN** : `10.0.99.254/24` — récupère Internet depuis le PC Windows via NAT.
-- **LAN/MGMT** : `10.0.10.254/24` — gateway du VLAN management.
-- **DMZ** : `10.0.20.254/24` — gateway de la zone DMZ.
-- **SRV/LAN** : `10.0.30.254/24` — gateway des services internes.
+- **WAN** : `10.0.99.254/24` - récupère Internet depuis le PC Windows via NAT.
+- **LAN/MGMT** : `10.0.10.254/24` - gateway du VLAN management.
+- **DMZ** : `10.0.20.254/24` - gateway de la zone DMZ.
+- **SRV/LAN** : `10.0.30.254/24` - gateway des services internes.
 
 ### 💻 PC Windows
 
@@ -114,10 +114,10 @@ Au-dessus de l'underlay physique, les VMs métier sont déployées en IaC (OpenT
 
 | VM | Rôle | VLAN | IP |
 |----|------|------|----|
-| **bastion** | JumpServer (PAM) + outils d'admin | 20 — DMZ | `10.0.20.1` |
-| **web** | Frontal nginx + php-fpm | 30 — SRV-LAN | `10.0.30.4` |
-| **db** | Base de données MariaDB | 30 — SRV-LAN | `10.0.30.5` |
-| **zabbix** | Supervision (serveur + web + MariaDB) | 30 — SRV-LAN | `10.0.30.6` |
+| **bastion** | JumpServer (PAM) + outils d'admin | 20 - DMZ | `10.0.20.1` |
+| **web** | Frontal nginx + php-fpm | 30 - SRV-LAN | `10.0.30.4` |
+| **db** | Base de données MariaDB | 30 - SRV-LAN | `10.0.30.5` |
+| **zabbix** | Supervision (serveur + web + MariaDB) | 30 - SRV-LAN | `10.0.30.6` |
 
 > Détails du provisionnement : [OpenTofu & cloud-init](opentofu.md) · [Configuration Ansible](ansible.md)
 
@@ -161,7 +161,7 @@ sequenceDiagram
 
     VM->>OPN_SRV: requête (VLAN 30)
     OPN_SRV->>OPN_WAN: routage inter-VLAN
-    OPN_WAN->>WIN: VLAN 99 — NAT
+    OPN_WAN->>WIN: VLAN 99 - NAT
     WIN->>INET: Wi-Fi (4G/5G)
     INET-->>WIN: réponse
     WIN-->>OPN_WAN: NAT retour
@@ -207,7 +207,7 @@ graph LR
 
 ## Configuration switch Arista (running-config)
 
-Configuration complète exportée depuis le switch (`show running-config`) — **EOS 4.20.12M** :
+Configuration complète exportée depuis le switch (`show running-config`) - **EOS 4.20.12M** :
 
 ```eos
 ! device: YNOV-SW-LAB (DCS-7050TX-64, EOS-4.20.12M)
@@ -250,13 +250,13 @@ ip routing
 
 > Fichier complet : [`configs/arista/running-config-current.eos`](../configs/arista/running-config-current.eos)
 
-![Table de routage Arista — ip route](assets/route.png)
+![Table de routage Arista - ip route](assets/route.png)
 
 ---
 
 ## Voir aussi
 
-- [docs/network-plan.md](network-plan.md) — Plan IP complet et rôles des ports switch
-- [diagrams/architecture.mmd](../diagrams/architecture.mmd) — Schéma Mermaid
-- [docs/proxmox.md](proxmox.md) — Configuration des nœuds
-- [docs/ceph.md](ceph.md) — Déploiement du cluster Ceph
+- [docs/network-plan.md](network-plan.md) - Plan IP complet et rôles des ports switch
+- [diagrams/architecture.mmd](../diagrams/architecture.mmd) - Schéma Mermaid
+- [docs/proxmox.md](proxmox.md) - Configuration des nœuds
+- [docs/ceph.md](ceph.md) - Déploiement du cluster Ceph

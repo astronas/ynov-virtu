@@ -71,7 +71,7 @@ ping -c 4 10.0.101.1
 ping -c 4 10.0.101.2
 ping -c 4 10.0.101.3
 
-# Test ping réseau Ceph private (VLAN 102 — PRX1 et PRX3 uniquement)
+# Test ping réseau Ceph private (VLAN 102 - PRX1 et PRX3 uniquement)
 ping -c 4 10.0.102.1   # depuis PRX3
 ping -c 4 10.0.102.3   # depuis PRX1
 

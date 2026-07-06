@@ -1,0 +1,56 @@
+---
+# Donnees IPAM du lab, transcrites depuis docs/network-plan.md.
+# Consommees par playbooks/netbox-seed.yml pour peupler NetBox (source de verite).
+# Toute IP/prefixe/VLAN reel du lab doit vivre ICI (versionne) -> NetBox n'est
+# qu'un miroir rejouable de ce fichier.
+
+netbox_site: "Ynov Sophia"
+
+# VLANs (cf. docs/network-plan.md)
+netbox_vlans:
+  - { vid: 10, name: "MGMT" }
+  - { vid: 20, name: "DMZ" }
+  - { vid: 30, name: "SRV-LAN" }
+  - { vid: 99, name: "WAN-OPNSENSE" }
+  - { vid: 101, name: "CEPH-PUBLIC" }
+  - { vid: 102, name: "CEPH-PRIVATE" }
+  - { vid: 4094, name: "BLACKHOLE" }
+
+# Prefixes (reseaux /24) lies a leur VLAN
+netbox_prefixes:
+  - { prefix: "10.0.10.0/24", vid: 10, description: "MGMT - Proxmox, switch, OPNsense LAN" }
+  - { prefix: "10.0.20.0/24", vid: 20, description: "DMZ - reverse proxy, services exposes" }
+  - { prefix: "10.0.30.0/24", vid: 30, description: "SRV-LAN - services internes, VMs metier" }
+  - { prefix: "10.0.99.0/24", vid: 99, description: "WAN OPNsense via NAT Windows" }
+  - { prefix: "10.0.101.0/24", vid: 101, description: "Ceph public - MON/MGR" }
+  - { prefix: "10.0.102.0/24", vid: 102, description: "Ceph private - replication OSD" }
+
+# IPs statiques deja utilisees (reservees dans NetBox)
+# NetBox saura ainsi ne PAS les redistribuer via netbox_available_ip_address.
+netbox_ips:
+  # VLAN 10 - MGMT
+  - { address: "10.0.10.1/24", dns_name: "prx1", description: "Noeud Proxmox PRX1" }
+  - { address: "10.0.10.2/24", dns_name: "prx2", description: "Noeud Proxmox PRX2" }
+  - { address: "10.0.10.3/24", dns_name: "prx3", description: "Noeud Proxmox PRX3" }
+  - { address: "10.0.10.253/24", dns_name: "sw-arista", description: "Switch Arista 7050" }
+  - { address: "10.0.10.254/24", dns_name: "opnsense-lan", description: "OPNsense - gateway MGMT" }
+  # VLAN 20 - DMZ
+  - { address: "10.0.20.1/24", dns_name: "bastion", description: "Bastion JumpServer (PAM)" }
+  - { address: "10.0.20.10/24", dns_name: "reverse-proxy", description: "Reverse proxy DMZ" }
+  - { address: "10.0.20.254/24", dns_name: "opnsense-dmz", description: "OPNsense - gateway DMZ" }
+  # VLAN 30 - SRV-LAN
+  - { address: "10.0.30.4/24", dns_name: "web", description: "Frontal web nginx/php" }
+  - { address: "10.0.30.5/24", dns_name: "db", description: "Base de donnees MariaDB" }
+  - { address: "10.0.30.6/24", dns_name: "zabbix", description: "Supervision Zabbix" }
+  - { address: "10.0.30.7/24", dns_name: "netbox", description: "IPAM/DCIM NetBox" }
+  - { address: "10.0.30.254/24", dns_name: "opnsense-srv", description: "OPNsense - gateway SRV/LAN" }
+  # VLAN 99 - WAN OPNsense
+  - { address: "10.0.99.1/24", dns_name: "pc-nat", description: "PC Windows NAT (gateway WAN)" }
+  - { address: "10.0.99.254/24", dns_name: "opnsense-wan", description: "OPNsense - interface WAN" }
+  # VLAN 101 - Ceph public
+  - { address: "10.0.101.1/24", dns_name: "prx1-ceph-pub", description: "PRX1 Ceph public" }
+  - { address: "10.0.101.2/24", dns_name: "prx2-ceph-pub", description: "PRX2 Ceph public" }
+  - { address: "10.0.101.3/24", dns_name: "prx3-ceph-pub", description: "PRX3 Ceph public" }
+  # VLAN 102 - Ceph private
+  - { address: "10.0.102.1/24", dns_name: "prx1-ceph-priv", description: "PRX1 Ceph private" }
+  - { address: "10.0.102.3/24", dns_name: "prx3-ceph-priv", description: "PRX3 Ceph private" }

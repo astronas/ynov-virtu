@@ -1,7 +1,7 @@
 ---
-# ===== Version de Zabbix (LTS) =====
-zabbix_server_version: "7.0"
-zabbix_web_version: "7.0"
+# ===== Version de Zabbix =====
+zabbix_server_version: "7.4"
+zabbix_web_version: "7.4"
 
 # ===== Base de donnees (MariaDB locale sur l'hote zabbix) =====
 zabbix_server_database: mysql
@@ -21,8 +21,8 @@ zabbix_server_mysql_login_host: localhost
 zabbix_server_mysql_login_user: root
 zabbix_server_mysql_login_unix_socket: /run/mysqld/mysqld.sock
 
-# ===== Frontend web (nginx + php-fpm) =====
-zabbix_web_http_server: nginx
+# ===== Frontend web (apache + php-fpm) =====
+zabbix_web_http_server: apache
 zabbix_web_vhost_port: 80
 zabbix_api_server_url: "{{ ansible_host }}"   # accessible via http://10.0.30.6/
 zabbix_server_hostname: localhost             # le serveur zabbix tourne en local
@@ -33,6 +33,6 @@ zabbix_server_name: "Workshop Zabbix"
 # qui se monitore via l'hote "Zabbix server" pre-cree par le schema -> pas de
 # zabbix_api_create_hosts ici.
 zabbix_agent2: true
-zabbix_agent_version: "7.0"
+zabbix_agent_version: "7.4"
 zabbix_agent_server: 127.0.0.1
 zabbix_agent_serveractive: 127.0.0.1

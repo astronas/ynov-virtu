@@ -1,0 +1,38 @@
+---
+# Variables du role netbox (netbox-docker : PostgreSQL + Redis + NetBox via compose).
+# S'applique a l'hote du groupe [netbox] defini dans hosts.ini.
+# Les defauts complets sont dans roles/netbox/defaults/main.yml ; on ne surcharge
+# ici que ce qui est specifique au lab (version, reseau, secrets).
+
+# ===== Source netbox-docker =====
+# Version epinglee du depot netbox-docker (determine l'image netboxcommunity/netbox
+# embarquee). TODO: verifier la derniere release sur
+# https://github.com/netbox-community/netbox-docker/releases
+netbox_docker_version: "3.3.0"
+
+# ===== Reseau =====
+# Port publie sur l'hote (le conteneur netbox ecoute sur 8080).
+# Acces : http://10.0.30.7:8080/
+netbox_http_port: 8080
+# ALLOWED_HOSTS (Django). ATTENTION : netbox-docker separe cette variable par des
+# ESPACES (pas des virgules) -> une liste en virgules = un seul hote bidon = HTTP 400.
+# "*" accepte tout (defaut netbox-docker, OK en lab). Pour restreindre, liste separee
+# par des espaces, ex : "10.0.30.7 netbox localhost 127.0.0.1".
+netbox_allowed_hosts: "*"
+
+# ===== Compte super-utilisateur initial =====
+netbox_superuser_name: admin
+netbox_superuser_email: admin@lab.local
+
+# ===== Secrets =====
+# TODO: a chiffrer avec ansible-vault (cf. group_vars/zabbix.yml et bastion.yml).
+# SECRET_KEY : minimum 50 caracteres, stable dans le temps.
+#   Generer : openssl rand -base64 48
+netbox_secret_key: "CHANGE_ME_generer_une_cle_secrete_de_50_caracteres_minimum"
+netbox_superuser_password: "CHANGE_ME_netbox_admin"
+# Jeton API du super-utilisateur : 40 caracteres hexadecimaux.
+#   Generer : openssl rand -hex 20
+netbox_superuser_api_token: "0123456789abcdef0123456789abcdef01234567"
+netbox_db_password: "CHANGE_ME_netbox_db"
+netbox_redis_password: "CHANGE_ME_netbox_redis"
+netbox_redis_cache_password: "CHANGE_ME_netbox_redis_cache"

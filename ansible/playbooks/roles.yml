@@ -15,11 +15,64 @@
 - name: Configurer la supervision (serveur Zabbix)
   hosts: zabbix
   become: true
+  pre_tasks:
+    # Debian ne genere quasi aucune locale ; le frontend Zabbix veut en_US.UTF-8
+    # (+ fr_FR.UTF-8 ici) sinon chaque widget affiche
+    # "Locale for language en_US is not found on the web server".
+    - name: "Frontend | Generer les locales requises par le frontend Zabbix"
+      community.general.locale_gen:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - en_US.UTF-8
+        - fr_FR.UTF-8
+      notify: Redemarrer apache2 (locales)
+
+    # Prerequis Apache non geres par community.zabbix.zabbix_web sur cette VM :
+    #  1. cloud-init installe et demarre nginx -> il occupe le port 80 et empeche
+    #     apache2 de se lier (AH00072: Address already in use) ;
+    #  2. le vhost genere utilise `RewriteEngine` mais le role n'active jamais
+    #     mod_rewrite -> `apache2ctl configtest` echoue.
+    # On corrige les deux AVANT le role zabbix_web (qui, lui, demarre apache).
+    - name: "Apache | Preparer Apache (neutraliser nginx + activer mod_rewrite)"
+      when: zabbix_web_http_server | default('nginx') == 'apache'
+      block:
+        - name: "Arreter/desactiver nginx (installe par cloud-init, occupe le port 80)"
+          ansible.builtin.systemd:
+            name: nginx
+            state: stopped
+            enabled: false
+          register: _zbx_nginx_off
+          failed_when:
+            - _zbx_nginx_off is failed
+            - "'Could not find' not in (_zbx_nginx_off.msg | default(''))"
+
+        - name: Installer apache2 (pour disposer de a2enmod avant zabbix_web)
+          ansible.builtin.apt:
+            name: apache2
+            state: present
+            update_cache: true
+        # On utilise a2enmod brut (cree juste le symlink, SANS configtest) et non
+        # community.general.apache2_module : ce dernier lance `apache2ctl` qui charge
+        # toute la conf et echoue si un vhost referencant RewriteEngine existe deja
+        # (cas d'un re-run apres un premier passage interrompu).
+        - name: Activer le module Apache rewrite
+          ansible.builtin.command:
+            cmd: a2enmod rewrite
+          register: _zbx_a2enmod_rewrite
+          changed_when: "'already enabled' not in _zbx_a2enmod_rewrite.stdout"
   roles:
     - zabbix                           # local : MariaDB + client PyMySQL (prerequis)
     - community.zabbix.zabbix_server   # serveur Zabbix (backend MySQL)
-    - community.zabbix.zabbix_web      # frontend nginx + php-fpm
+    - community.zabbix.zabbix_web      # frontend apache + php (mod_php)
     - community.zabbix.zabbix_agent    # agent local (auto-supervision de l'hote)
+  handlers:
+    # mod_php ne recharge les locales nouvellement generees qu'apres un restart Apache
+    - name: Redemarrer apache2 (locales)
+      when: zabbix_web_http_server | default('nginx') == 'apache'
+      ansible.builtin.service:
+        name: apache2
+        state: restarted
 
 - name: Configurer le frontal web + agent Zabbix
   hosts: web
@@ -34,3 +87,160 @@
   roles:
     - db
     - community.zabbix.zabbix_agent    # agent + enregistrement auto sur le serveur
+
+# NetBox (IPAM/DCIM) deploye en conteneurs (netbox-docker / compose v2), comme le
+# bastion JumpServer. Place APRES le serveur Zabbix car l'agent s'enregistre via l'API.
+- name: Deployer NetBox (IPAM/DCIM) + agent Zabbix
+  hosts: netbox
+  become: true
+  roles:
+    - docker                           # Docker Engine + plugin Compose (requis par netbox-docker)
+    - netbox                           # netbox-docker : PostgreSQL + Redis + NetBox (compose v2)
+    - community.zabbix.zabbix_agent    # agent + enregistrement auto sur le serveur
+
+# ===== Supervision du service web via l'API Zabbix (TD monitoring, section 5) =====
+# Le host "web" est cree par zabbix_api_create_hosts pendant le play web ci-dessus
+# (avec le template "Linux by Zabbix agent" : disponibilite VM, etat agent, disque).
+# On ajoute ici les checks APPLICATIFS que ce template ne couvre pas : disponibilite
+# HTTP, temps de reponse HTTP, etat des services nginx/php-fpm, et un trigger explicite
+# de saturation disque (c'est cette metrique qui derive en section 6).
+# Ce play parle a l'API Zabbix (connexion httpapi), pas en SSH -> pas de become.
+- name: Superviser le service web (HTTP + services + saturation disque)
+  hosts: zabbix
+  gather_facts: false
+  connection: httpapi
+  vars:
+    ansible_network_os: community.zabbix.zabbix
+    ansible_httpapi_port: 80
+    ansible_httpapi_use_ssl: false
+    ansible_httpapi_validate_certs: false
+    ansible_zabbix_url_path: ""            # frontend a la racine : http://10.0.30.6/
+    # Compte Admin du frontend (defaut 1ere install). TODO: chiffrer via ansible-vault.
+    ansible_user: Admin
+    ansible_httpapi_pass: "zabbix"
+    zbx_web_host: web
+  tasks:
+    # ----- Items (metriques) -----
+    - name: "Item | Disponibilite HTTP (net.tcp.service)"
+      community.zabbix.zabbix_item:
+        name: "HTTP service availability"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          type: simple_check          # verifie par le serveur Zabbix directement
+          key: "net.tcp.service[http,,80]"
+          value_type: numeric_unsigned
+          interval: 1m
+        state: present
+
+    - name: "Item | Temps de reponse HTTP (net.tcp.service.perf)"
+      community.zabbix.zabbix_item:
+        name: "HTTP response time"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          type: simple_check
+          key: "net.tcp.service.perf[http,,80]"
+          value_type: numeric_float
+          interval: 1m
+        state: present
+
+    - name: "Item | Service nginx en cours d'execution"
+      community.zabbix.zabbix_item:
+        name: "nginx running processes"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          type: zabbix_agent          # collecte par l'agent (passif)
+          key: "proc.num[nginx]"
+          value_type: numeric_unsigned
+          interval: 1m
+          interface:
+            main: true
+        state: present
+
+    - name: "Item | Service PHP-FPM en cours d'execution"
+      community.zabbix.zabbix_item:
+        name: "php-fpm running processes"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          type: zabbix_agent
+          key: "proc.num[,,,php-fpm]"
+          value_type: numeric_unsigned
+          interval: 1m
+          interface:
+            main: true
+        state: present
+
+    - name: "Item | Taux d'occupation du systeme de fichiers racine"
+      community.zabbix.zabbix_item:
+        name: "Root FS space used (%)"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          type: zabbix_agent
+          key: "vfs.fs.size[/,pused]"
+          value_type: numeric_float
+          interval: 1m
+          interface:
+            main: true
+        state: present
+
+    # ----- Triggers (alertes) -----
+    - name: "Trigger | HTTP indisponible"
+      community.zabbix.zabbix_trigger:
+        name: "Web service is DOWN on {{ zbx_web_host }}"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          severity: high
+          expression: "last(/{{ zbx_web_host }}/net.tcp.service[http,,80])=0"
+          enabled: true
+        state: present
+
+    - name: "Trigger | Temps de reponse HTTP eleve (>2s)"
+      community.zabbix.zabbix_trigger:
+        name: "Web response time is high on {{ zbx_web_host }}"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          severity: warning
+          expression: "min(/{{ zbx_web_host }}/net.tcp.service.perf[http,,80],5m)>2"
+          enabled: true
+        state: present
+
+    - name: "Trigger | nginx arrete"
+      community.zabbix.zabbix_trigger:
+        name: "nginx is not running on {{ zbx_web_host }}"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          severity: high
+          expression: "last(/{{ zbx_web_host }}/proc.num[nginx])=0"
+          enabled: true
+        state: present
+
+    - name: "Trigger | PHP-FPM arrete"
+      community.zabbix.zabbix_trigger:
+        name: "php-fpm is not running on {{ zbx_web_host }}"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          severity: high
+          expression: "last(/{{ zbx_web_host }}/proc.num[,,,php-fpm])=0"
+          enabled: true
+        state: present
+
+    # Cette derive (disque qui se remplit) est le symptome du defaut applicatif
+    # embarque (session.php ecrit 5 Mo a chaque affichage du dashboard).
+    - name: "Trigger | Disque racine se remplit (>80%)"
+      community.zabbix.zabbix_trigger:
+        name: "Root filesystem is filling up (>80%) on {{ zbx_web_host }}"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          severity: warning
+          expression: "last(/{{ zbx_web_host }}/vfs.fs.size[/,pused])>80"
+          enabled: true
+        state: present
+
+    - name: "Trigger | Disque racine critique (>90%)"
+      community.zabbix.zabbix_trigger:
+        name: "Root filesystem is almost full (>90%) on {{ zbx_web_host }}"
+        host_name: "{{ zbx_web_host }}"
+        params:
+          severity: high
+          expression: "last(/{{ zbx_web_host }}/vfs.fs.size[/,pused])>90"
+          enabled: true
+        state: present
