@@ -1,6 +1,9 @@
 <div align="center">
 
-<img src="docs/assets/logo_ynov_campus_sophia.png" alt="Ynov Campus Sophia-Antipolis" height="72">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo_ynov_campus_sophia-white.png">
+  <img src="docs/assets/logo_ynov_campus_sophia.png" alt="Ynov Campus Sophia-Antipolis" height="72">
+</picture>
 
 <h1>ynov-virtu</h1>
 
@@ -36,8 +39,10 @@ Projet réalisé dans le cadre du module Virtualisation du M1 Expert Cloud, Séc
 
 ## Points clés
 
+<div align="center">
+
 | Domaine | Mise en œuvre |
-|---|---|
+|:--|:--|
 | **Virtualisation** | Cluster Proxmox VE 3 nœuds : quorum, stockage partagé, migration à chaud |
 | **Stockage** | Ceph hyperconvergé (OSD / MON / MGR), réseaux public et privé dédiés en LACP |
 | **Réseau** | 6 VLANs segmentés (802.1Q), agrégation LACP, VLAN blackhole pour les ports inutilisés |
@@ -47,21 +52,29 @@ Projet réalisé dans le cadre du module Virtualisation du M1 Expert Cloud, Séc
 | **Observabilité** | Supervision Zabbix (serveur, agents, monitoring applicatif) |
 | **CI/CD** | GitHub Actions : validation OpenTofu et documentation déployée à chaque push |
 
+</div>
+
 ## Stack technique
 
 <div align="center">
-  <img src="docs/assets/logos/proxmox.png" height="46" alt="Proxmox VE">&nbsp;&nbsp;&nbsp;
-  <img src="docs/assets/logos/opnsense.svg" height="46" alt="OPNsense">&nbsp;&nbsp;&nbsp;
-  <img src="docs/assets/logos/ceph.svg" height="46" alt="Ceph">&nbsp;&nbsp;&nbsp;
-  <img src="docs/assets/logos/arista.png" height="46" alt="Arista">&nbsp;&nbsp;&nbsp;
-  <img src="docs/assets/logos/terraform.svg" height="46" alt="OpenTofu">&nbsp;&nbsp;&nbsp;
-  <img src="docs/assets/logos/ansible.svg" height="46" alt="Ansible">&nbsp;&nbsp;&nbsp;
-  <img src="docs/assets/logos/github.svg" height="46" alt="GitHub">
-</div>
 
-<p align="center">
-Proxmox VE&nbsp;·&nbsp;Ceph&nbsp;·&nbsp;OPNsense&nbsp;·&nbsp;Arista EOS&nbsp;·&nbsp;OpenTofu&nbsp;·&nbsp;cloud-init&nbsp;·&nbsp;Ansible&nbsp;·&nbsp;NetBox&nbsp;·&nbsp;Zabbix&nbsp;·&nbsp;JumpServer&nbsp;·&nbsp;HashiCorp Vault&nbsp;·&nbsp;Docker&nbsp;·&nbsp;GitHub Actions
-</p>
+![Proxmox VE](https://img.shields.io/badge/Proxmox_VE-E57000?style=for-the-badge&logo=proxmox&logoColor=white)
+![Ceph](https://img.shields.io/badge/Ceph-EF5C55?style=for-the-badge&logo=ceph&logoColor=white)
+![Arista EOS](https://img.shields.io/badge/Arista_EOS-2B3A67?style=for-the-badge&logo=arista&logoColor=white)
+![OPNsense](https://img.shields.io/badge/OPNsense-D94F00?style=for-the-badge&logo=opnsense&logoColor=white)
+
+![OpenTofu](https://img.shields.io/badge/OpenTofu-844FBA?style=for-the-badge&logo=opentofu&logoColor=white)
+![cloud-init](https://img.shields.io/badge/cloud--init-F5A623?style=for-the-badge&logo=cloudinit&logoColor=white)
+![Ansible](https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=ansible&logoColor=white)
+![HashiCorp Vault](https://img.shields.io/badge/HashiCorp_Vault-000000?style=for-the-badge&logo=vault&logoColor=FFEC6E)
+
+![NetBox](https://img.shields.io/badge/NetBox-127998?style=for-the-badge&logo=netbox&logoColor=white)
+![JumpServer](https://img.shields.io/badge/JumpServer-00B96B?style=for-the-badge&logo=jumpserver&logoColor=white)
+![Zabbix](https://img.shields.io/badge/Zabbix-D40000?style=for-the-badge&logo=zabbix&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
+
+</div>
 
 ## Architecture
 
@@ -105,8 +118,10 @@ graph TD
 
 ### Plan réseau
 
+<div align="center">
+
 | VLAN | Rôle | Réseau |
-|---|---|---|
+|:--:|:--|:--|
 | 10 | MGMT (management cluster) | `10.0.10.0/24` |
 | 20 | DMZ (bastion, reverse-proxy) | `10.0.20.0/24` |
 | 30 | SRV-LAN (web, db, supervision) | `10.0.30.0/24` |
@@ -114,15 +129,21 @@ graph TD
 | 101 / 102 | Ceph public / privé | `10.0.101.0/24`, `10.0.102.0/24` |
 | 4094 | Blackhole (ports inutilisés) | (aucun) |
 
+</div>
+
 ### Couche applicative
 
+<div align="center">
+
 | VM | Rôle | VLAN | IP |
-|---|---|---|---|
+|:--|:--|:--:|:--|
 | **bastion** | JumpServer (PAM) et outils d'administration | DMZ | `10.0.20.1` |
 | **web** | Frontal nginx + php-fpm | SRV-LAN | `10.0.30.4` |
 | **db** | Base de données MariaDB | SRV-LAN | `10.0.30.5` |
 | **zabbix** | Supervision | SRV-LAN | `10.0.30.6` |
 | **netbox** | IPAM / DCIM | SRV-LAN | `10.0.30.7` |
+
+</div>
 
 ## Déploiement
 
@@ -150,16 +171,20 @@ Guides pas à pas : [OpenTofu et cloud-init](https://astronas.github.io/ynov-vir
 
 Toute la conception, les choix d'architecture et les procédures sont publiés sur le site de documentation, généré avec [Zensical](https://zensical.org) et déployé sur GitHub Pages :
 
+<div align="center">
+
 **<https://astronas.github.io/ynov-virtu/>**
 
 | Section | Contenu |
-|---|---|
+|:--|:--|
 | [Architecture](https://astronas.github.io/ynov-virtu/architecture/) | Topologie physique, rôles des nœuds, choix de conception |
 | [Plan réseau](https://astronas.github.io/ynov-virtu/network-plan/) | Plan d'adressage, VLANs, ports du switch |
 | [Proxmox](https://astronas.github.io/ynov-virtu/proxmox/) · [Ceph](https://astronas.github.io/ynov-virtu/ceph/) | Cluster, bridges, interfaces, déploiement du stockage |
 | [OPNsense](https://astronas.github.io/ynov-virtu/opnsense/) · [Vault](https://astronas.github.io/ynov-virtu/vault/) · [JumpServer](https://astronas.github.io/ynov-virtu/jumpserver/) | Pare-feu, secrets, bastion |
 | [OpenTofu](https://astronas.github.io/ynov-virtu/opentofu/) · [Ansible](https://astronas.github.io/ynov-virtu/ansible/) · [NetBox](https://astronas.github.io/ynov-virtu/netbox/) | Provisioning, configuration, IPAM |
 | [Supervision](https://astronas.github.io/ynov-virtu/supervision/) · [Sécurité](https://astronas.github.io/ynov-virtu/security/) · [Tests réseau](https://astronas.github.io/ynov-virtu/network-tests/) | Zabbix, politique de sécurité, matrice de validation |
+
+</div>
 
 ## Structure du dépôt
 
@@ -184,7 +209,38 @@ ynov-virtu/
 
 ## Équipe
 
-Jonathan Panzer &nbsp;·&nbsp; Redouane Kachour &nbsp;·&nbsp; Thibaut Gianola &nbsp;·&nbsp; Sacha Veylon-Busser
+<div align="center">
+<table>
+<tr>
+<td align="center" width="180">
+<a href="https://github.com/astronas">
+<img src="https://github.com/astronas.png" width="86" alt="Thibaut Gianola"><br>
+<sub><b>Thibaut Gianola</b></sub>
+</a><br>
+<sub>@astronas</sub>
+</td>
+<td align="center" width="180">
+<a href="https://github.com/Sorway">
+<img src="https://github.com/Sorway.png" width="86" alt="Jonathan Panzer"><br>
+<sub><b>Jonathan Panzer</b></sub>
+</a><br>
+<sub>@Sorway</sub>
+</td>
+<td align="center" width="180">
+<img src="docs/assets/avatar-redouane.png" width="86" alt="Redouane Kachour"><br>
+<sub><b>Redouane Kachour</b></sub><br>
+<sub>&nbsp;</sub>
+</td>
+<td align="center" width="180">
+<a href="https://github.com/veysacha">
+<img src="https://github.com/veysacha.png" width="86" alt="Sacha Veylon-Busser"><br>
+<sub><b>Sacha Veylon-Busser</b></sub>
+</a><br>
+<sub>@veysacha</sub>
+</td>
+</tr>
+</table>
+</div>
 
 ## Licence
 
