@@ -18,8 +18,10 @@ ansible/ansible.log
 tfplan
 *.tfplan
 
-# Variables locales (peuvent contenir des secrets) — garder les .example
-**/terraform.tfvars
+# Variables Terraform/OpenTofu (peuvent contenir des secrets) — garder les .example
+*.tfvars
+!*.tfvars.example
 
-# Sortie de build MkDocs
+# Sortie et cache de build du site (Zensical / MkDocs)
 site/
+.cache/

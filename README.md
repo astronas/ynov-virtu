@@ -7,6 +7,16 @@
 > **Cours de Virtualisation** - M1 Expert Cloud, Sécurité & Infrastructure  
 > YNOV Campus Sophia-Antipolis
 
+<div align="center">
+
+[![Documentation](https://github.com/astronas/ynov-virtu/actions/workflows/docs.yml/badge.svg)](https://astronas.github.io/ynov-virtu/)
+[![OpenTofu validate](https://github.com/astronas/ynov-virtu/actions/workflows/opentofu-validate.yml/badge.svg)](https://github.com/astronas/ynov-virtu/actions/workflows/opentofu-validate.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+**📖 [Documentation en ligne](https://astronas.github.io/ynov-virtu/)** — architecture, plan réseau, IaC, services
+
+</div>
+
 Lab orienté entreprise basé sur **Proxmox VE**, **OPNsense**, **Ceph** et un switch **Arista 7050TX-64**.  
 Par-dessus cet underlay physique, une **couche workload** (bastion JumpServer, web, db, supervision Zabbix, IPAM/DCIM NetBox) est déployée en **Infrastructure as Code** : **OpenTofu** + **cloud-init** + **Ansible**.
 
@@ -185,7 +195,7 @@ ansible-playbook playbooks/roles.yml
 ```
 ynov-virtu/
 │
-├── docs/                          # Documentation (GitHub Pages via MkDocs)
+├── docs/                          # Documentation (GitHub Pages via Zensical)
 │   ├── architecture.md            # Topologie physique, rôles, choix d'architecture
 │   ├── network-plan.md            # Plan IP, VLANs, ports switch
 │   ├── proxmox.md                 # Cluster Proxmox (nœuds, bridges, interfaces)
@@ -242,12 +252,14 @@ ynov-virtu/
 ├── diagrams/                      # Schémas Mermaid (.mmd)
 │
 ├── .github/workflows/
-│   ├── docs.yml                   # GitHub Pages (MkDocs Material)
+│   ├── docs.yml                   # GitHub Pages (Zensical)
 │   └── opentofu-validate.yml      # CI : tofu fmt + init + validate
 │
-├── old/                           # Ancienne IaC physique (terraform + ansible + scripts)
+├── overrides/                     # Surcharges de thème Zensical (templates)
+├── old/                           # Ancienne IaC physique (référence, superseded)
 │
-└── mkdocs.yml                     # Config du site de documentation
+├── zensical.toml                  # Config du site de documentation (Zensical)
+└── LICENSE                        # Licence MIT
 ```
 
 ---
@@ -315,8 +327,11 @@ ansible-playbook playbooks/roles.yml --check
 
 ## Documentation en ligne
 
-La documentation est disponible via GitHub Pages (MkDocs Material).  
-Déployée automatiquement à chaque push sur `main` via `.github/workflows/docs.yml`.
+📖 **<https://astronas.github.io/ynov-virtu/>**
+
+Documentation complète (architecture, plan réseau, IaC, services, sécurité, dépannage) générée
+avec [Zensical](https://zensical.org) et déployée sur GitHub Pages à chaque push sur `main`
+via `.github/workflows/docs.yml`.
 
 ---
 
