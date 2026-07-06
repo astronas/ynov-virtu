@@ -161,6 +161,12 @@ Les VMs avec `ip` renseignée restent **statiques** (ex : la VM `netbox` elle-m�
 !!! warning "Ordre de déploiement"
     NetBox doit être **déployé et peuplé** (voir [Configuration Ansible](ansible.md), playbook `netbox-seed.yml`) avant que l'allocateur ne puisse distribuer des IP. La VM qui héberge NetBox garde donc une IP statique.
 
+Après le seed, NetBox reflète le plan réseau du lab (préfixes, adresses réservées et VLANs) :
+
+![IPAM NetBox - préfixes et adresses IP du lab](assets/netbox_ip_dash.png)
+
+![VLANs déclarés dans NetBox](assets/netbox_vlan_dash.png)
+
 ---
 
 ## cloud-init (bootstrap)

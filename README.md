@@ -194,6 +194,11 @@ ynov-virtu/
 │   ├── windows-nat.md             # Passerelle NAT Windows Wi-Fi→Ethernet
 │   ├── opentofu.md                # IaC - provisioning des VMs (template, provider)
 │   ├── ansible.md                 # IaC - configuration des VMs (rôles, services)
+│   ├── services.md                # web & db (demoapp) + défaut disque supervisé
+│   ├── jumpserver.md              # Bastion PAM JumpServer
+│   ├── supervision.md             # Zabbix (serveur, agents, monitoring web)
+│   ├── gitlab.md                  # GitLab (remote Git + backend état Terraform)
+│   ├── vault.md                   # HashiCorp Vault (secrets)
 │   ├── security.md                # Politique de sécurité réseau
 │   ├── troubleshooting.md         # Problèmes rencontrés et résolutions
 │   └── network-tests.md           # Matrice de validation réseau
