@@ -37,6 +37,13 @@ nav = [
     { "OpenTofu & cloud-init" = "opentofu.md" },
     { "Configuration Ansible" = "ansible.md" },
   ] },
+  { "Services & applicatifs" = [
+    { "Services web & db" = "services.md" },
+    { "Bastion JumpServer" = "jumpserver.md" },
+    { "Supervision Zabbix" = "supervision.md" },
+    { "GitLab" = "gitlab.md" },
+    { "Vault" = "vault.md" },
+  ] },
   { "Sécurité" = "security.md" },
   { "Dépannage" = "troubleshooting.md" },
   { "Tests réseau" = "network-tests.md" },
